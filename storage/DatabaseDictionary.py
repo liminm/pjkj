@@ -29,7 +29,7 @@ class DatabaseDictionary(MutableMapping):
         self.mongo_collection.delete_many({'key': key})
 
     def __iter__(self):
-        return iter([entry['value'] for entry in self.mongo_collection.find()])
+        return iter([entry['key'] for entry in self.mongo_collection.find()])
 
     def __len__(self):
         return self.mongo_collection.count_documents({})
