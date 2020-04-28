@@ -31,6 +31,11 @@ storage[key] = game`
 ### How to read something
 `game = storage['key']`
 
+### How to iterate over all entries
+`for key in storage:
+    game = storage[key]
+`
+
 ## Important Information
 - The module only accepts String keys, if not a type error will be raised!
 - The values must be convertable to json if its not there will occur errors which are not handled yet!
