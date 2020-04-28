@@ -12,11 +12,11 @@ To get an overview over all running container type
 
 ## How to use the dictionary
 
-### how to connect to the storage module
+### How to connect to the storage module
 `from storage.DatabaseDictionary import DatabaseDictionary
 storage = DatabaseDictionary()`
 
-### how to save something
+### How to save something
 `key = 'insert your key here'
 game = {
     'player1': 'Lorenz',
@@ -28,6 +28,9 @@ game = {
     ]
 }
 storage[key] = game`
-### how to read something
+### How to read something
 `game = storage['key']`
 
+## Important Information
+- The module only accepts String keys, if not a type error will be raised!
+- The values must be convertable to json if its not there will occur errors which are not handled yet!
