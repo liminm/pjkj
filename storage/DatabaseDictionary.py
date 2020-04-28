@@ -13,7 +13,7 @@ class DatabaseDictionary(MutableMapping):
         self.mongo_collection = self.mongo_database['game-history']
 
     def __getitem__(self, key):
-        if type(key) is str:
+        if type(key) is not str:
             raise TypeError('Key is not string')
 
         return self.mongo_collection.find_one({'key': key})['value']
