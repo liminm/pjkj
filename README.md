@@ -34,9 +34,10 @@ game = {
         ...
     ]
 }
+storage[key] = game
 `
 ### how to read something
 `
-storage[key] = game
+game = storage['key']
 `
 
