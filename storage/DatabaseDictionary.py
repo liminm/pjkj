@@ -19,6 +19,7 @@ class DatabaseDictionary(MutableMapping):
         return self.mongo_collection.find_one({'key': key})['value']
 
     def __setitem__(self, key, value):
+        self.mongo_collection.delete_one({'key': key})
         self.mongo_collection.insert_one({
             'key': key,
             'value': value
