@@ -1,3 +1,10 @@
+AI project game server
+======================
+
+This is the backend for the 2020 AI tournament at the TU Berlin AOT.
+
+To run, simply call `python3 src/main.py`.
+
 # Storage Setup
 
 ## How to setup Docker the first time
