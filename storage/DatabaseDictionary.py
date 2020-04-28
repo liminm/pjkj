@@ -19,14 +19,14 @@ class DatabaseDictionary(MutableMapping):
         return self.mongo_collection.find_one({'key': key})['value']
 
     def __setitem__(self, key, value):
-        self.mongo_collection.delete({'key': key})
+        self.mongo_collection.delete_many({'key': key})
         self.mongo_collection.insert_one({
             'key': key,
             'value': value
         })
 
     def __delitem__(self, key):
-        self.mongo_collection.delet({'key': key})
+        self.mongo_collection.delete_many({'key': key})
 
     def __iter__(self):
         return iter([entry['value'] for entry in self.mongo_collection.find()])
