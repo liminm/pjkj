@@ -17,14 +17,11 @@ sudo docker ps
 ## How to use the dictionary
 
 ### how to connect to the storage module
-`
-from storage.DatabaseDictionary import DatabaseDictionary
-storage = DatabaseDictionary()
-`
+`from storage.DatabaseDictionary import DatabaseDictionary
+storage = DatabaseDictionary()`
 
 ### how to save something
-`
-key = 'insert your key here'
+`key = 'insert your key here'
 game = {
     'player1': 'Lorenz',
     'player2': 'Matthias',
@@ -34,10 +31,7 @@ game = {
         ...
     ]
 }
-storage[key] = game
-`
+storage[key] = game`
 ### how to read something
-`
-game = storage['key']
-`
+`game = storage['key']`
 
