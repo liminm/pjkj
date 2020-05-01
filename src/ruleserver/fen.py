@@ -21,13 +21,16 @@ class Board:
     def __init__(self, string=None):
         self.start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"
         self.string = string
-        self.queen = np.int64(0)
-        self.king = np.int64(0)
-        self.pawn = np.int64(0)
-        self.bishop = np.int64(0)
-        self.knight = np.int64(0)
-        self.rook = np.int64(0)
-        self.color = np.int64(0)
+        self.board = {
+            "q": np.int64(0),
+            "k": np.int64(0),
+            "p": np.int64(0),
+            "b": np.int64(0),
+            "k": np.int64(0),
+            "r": np.int64(0),
+            "w": np.int64(0),
+            "b": np.int64(0)
+        }
         
         self.pattern = re.compile("([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8}) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
         
@@ -41,7 +44,7 @@ class Board:
     """
     return [0-7:    Figurenstellung aus der FEN Notation,
             8:      Spieler am Zug,
-            9:     Rochade,
+            9:      Rochade,
             10:     En passant,
             11:     Halbzüge
             12:     Zugnummer]
