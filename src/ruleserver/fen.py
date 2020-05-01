@@ -1,7 +1,6 @@
 import numpy as np
 import re
 
-
 """
 Notation:
 a trun will alway be FEN i.e: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1    
