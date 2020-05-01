@@ -17,19 +17,29 @@ class Board:
         
         if not string is None:
             self.parse(string)
-    
+    """
+    return [0-8:    Figurenstellung aus der FEN Notation,
+            9:      Spieler am Zug,
+            10:     Rochade,
+            11:     En passant,
+            12:     Halbzüge
+            13:     Zugnummer]
+    """
     def scan(self, string):
         m = self.pattern.match(string)
         
         if m is None:
             raise SyntaxError("The FEN string is not valid!")
-        
-        
-        
-        return 
+            
+        return [m.group(i) for i in range(1, int(self.pattern.groups+1) )]
         
     def parse(self, string): # TODO: use the scanner to map string input to bitfields
         pass
         
     def printBitboard(bitboard):
         return '{:064b}'.format(bitboard)
+        
+        
+if __name__ == "__main__":
+    b = Board()
+    print(b.scan("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"))
