@@ -1,4 +1,4 @@
-from bitboard import racing_kings
+from bitboard import racing_kings # will be changed later
 
 
 class ValidCheck():
