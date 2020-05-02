@@ -79,7 +79,7 @@ class Board:
             self.string = string
             fen = self.scan(string)
         
-        if not checkFigures(fen[:8]):
+        if not self.checkFigures(fen[:8]):
             raise ValueError("ParseError: Each line on the board has to contain exactly 8 fields.")
         
         # fen ist ab hier eine liste, im im kommentar über der scan funktion beschriebenend format
@@ -153,13 +153,13 @@ if __name__ == "__main__":
     #print(b.checkFigures(s[:8]))
     
     # default string representation
-    b.board["r"] = np.uint64(int("10000001" + ("0"*8*6) + "10000001",2))
-    b.board["n"] = np.uint64(int("01000010" + ("0"*8*6) + "01000010",2))
-    b.board["b"] = np.uint64(int("00100100" + ("0"*8*6) + "00100100",2))
-    b.board["q"] = np.uint64(int("00010000" + ("0"*8*6) + "00010000",2))
-    b.board["k"] = np.uint64(int("00001000" + ("0"*8*6) + "00001000",2))
-    b.board["p"] = np.uint64(int("0"*8 + "1"*8 + ("0"*8*4) + "1"*8 + "0"*8,2))
+    b.board['r'] = np.uint64(int('10000001' + ('0'*8*6) + '10000001',2))
+    b.board['n'] = np.uint64(int('01000010' + ('0'*8*6) + '01000010',2))
+    b.board['b'] = np.uint64(int('00100100' + ('0'*8*6) + '00100100',2))
+    b.board['q'] = np.uint64(int('00010000' + ('0'*8*6) + '00010000',2))
+    b.board['k'] = np.uint64(int('00001000' + ('0'*8*6) + '00001000',2))
+    b.board['p'] = np.uint64(int('0'*8 + '1'*8 + ('0'*8*4) + '1'*8 + '0'*8,2))
     
-    b.board["wh"] = np.uint64(int(("0"*8*6) + "1"*16,2))
-    b.board["bl"] = np.uint64(int("1"*16 + ("0"*8*6),2))
+    b.board['wh'] = np.uint64(int(('0'*8*6) + '1'*16,2))
+    b.board['bl'] = np.uint64(int('1'*16 + ('0'*8*6),2))
     print(b)
