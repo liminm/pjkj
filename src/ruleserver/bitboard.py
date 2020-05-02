@@ -1,3 +1,6 @@
+import numpy as np
+import re
+
 """
 Notation:
 a trun will alway be FEN i.e: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1    
@@ -12,107 +15,77 @@ the - wont be changed (again chess rules that do not apply to racing kings)
 the 0 is the amount of halfturns since the last figure was killed TODO languge 
 1 the round number that is currently played
 """
-class racing_kings():
+class Board:
     
-    def __init__(self,  board = None):
+    def __init__(self, string=None):
         self.start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"
-        self.turns = []
-        self.player = ''
-        self.figures = ["krbnqKRBNQ"]
-        self.black_board = {
-                'k': 0<<63,
-                'b': 0<<63,
-                'n': 0<<63,
-                'r': 0<<63,
-                'q': 0<<63,
-                }
-        self.white_board = {
-                'K': 0<<63,
-                'B': 0<<63,
-                'N': 0<<63,
-                'R': 0<<63,
-                'Q': 0<<63,
-                }
-        self.cur_state = 0<<63
-        self.black_board_last = {
-                'k': 0<<63,
-                'b': 0<<63,
-                'n': 0<<63,
-                'r': 0<<63,
-                'q': 0<<63,
-                }
-        self.white_board_last = {
-                'K': 0<<63,
-                'B': 0<<63,
-                'N': 0<<63,
-                'R': 0<<63,
-                'Q': 0<<63,
-                }
-        self.last_state = 0<<63
+        self.string = string
+        self.board = {
+            "q": np.uint64(0), # queen
+            "k": np.uint64(0), # king
+            "p": np.uint64(0), # pawn
+            "b": np.uint64(0), # bishop
+            "n": np.uint64(0), # knight
+            "r": np.uint64(0), # rook
+            "wh": np.uint64(0), # white
+            "bl": np.uint64(0) # black
+        }
         
-        if board == None :
-            self.toBitBoard(self.start)
-            self.turns.append(self.start)
-            self.player = 'w'
-        else :
-            self.toBitBoard(board)
-            self.turns.append(board)
-            parts = board.split()
+        self.pattern = re.compile("([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8}) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
+        
+        if not string is None:
+            self.parse(string)
             
-            self.player = parts[1]
+    def resetBoard(self):
+        self.string = self.start
+        self.parse(self.string)
         
-    def toBitBoard(self, turn):
-        """
-        turn will be a FEN string, where we will take the the first, second, fith and sixth part
-        """
-        pos = 0
-        turn_parts = turn.split()
-        self.last_state = self.cur_state
-        self.black_board_last = self.black_board.copy()
-        self.white_board_last = self.white_board.copy()
-      
-        self.resetBoard()
-
-        self.player = turn_parts[1]
-
-        for elem in turn_parts[0]:
-            if ord(elem) < 57 and ord(elem) > 48:  #we have a number with 1-8 49-56
-                pos += int(elem)
-            else: 
-                if elem == 'k':
-                    self.black_board['k'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'b':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'r':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'n':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'q':
-                    self.black_board['q'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'K':
-                    self.white_board['K'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'B':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'R':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'N':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'Q':
-                    self.white_board['Q'] = 1 << pos
-                    self.cur_state += 1<< pos
+    """
+    return [0-7:    Figurenstellung aus der FEN Notation,
+            8:      Spieler am Zug,
+            9:      Rochade,
+            10:     En passant,
+            11:     Halbzüge
+            12:     Zugnummer]
+    """
+    def scan(self, string):
+        m = self.pattern.match(string)
+        
+        if m is None:
+            raise SyntaxError("The FEN string is not valid!")
+            
+        return [m.group(i) for i in range(1, int(self.pattern.groups+1) )]
+        
+    def checkFigures(self, lines):
+        if len(lines) != 8:
+            return False
+        
+        for l in lines:
+            figures = 0
+            for c in l:
+                if c.isdigit():
+                    figures+= int(c)
+                else:
+                    figures+=1
                 
-                if elem != '/':
-                    pos += 1
-            
+            if figures != 8:
+                return False
+        return True
+        
+    def parse(self, string): # TODO: use the scanner to map string input to bitfields
+        
+        fen = string
+        if not isinstance(string, list):
+            self.string = string
+            fen = self.scan(string)
+        
+        if not checkFigures(fen[:8]):
+            raise ValueError("ParseError: Each line on the board has to contain exactly 8 fields.")
+        
+        # fen ist ab hier eine liste, im im kommentar über der scan funktion beschriebenend format
+        # du kannst auch python fen.py ausführen, dann siehst du einen beispielaufruf von fen
+        pass
+           
     def printBoard(self, bitboard):
         board = '{0:b}'.format(bitboard).zfill(64)
         board = board[::-1]
@@ -124,25 +97,69 @@ class racing_kings():
         parts.insert(0,"  abcdefgh")
         print('\n'.join(parts))
     
-    def player(self, turn):
-        pass
+    # TODO: not working with this implementation yet. Has to rely on bitboards
+    def to_matrix(self, board_str):
+        self.vector = []
+        self.matrix = []
+        for char in board_str:
+            if char.isdigit():
+                for i in range(int(char)):
+                    self.vector.append(" ")
+            elif char == "/":
+                self.matrix.append(self.vector)
+                self.vector = []
+            else:
+                self.vector.append(char)
+        self.matrix.append(self.vector)
+        return self.matrix
+        
+    def __repr__(self):
+        get_bin = lambda x, n: format(x, 'b').zfill(n)
+        toBitmask = lambda x : np.array([np.bool(int(c)) for c in get_bin(x,64)])
     
-    def resetBoard(self):
-        self.black_board.clear()
-        self.white_board.clear()
-        self.cur_state = 0<< 63
-
-
-
-#game = racing_kings()
-#game.printBoard(game.cur_state)
-#print('{0:b}'.format(game.black_board['r']))
-#print(game.black_board['r'])
-#game.toBitBoard("8/8/8/8/8/r7/k1bnKRBN/qrbnQRBN w - - 0 1")
-#game.printBoard(game.cur_state)
-#game.printBoard(game.last_state)
-#print(game.black_board_last['r'])
-#print('{0:b}'.format(game.black_board['r']))
-#test = "8/8/8/8/8/r7/k1bnKRBN/qrbnQRBN w - - 0 1"
-#parts = test.split()
-
+        matrix = np.array(["." for i in range(64)])
+        black = toBitmask(self.board["bl"])
+        white = toBitmask(self.board["wh"])
+        
+        for key, value in self.board.items():
+            if key in ["wh", "bl"]:
+                continue
+        
+            mask = toBitmask(value)
+            
+            matrix[np.bitwise_and(mask, black)] = key.lower()
+            matrix[np.bitwise_and(mask, white)] = key.upper()
+        
+        s = ""
+        for i in range(len(matrix)):
+            s += matrix[i]
+            if (i+1)%8==0:
+                s += "\n"
+        
+        return s
+        
+    def __str__(self):
+        return self.__repr__()
+        
+"""
+main function
+is only called if you directly execute this code, not just if you import it
+"""
+if __name__ == "__main__": 
+    b = Board()
+    #sample = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    #s = b.scan(sample)
+    #print(s)
+    #print(b.checkFigures(s[:8]))
+    
+    # default string representation
+    b.board["r"] = np.uint64(int("10000001" + ("0"*8*6) + "10000001",2))
+    b.board["n"] = np.uint64(int("01000010" + ("0"*8*6) + "01000010",2))
+    b.board["b"] = np.uint64(int("00100100" + ("0"*8*6) + "00100100",2))
+    b.board["q"] = np.uint64(int("00010000" + ("0"*8*6) + "00010000",2))
+    b.board["k"] = np.uint64(int("00001000" + ("0"*8*6) + "00001000",2))
+    b.board["p"] = np.uint64(int("0"*8 + "1"*8 + ("0"*8*4) + "1"*8 + "0"*8,2))
+    
+    b.board["wh"] = np.uint64(int(("0"*8*6) + "1"*16,2))
+    b.board["bl"] = np.uint64(int("1"*16 + ("0"*8*6),2))
+    print(b)
