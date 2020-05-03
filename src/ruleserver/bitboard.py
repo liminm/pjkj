@@ -137,7 +137,6 @@ class Board:
         x = 7-int(ord(position[0])-ord("a"))
         y = int(position[1])-1
         pos = y*8+x
-        print(pos)
         mask = np.uint64(1 << pos)
         
         self.removeField(position)
@@ -180,7 +179,7 @@ class Board:
         
         return matrix.reshape((8,8))
     
-    # returns a fen string
+    # returns a fen string. Can be called via repr(board)
     def __repr__(self):
         matrix = self.toMatrix()
         
@@ -208,7 +207,7 @@ class Board:
         
         return fen
     
-    # returns a human readable representation
+    # returns a human readable representation. can be called via str(board) or print(board)
     def __str__(self):
         matrix = self.toMatrix()
         
@@ -220,7 +219,12 @@ class Board:
         s += "player:"+self.player + ", rochade:"+self.rochade+", enPassant:"+self.enPassant+", halfRounds:"+str(self.halfRounds)+", roundCount:"+str(self.roundCount)
         
         return s
-
+    
+    """
+    this function is called if you compare 2 boards with the '==' operator
+    """    
+    def __eq__(self, other):
+        return self.board == other.board and self.player == other.player and self.rochade == other.rochade and self.enPassant == other.enPassant and self.halfRounds == other.halfRounds and self.roundCount == other.roundCount
 
 def printBoard(self, bitboard):
     board = '{0:b}'.format(bitboard).zfill(64)
@@ -237,12 +241,17 @@ def printBoard(self, bitboard):
 main function
 is only called if you directly execute this code, not just if you import it
 """
+from copy import deepcopy
 if __name__ == "__main__": 
     sample = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     rkStart = "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1"
     b = Board(rkStart)
     
+    b2 = deepcopy(b)
+    
     # default string representation
-    b.setField("h3", "p")
     print(b)
-    print(repr(b))
+    print(b==b2)
+    b.setField("h3", "p")
+    print(b==b2)
+    print(repr(Board()))
