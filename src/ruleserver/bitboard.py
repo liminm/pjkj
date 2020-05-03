@@ -1,3 +1,6 @@
+import numpy as np
+import re
+
 """
 Notation:
 a trun will alway be FEN i.e: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1    
@@ -12,137 +15,234 @@ the - wont be changed (again chess rules that do not apply to racing kings)
 the 0 is the amount of halfturns since the last figure was killed TODO languge 
 1 the round number that is currently played
 """
-class racing_kings():
+class Board:
     
-    def __init__(self,  board = None):
-        self.start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"
-        self.turns = []
-        self.player = ''
-        self.figures = ["krbnqKRBNQ"]
-        self.black_board = {
-                'k': 0<<63,
-                'b': 0<<63,
-                'n': 0<<63,
-                'r': 0<<63,
-                'q': 0<<63,
-                }
-        self.white_board = {
-                'K': 0<<63,
-                'B': 0<<63,
-                'N': 0<<63,
-                'R': 0<<63,
-                'Q': 0<<63,
-                }
-        self.cur_state = 0<<63
-        self.black_board_last = {
-                'k': 0<<63,
-                'b': 0<<63,
-                'n': 0<<63,
-                'r': 0<<63,
-                'q': 0<<63,
-                }
-        self.white_board_last = {
-                'K': 0<<63,
-                'B': 0<<63,
-                'N': 0<<63,
-                'R': 0<<63,
-                'Q': 0<<63,
-                }
-        self.last_state = 0<<63
+    def __init__(self, string=None):
+        self.string = string
+        self.board = {
+            "q": np.uint64(0), # queen
+            "k": np.uint64(0), # king
+            "p": np.uint64(0), # pawn
+            "b": np.uint64(0), # bishop
+            "n": np.uint64(0), # knight
+            "r": np.uint64(0), # rook
+            "wh": np.uint64(0), # white
+            "bl": np.uint64(0) # black
+        }
+        self.player = "w"
+        self.rochade = "-"
+        self.enPassant = "-"
+        self.halfRounds = 0
+        self.roundCount = 1
         
-        if board == None :
-            self.toBitBoard(self.start)
-            self.turns.append(self.start)
-            self.player = 'w'
-        else :
-            self.toBitBoard(board)
-            self.turns.append(board)
-            parts = board.split()
+        self.pattern = re.compile("(([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
+        
+        if not string is None:
+            self.parse(string)
+        
+    """
+    return [0: Figurenstellungen mit / separated
+           1-8:    Figurenstellung aus der FEN Notation,
+            9:      Spieler am Zug,
+            10:      Rochade,
+            11:     En passant,
+            12:     Halbzuege
+            13:     Zugnummer]
+    """
+    def scan(self, string):
+        m = self.pattern.match(string)
+        
+        if m is None:
+            raise SyntaxError("The FEN string is not valid!")
             
-            self.player = parts[1]
+        return [m.group(i) for i in range(1, int(self.pattern.groups+1) )]
         
-    def toBitBoard(self, turn):
-        """
-        turn will be a FEN string, where we will take the the first, second, fith and sixth part
-        """
+    def parse(self, fen):
+        turn_parts = self.scan(fen)
+
+        self.fields = turn_parts[0];
+        self.player = turn_parts[9]
+        self.rochade = turn_parts[10]
+        self.enPassant = turn_parts[11]
+        self.halfRounds = turn_parts[12]
+        self.roundCount = turn_parts[13]
         pos = 0
-        turn_parts = turn.split()
-        self.last_state = self.cur_state
-        self.black_board_last = self.black_board.copy()
-        self.white_board_last = self.white_board.copy()
-      
-        self.resetBoard()
-
-        self.player = turn_parts[1]
-
-        for elem in turn_parts[0]:
-            if ord(elem) < 57 and ord(elem) > 48:  #we have a number with 1-8 49-56
+        for elem in self.fields:
+            mask = np.uint64(9223372036854775808>>pos) # 9223372036854775808 == s^63
+            if elem == 'K':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'B':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'N':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'R':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'Q':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'P':
+                self.board[elem.lower()] |= mask
+                self.board["wh"] |= mask
+                pos += 1
+            elif elem == 'k':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem == 'b':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem == 'n':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem == 'r':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem == 'q':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem == 'p':
+                self.board[elem.lower()] |= mask
+                self.board["bl"] |= mask
+                pos += 1
+            elif elem != '/':
                 pos += int(elem)
-            else: 
-                if elem == 'k':
-                    self.black_board['k'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'b':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'r':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'n':
-                    self.black_board[elem] = self.black_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'q':
-                    self.black_board['q'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'K':
-                    self.white_board['K'] = 1 << pos
-                    self.cur_state += 1<< pos
-                elif elem == 'B':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'R':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'N':
-                    self.white_board[elem] = self.white_board.get(elem,0) +  1 << pos 
-                    self.cur_state += 1<< pos
-                elif elem == 'Q':
-                    self.white_board['Q'] = 1 << pos
-                    self.cur_state += 1<< pos
-                
-                if elem != '/':
-                    pos += 1
+            elif elem == '/' and pos % 8 != 0:
+                raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
+    
+    """
+    
+    this functions sets a field on the bitboard. You have to give a location, for example 'f2' and a character in fen style, like 'Q' or 'q', for white and black queens.
+    
+    """
+    def setField(self, position, character):
+        position = position[0].lower() +position[1]
+        m = re.compile("[a-h][1-8] [qQkKrRpPnN]").match(position + " " + character)
+        
+        if m is None:
+            raise SyntaxError("The Syntax of the position or character is wrong!")
+        
+        x = 7-int(ord(position[0])-ord("a"))
+        y = int(position[1])-1
+        pos = y*8+x
+        print(pos)
+        mask = np.uint64(1 << pos)
+        
+        self.removeField(position)
+        self.board[character.lower()] |= mask
+        if character.lower() == character:
+            self.board["bl"] |= mask
+        else:
+            self.board["wh"] |= mask
+    
+    def removeField(self, position):
+        position = position[0].lower() +position[1]
+        m = re.compile("[a-h][1-8]").match(position)
+        
+        if m is None:
+            raise SyntaxError("The Syntax of the position is wrong!")
+        
+        x = 7-int(ord(position[0])-ord("a"))
+        y = int(position[1])-1
+        pos = y*8+x
+        mask = ~(np.uint64(1 << pos))
+        for b in self.board:
+            self.board[b] &= mask
+    
+    def toMatrix(self):
+        get_bin = lambda x, n: format(x, 'b').zfill(n)
+        toBitmask = lambda x : np.array([np.bool(int(c)) for c in get_bin(x,64)])
+    
+        matrix = np.array(["." for i in range(64)])
+        black = toBitmask(self.board["bl"])
+        white = toBitmask(self.board["wh"])
+        
+        for key, value in self.board.items():
+            if key in ["wh", "bl"]:
+                continue
+        
+            mask = toBitmask(value)
             
-    def printBoard(self, bitboard):
-        board = '{0:b}'.format(bitboard).zfill(64)
-        board = board[::-1]
-        indices = [0,8,16,24,32,40,48,56,]
-        parts = [board[i:j] for i,j in zip(indices, indices[1:]+[None])]
-        rows = [8,7,6,5,4,3,2,1]
-        for i in range(1,9):
-            parts[i-1] = str(rows[i-1])+'|'+ parts[i-1]
-        parts.insert(0,"  abcdefgh")
-        print('\n'.join(parts))
+            matrix[np.bitwise_and(mask, black)] = key.lower()
+            matrix[np.bitwise_and(mask, white)] = key.upper()
+        
+        return matrix.reshape((8,8))
     
-    def player(self, turn):
-        pass
+    # returns a fen string
+    def __repr__(self):
+        matrix = self.toMatrix()
+        
+        fen = ""
+        for line in matrix:
+            count = 0
+            for c in line:
+                if c == ".":
+                    count+=1
+                else:
+                    if count != 0:
+                        fen += str(count)
+                    fen += c
+                    
+            if count != 0:
+                fen += str(count)
+            fen += "/"
+        fen = fen[:len(fen)-1] + ' ' # delete last / and replace it with a space
+        
+        fen += self.player + " "
+        fen += self.rochade + " "
+        fen += self.enPassant + " "
+        fen += str(self.halfRounds) + " "
+        fen += str(self.roundCount)
+        
+        return fen
     
-    def resetBoard(self):
-        self.black_board.clear()
-        self.white_board.clear()
-        self.cur_state = 0<< 63
+    # returns a human readable representation
+    def __str__(self):
+        matrix = self.toMatrix()
+        
+        s = ""
+        for i in range(matrix.shape[0]*matrix.shape[1]):
+            s += matrix[int(i/8)][i%8]
+            if (i+1)%8==0:
+                s += "\n"
+        s += "player:"+self.player + ", rochade:"+self.rochade+", enPassant:"+self.enPassant+", halfRounds:"+str(self.halfRounds)+", roundCount:"+str(self.roundCount)
+        
+        return s
 
 
-
-#game = racing_kings()
-#game.printBoard(game.cur_state)
-#print('{0:b}'.format(game.black_board['r']))
-#print(game.black_board['r'])
-#game.toBitBoard("8/8/8/8/8/r7/k1bnKRBN/qrbnQRBN w - - 0 1")
-#game.printBoard(game.cur_state)
-#game.printBoard(game.last_state)
-#print(game.black_board_last['r'])
-#print('{0:b}'.format(game.black_board['r']))
-#test = "8/8/8/8/8/r7/k1bnKRBN/qrbnQRBN w - - 0 1"
-#parts = test.split()
-
+def printBoard(self, bitboard):
+    board = '{0:b}'.format(bitboard).zfill(64)
+    board = board[::-1]
+    indices = [0,8,16,24,32,40,48,56,]
+    parts = [board[i:j] for i,j in zip(indices, indices[1:]+[None])]
+    rows = [8,7,6,5,4,3,2,1]
+    for i in range(1,9):
+        parts[i-1] = str(rows[i-1])+'|'+ parts[i-1]
+    parts.insert(0,"  abcdefgh")
+    print('\n'.join(parts))
+    
+"""
+main function
+is only called if you directly execute this code, not just if you import it
+"""
+if __name__ == "__main__": 
+    sample = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    rkStart = "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1"
+    b = Board(rkStart)
+    
+    # default string representation
+    b.setField("h3", "p")
+    print(b)
+    print(repr(b))
