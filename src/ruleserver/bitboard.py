@@ -30,8 +30,13 @@ class Board:
             "wh": np.uint64(0), # white
             "bl": np.uint64(0) # black
         }
+        self.player = "w"
+        self.rochade = "-"
+        self.enPassant = "-"
+        self.halfRounds = 0
+        self.roundCount = 1
         
-        self.pattern = re.compile("([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8}) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
+        self.pattern = re.compile("(([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
         
         if not string is None:
             self.parse(string)
@@ -41,12 +46,13 @@ class Board:
         self.parse(self.string)
         
     """
-    return [0-7:    Figurenstellung aus der FEN Notation,
-            8:      Spieler am Zug,
-            9:      Rochade,
-            10:     En passant,
-            11:     Halbzüge
-            12:     Zugnummer]
+    return [0: Figurenstellungen mit / separated
+           1-8:    Figurenstellung aus der FEN Notation,
+            9:      Spieler am Zug,
+            10:      Rochade,
+            11:     En passant,
+            12:     Halbzüge
+            13:     Zugnummer]
     """
     def scan(self, string):
         m = self.pattern.match(string)
@@ -79,13 +85,120 @@ class Board:
             self.string = string
             fen = self.scan(string)
         
-        if not checkFigures(fen[:8]):
+        if not checkFigures(fen[1:9]):
             raise ValueError("ParseError: Each line on the board has to contain exactly 8 fields.")
         
         # fen ist ab hier eine liste, im im kommentar über der scan funktion beschriebenend format
         # du kannst auch python fen.py ausführen, dann siehst du einen beispielaufruf von fen
         pass
-           
+        
+    def parse(self, fen):
+        turn_parts = self.scan(fen)
+        #self.board_black_last = self.board_black.copy()
+        #self.board_white_last = self.board_white.copy()
+
+        self.player = turn_parts[9]
+        self.fields = turn_parts[0];
+        self.rochade = turn_parts[10]
+        self.enPassant = turn_parts[11]
+        self.halfRounds = turn_parts[12]
+        self.roundCount = turn_parts[13]
+        """white = {
+            'K': list("{0:b}".format(0).zfill(64)),
+            'B': list("{0:b}".format(0).zfill(64)),
+            'N': list("{0:b}".format(0).zfill(64)),
+            'R': list("{0:b}".format(0).zfill(64)),
+            'Q': list("{0:b}".format(0).zfill(64)),
+        }
+        black = {
+            'k': list("{0:b}".format(0).zfill(64)),
+            'b': list("{0:b}".format(0).zfill(64)),
+            'n': list("{0:b}".format(0).zfill(64)),
+            'r': list("{0:b}".format(0).zfill(64)),
+            'q': list("{0:b}".format(0).zfill(64)),
+        }"""
+        pos = 0
+        for elem in fields:
+            mask = 1<<pos
+            if elem == 'K':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'B':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'N':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'R':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'Q':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'P':
+                self.board[elem.lower()] &= mask
+                self.board["wh"] &= mask
+                pos += 1
+            elif elem == 'k':
+                self.board[elem.lower()] &= mask
+                self.board["bl"] &= mask
+                pos += 1
+            elif elem == 'b':
+                self.board[elem.lower()] &= mask
+                self.board["bl"] &= mask
+                pos += 1
+            elif elem == 'n':
+                self.board[elem.lower()] &= mask
+                self.board["bl"] &= mask
+                pos += 1
+            elif elem == 'r':
+                self.board[elem.lower()] &= mask
+                self.board["bl"] &= mask
+                pos += 1
+            elif elem == 'q':
+                self.board[elem.lower()] &= mask
+                self.board["bl"] &= mask
+                pos += 1
+            elif elem != '/':
+                pos += int(elem)
+            elif elem == '/':
+                if pos % 8 != 0:
+                    raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
+
+        """for k, v in self.board_white.items():
+            white[k] = int("".join(white[k]), base = 2)
+        for k,v in self.board_black.items():
+            black[k] = int("".join(black[k]), base = 2)
+
+        bitboards = [white, black]
+        print(bitboards)
+        self.resetBoard(bitboards)"""
+        #return (bitboards)
+    
+    def resetBoard(self, bitboards = []):
+        if len(bitboards) == 0:
+            for k, v in self.board_white.items():
+                self.board_white_last[k] = self.board_white[k]
+                self.board_white[k] = 0
+            for k, v in self.board_black.items():
+                self.board_black_last[k] = self.board_black[k]
+                self.board_black[k] = 0
+            self.player_last = self.player
+
+        else:
+            print(bitboards[0]['K'])
+            for k, v in self.board_white.items():
+                self.board_white[k] = bitboards[0][k]
+                print("hier")
+                print(self.board_white[k])
+            for k, v in self.board_black.items():
+                self.board_black[k] = bitboards[1][k]
+    
     def printBoard(self, bitboard):
         board = '{0:b}'.format(bitboard).zfill(64)
         board = board[::-1]
