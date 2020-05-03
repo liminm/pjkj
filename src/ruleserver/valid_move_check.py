@@ -1,4 +1,5 @@
-from bitboard import racing_kings  # will be changed later
+import numpy as np
+from bitboard import Board
 
 
 class ValidCheck():
@@ -8,31 +9,23 @@ class ValidCheck():
     # @board_after:  FEN-board after the move
     # @return: figure-type, before-position, after-position    example: 'r', (1,0), (2,3)
     def calc_positions(self, board_before, board_after):
-        before = racing_kings()
-        after = racing_kings()
-
-        before.toBitBoard(board_before)
-        after.toBitBoard(board_after)
+        before = Board(board_before)
+        after = Board(board_after)
 
         figure = self.get_figure(before, after)
         if figure == "":
             return figure, (-1, -1), (-1, -1)
 
         if after.player == "w":
-            bit_before = before.white_board[figure]
-            bit_after = after.white_board[figure]
+            bit_before = before.board[figure] & before.board['wh']
+            bit_after  = after.board[figure]  & after.board['wh']
         else:
-            bit_before = before.black_board[figure]
-            bit_after = after.black_board[figure]
-
-        # print("before: ","{0:b}".format(bit_before))
-        # print("after:  ","{0:b}".format(bit_after))
+            bit_before = before.board[figure] & before.board['bl']
+            bit_after  = after.board[figure]  & after.board['bl']
 
         mix = bit_before & bit_after
         bit_before = bit_before - mix
         bit_after = bit_after - mix
-
-        # print("mix:    ","{0:b}".format(mix))
 
         # check if only one figure moves
         if (self.count_bits(bit_before) > 1) or (self.count_bits(bit_after) > 1):
@@ -49,35 +42,18 @@ class ValidCheck():
     # return "" if: - no figure moved
     #               - too many moves
     def get_figure(self, before, after):
+        player_mask = 0
+        fig_moved = 0
+        curr_fig = ""
         if after.player == 'w':
-            return self.get_figure_w(before, after, 0)
+            player_mask = after.board['wh']
         elif after.player == "b":
-            return self.get_figure_b(before, after, 0)
-        else:
-            return ""
-
-    def get_figure_w(self, before, after, fig_moved):
-        curr_fig = ""
-        for fig in "KBNRQ":
-            try:
-                fig_board_before = before.white_board[fig]
-                fig_board_after = after.white_board[fig]
-            except KeyError:  # catch Error, if such figure doesn't exist
-                continue
-            if fig_board_before != fig_board_after:
-                curr_fig = fig
-                fig_moved += 1
-        if (fig_moved == 1):
-            return curr_fig
-        return ""
-
-    def get_figure_b(self, before, after, fig_moved):
-        curr_fig = ""
+            player_mask = after.board['bl']
         for fig in "kbrnq":
             try:
-                fig_board_before = before.black_board[fig]
-                fig_board_after = after.black_board[fig]
-            except KeyError:
+                fig_board_before = before.board[fig] & player_mask
+                fig_board_after = after.board[fig] & player_mask
+            except KeyError:    # catch Error, if such figure doesn't exist
                 continue
             if fig_board_before != fig_board_after:
                 curr_fig = fig
@@ -94,7 +70,7 @@ class ValidCheck():
         if bitboard == 0:
             return (-1, -1)
         while bitboard != 0:
-            bitboard = bitboard >> 1
+            bitboard = bitboard >> np.uint64(1)
             x += 1
             if x >= 8:
                 x = 0
@@ -104,8 +80,8 @@ class ValidCheck():
     def count_bits(self, number):
         i = 0
         while (number > 0):
-            i += number & 1
-            number = number >> 1
+            i += number & np.uint64(1)
+            number = number >> np.uint64(1)
         return i
 
     # Check if the mofe of the specific figure is correct
@@ -198,46 +174,19 @@ class ValidCheck():
         return False
 
 
-# check = check_valid_move('KN',(3,3),(1,4))
-# print(check)
+# Only called if you directly execute this code
+if __name__ == "__main__":
+    check = ValidCheck()
+    board1 = "1r6/8/8/8/1q6/8/8/r7 w - - 3 2"
+    board2 = "2r5/8/8/8/1q6/8/8/r7 b - - 4 5"
 
-check = ValidCheck()
+    move = check.calc_positions(board1, board2)
+    print(move)
 
-# board1 = "r7/8/8/8/1q7/8/8/r7 w - - 3 2" # produces wrong board -> overflow?
-# board2 = "1r6/8/8/8/1q7/8/8/r7 b - - 4 5"
+    check.check_valid_move(move[0], (move[1])[0], (move[1])[1], (move[2])[0], (move[2])[1])
 
-board1 = "r7/8/8/8/1q7/8/8/8 w - - 3 2"
-board2 = "2r5/8/8/8/1q7/8/8/8 b - - 4 5"
 
-# game = racing_kings()
-# game.toBitBoard(board1)
-# game.printBoard(game.black_board['r'])
-
-move = check.calc_positions(board1, board2)
-print(move)
-check.check_valid_move(move[0], (move[1])[0], (move[1])[1], (move[2])[0], (move[2])[1])
-# game.toBitBoard(board1)
-# state = game.cur_state
-# game.printBoard(game.black_board['r'])
-# game.printBoard(state)
-# print(game.cur_state)
-
-# example
-# a1 = 0b00110000000010
-# a2 = 0b10110000000000
-# print("{0:b}".format(a1))
-# print("{0:b}".format(a2))
-
-# move = check.calc_positions(a1, a2)
-# print("Figure, (x,y):     ",move)
-
-# TODO: check if only one figure moves
+# TODO: check if only one figure moves - ok
 # TODO: check if figure is not out of bounds -> happens before the bitboard-conversion
 # TODO: check if the translation is right (direction, board orientation) -> irrelevant
 # TODO: add actual check ->HeyiLee
-
-# print(game.cur_state)
-# before = "8/8/8/1K6/8/8/8/8 w"
-# after  = "8/8/8/2K5/8/8/8/8 w"
-
-# print("{0:b}".format(test))
