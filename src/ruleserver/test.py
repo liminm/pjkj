@@ -33,6 +33,11 @@ class FenParserTest(unittest.TestCase):
 class MoveCheckTest(unittest.TestCase):
     
     def testMoveCheck(self):
+        """
+        t[0] == fen string für board vor moveCheck
+        t[1] == move in uci mit space separated
+        t[2] == says if the move should be valid
+        """
         v = ValidCheck()
         for t in test_data["moveCheck"]:
             board = Board(t[0])
