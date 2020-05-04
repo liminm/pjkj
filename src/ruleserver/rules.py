@@ -18,116 +18,150 @@ class racingkings():
     
     """
 
-    def __init__(self, FEN = None, Time = None):
-        self.curBoard = ''
-        self.lastBoard = ''
+    def __init__(self, FEN = None, gameTime = None, turnTime = None):
     
-        self.lastPlayer = ''
         self.curPlayer = '' 
-        self.maxTime = ''
-        self.playerA = '' 
-    
-        start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 0"
-        #redo this and put in fen state checkt and set up
-        """
+        self.maxTime = 120000
+        self.turnTime = 60000
+        self.playerA = ''
+        
         self.board = bitboard.Board()
     
-        if FEN == None :
-            self.board.parse(start)
-            self.lastBoard = self.board.board
-            self.playerA = 'w'
-            #self.lastplayer = 'bl'
-        else :
-            self.board.parse(FEN)
-            self.lastBoard = self.board.board
-            #TODO catch expection 
-            self.lastplayer = self.board.scan(FEN)[8]
-            self.playerA = self.board.scan(FEN)[8]
-        """    
-        if Time == None:
-            self.maxTime = 30 
-        else :
-            self.maxTime = Time
+        self.start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"
         
-    def setupTurn(self, FEN, history = None):
-        """
-        sets all parametrs for a Turn so the checks can go through 
-        FEN is the FEN string
-        history is the game dict
-        """
-        #catch exception
-        parts = bitboard.Board.scan(FEN)
-        self.curPlayer = parts[8]
+        if not(gameTime == None):
+            self.maxTime = gameTime
+        if not(turnTime == None):
+            self.turnTime = turnTime
+       
         
-        bitboard.Board.parse(FEN)
-        self.curBoard = bitboard.Board.board
-
-        if history != None:
             
-            #Todo figure out how to access the fen
-            bitboard.Board.parse(history['history'][-1]) #Todo check if newest turn is saved last or firat element
-            self.lastPlayer   = history['history'][-1] #Todo figure out how to access the fen
-            
-            self.lastBoard = bitboard.Board.board
-
+        
+    def setup(self, uci , history = None):
+        """
+        setups the Last and current boardstate, current board state is saved in self.board last board is save in self.lastBoard
+        we also set current player
+        """
+        if type(history) == str :
+            try:
+                self.lastBoard = self.board.parse(history)
+                parts = self.board.scan(history)
+                self.curPlayer = parts[9]
+            except:
+                return "failed to parse the FEN"
+        elif type(history) == dict:
+            try:
+                self.lastBoard = self.board.parse(history['history'][-1]['FEN'])
+                parts = self.board.scan(history['history'][-1]['FEN'])
+                self.curPlayer = parts[9]
+            except:
+                return "failed to parse the FEN"
+        else:
+                self.lastBoard = self.board.parse(self.start)
+                parts = self.board.scan(self.start)
+                self.curPlayer = parts[9]
+        
+        self.board.moveUCI(uci[:2],uci[2:4])
   
         
-    def fenStateCheck(self,FEN):
+    def fenStateCheck(self,FEN, history):
         """ 
-        to check if the starting conditions are allowing a game
-        i.e. white doesnt win automatically
-        """
-        try:
-        #check for valid FEN
+        This will be only called at the beginning of a game and report if the enterd FEN string is valid
+        FEN --> The FEN string wil be cheked for format and if there is at least two kings on the field
+        history --> the gamedict for now until i know what we get/need 
         
-        #check for timeoout
+        Returns a bool if it was valid and a String telling why it wasnt
+        """
+        valid = True
+        con = 'V'
+        condition = {
+                'F' : " The FEN String is not acaptable, to many/less fields or diffrent figures",
+                'E': "We cant play on an Empty board need at least two kings",
+                'V': None
+                }
+        
+        #check for valid FEN
+        try:
+            parts = bitboard.Board.scan(FEN)
+        except:
+            con = 'F'
+            valid = False
+        #check for timeout
         pass
         #check for timebudget
         pass
-        pass
+        # check for empty field
+        if "8/8/8/8/8/8/8/8" in FEN :
+            con = 'E'
+            valid = False
+        #check if there are at least two kings
+        if con == '':
+            self.playerA = parts[9]
+        return (valid, condition[con])
     
-    def move_check(self,uci,turnTime,history):
-        r = ''
-        state = ''
-        winner = ''
+    def moveCheck(self,uci,turnTime,history):
+        r = 'V'
+        state = None
+        winner = None
+        valid = True
+        if type(history) == str :
+             FEN = history
+        elif type(history) == dict:
+            FEN = history['history'][-1]['FEN']
+        else:
+            FEN = ''
+    
         reason = {
                 'U': "Invalid UCI string, values have to be between(inclusive) a-h and 1-8. with the format being i.e. e1g3",
                 'M': "Could not move the figure in this way",
-                'K': "Turn would put any king in checkmate"
+                'K': "Turn would put any king in checkmate",
+                'H': "The old FEN String seems to be wrong",
+                'V': None    
                 }
-        
-        valid = True
-        
+    
         # calling all the classes
         vmc = vm.ValidCheck()
         wc = rk_win.KingIsAttackedCheck
-        
-        #check for valid uci 
+        #check for valid uci
         if not self.validUCI(uci):
            r = 'U'
            valid = False
+           
+        ####### Setup the turns ######
+        if self.setup(uci,history) != None:
+            valid = False
+            r = 'H'
+        
         #check for timeoout
         pass
         #check for timebudget
         pass
         #check if there is a figure
         pass
-        #check if own figure moved
+        #check if opponents figure moved
         pass
+        """
         # for check valid  movement
-        pos = vmc.calc_positions(self.curBoard,self.lastBoard)
+        pos = vmc.calc_positions(self.board,self.lastBoard)
         if not vmc.check_valid_move(pos[0],pos[1][0],pos[1][1],pos[2][0],pos[2][1]) :
             valid = False
             r = 'M'
         #check for checkmate
-        king = self.curBoard[self.curPlayer]&self.curBoard['k']
+        king = self.curBoard[self.curPlayer]&self.board['k']
         moves = wc.calc_movesboard(wc.set_occupied_pos,)
         if not wc.king_is_attacked(king,wc.calc_movesboard()):
             valid = False
             r = 'K'
+        """
         #check for winning conditions
         pass
-        FEN = self.board.__repr__(self.board)
+        # everything is good
+        if r == 'V':
+            self.board.halfRounds = 1
+            if self.curPlayer == self.playerA :
+                self.board.roundCount += 1
+                FEN = repr(self.board)
+        
         return (valid,FEN,state,winner,reason[r])
            
           
@@ -147,9 +181,10 @@ class racingkings():
         
         
     
-   # todo exceptions bei scan, parse
+
 rc = racingkings()
-print(rc.validUCI(''))
+print(rc.moveCheck('e7e8',1,"8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"))
 #TODO Timemanagement
 #TODO how to set starting player so player movement works out
-#TODO exceptions for setup
+#TODO exceptions bitbaord
+#TODO round counts increment 
