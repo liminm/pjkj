@@ -1,14 +1,19 @@
 import numpy as np
 from bitboard import Board
 
+#0: Initialales Board
+#...
 
-class ValidCheck():
+class ValidCheck:
 
-    # Calcualtes the position of the moved figure
-    # @board_before: FEN-board before the move
-    # @board_after:  FEN-board after the move
-    # @return: figure-type, before-position, after-position    example: 'r', (1,0), (2,3)
     def calc_positions(self, board_before, board_after):
+        """
+        Calcualtes the position of the moved figure
+
+        :param board_before: FEN-board before the move
+        :param board_after:  FEN-board after the move
+        :return: figure-type, before-position, after-position.    Example: 'r', (1,0), (2,3)
+        """
         before = Board(board_before)
         after = Board(board_after)
 
@@ -23,9 +28,14 @@ class ValidCheck():
             bit_before = before.board[figure] & before.board['bl']
             bit_after  = after.board[figure]  & after.board['bl']
 
+        # print("before: ","{0:b}".format(bit_before))
+        # print("after:  ","{0:b}".format(bit_after))
+
         mix = bit_before & bit_after
         bit_before = bit_before - mix
         bit_after = bit_after - mix
+
+        # print("mix:    ","{0:b}".format(mix))
 
         # check if only one figure moves
         if (self.count_bits(bit_before) > 1) or (self.count_bits(bit_after) > 1):
@@ -38,10 +48,13 @@ class ValidCheck():
 
         return figure, start_pos, end_pos
 
-    # get the figure that was moved
-    # return "" if: - no figure moved
-    #               - too many moves
+
     def get_figure(self, before, after):
+        """
+        Get the figure that was moved
+
+        :return: "" if: no figure moved or too many moves
+        """
         player_mask = 0
         fig_moved = 0
         curr_fig = ""
@@ -62,9 +75,11 @@ class ValidCheck():
             return curr_fig
         return ""
 
-    # req: only one bit set (one figure on bitboard)
-    # @return: position of the figure on the bitboard
     def get_position(self, bitboard):
+        """
+        :param bitboard: bitboard with ony one bit set
+        :return: position of the figure on the bitboard
+        """
         x = -1
         y = 0
         if bitboard == 0:
@@ -84,12 +99,17 @@ class ValidCheck():
             number = number >> np.uint64(1)
         return i
 
-    # Check if the mofe of the specific figure is correct
-    # @figure: the figure, as char. Ex.: 'k', 'b', ...
-    # @(x, y): startposition
-    # @(target_x, target_y): target position
-    # @return: valid (True) or not valid (False) move
     def check_valid_move(self, figure, x, y, target_x, target_y):
+        """
+        Check if the move of the specific figure is correct
+
+        :param figure: the figure, as char. 'k', 'b', ...
+        :param x: startposition
+        :param y: startposition
+        :param target_x: target position
+        :param target_y: target position
+        :return: valid (True) or not valid (False) move
+        """
         if ((target_x == x and target_y == y) or not (0 <= target_x <= 7 and 0 <= target_y <= 7)):
             print("unvalid target position or the start and target position have to be different")
             return False
@@ -185,8 +205,25 @@ if __name__ == "__main__":
 
     check.check_valid_move(move[0], (move[1])[0], (move[1])[1], (move[2])[0], (move[2])[1])
 
+# game.toBitBoard(board1)
+# state = game.cur_state
+# game.printBoard(game.black_board['r'])
+# game.printBoard(state)
+# print(game.cur_state)
+
+# example
+# a1 = 0b00110000000010
+# a2 = 0b10110000000000
+# print("{0:b}".format(a1))
+# print("{0:b}".format(a2))
+
+# move = check.calc_positions(a1, a2)
+# print("Figure, (x,y):     ",move)
 
 # TODO: check if only one figure moves - ok
 # TODO: check if figure is not out of bounds -> happens before the bitboard-conversion
 # TODO: check if the translation is right (direction, board orientation) -> irrelevant
 # TODO: add actual check ->HeyiLee
+
+#todo: generate bitboards for all posible positions for all figures
+#todo: check if figure doesnt 'jump' over other figures
