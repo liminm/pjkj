@@ -35,6 +35,8 @@ class Board:
         self.halfRounds = 0
         self.roundCount = 1
         
+        
+        
         self.pattern = re.compile("(([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
         
         if not string is None:
@@ -122,14 +124,21 @@ class Board:
             elif elem == '/' and pos % 8 != 0:
                 raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
     
-    """
+    def moveUCI(self,start,end):
+        character = self.getField(start)
+        if character is None:
+            return None
+        self.setField(end, character)
+        self.removeField(start)
     
-    this functions sets a field on the bitboard. You have to give a location, for example 'f2' and a character in fen style, like 'Q' or 'q', for white and black queens.
-    
-    """
     def setField(self, position, character):
-        position = position[0].lower() +position[1]
-        m = re.compile("[a-h][1-8] [qQkKrRpPnN]").match(position + " " + character)
+        """
+    
+        this functions sets a field on the bitboard. You have to give a location, for example 'f2' and a character in fen style, like 'Q' or 'q', for white and black queens.
+        
+        """
+        position = position[0].lower() + position[1]
+        m = re.compile("[a-h][1-8] [qQkKrRpPnNbB]").match(position + " " + character)
         
         if m is None:
             raise SyntaxError("The Syntax of the position or character is wrong!")
@@ -146,6 +155,30 @@ class Board:
         else:
             self.board["wh"] |= mask
     
+    def getField(self, position):
+        position = position[0].lower() +position[1]
+        m = re.compile("[a-h][1-8]").match(position)
+        
+        if m is None:
+            raise SyntaxError("The Syntax of the position is wrong!")
+        
+        x = 7-int(ord(position[0])-ord("a"))
+        y = int(position[1])-1
+        pos = y*8+x
+        mask = (np.uint64(1 << pos))
+        for b in self.board:
+            if b in ["wh", "bl"]:
+                continue
+                
+            if bool(self.board[b] & mask):
+                if bool(self.board["wh"] & mask):
+                    return b.upper()
+                elif bool(self.board["bl"] & mask):
+                    return b.lower()
+                break
+        
+        return None
+        
     def removeField(self, position):
         position = position[0].lower() +position[1]
         m = re.compile("[a-h][1-8]").match(position)
