@@ -77,7 +77,9 @@ def post_event(id):
 		)
 		event['details']['postFEN'] = postFEN
 		game['state']['fen'] = postFEN
-		if (gameEnd):
+		if valid:
+
+		if gameEnd:
 			endEvent = {
 				'type': 'gameEnd',
 				'player': event['player'],
@@ -91,11 +93,16 @@ def post_event(id):
 	else:
 		return 'Error: unknown event type', 400
 
-	if (valid):
+	if valid:
 		game['events'].append(event)
+		if 'time' in event['details']:
+			game['state']['timeBudgets'][event['player']] -= event['details']['time']
 
-	if (endEvent):
+	if endEvent:
 		game['events'].append(endEvent)
+
+	# DEBUG
+	util.showDict(storage)
 
 	return json.dumps({
 		'valid': valid,
