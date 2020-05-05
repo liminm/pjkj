@@ -62,3 +62,28 @@ echo ${GAMEID}
 
 http -v ${HOST}/games
 http -v ${HOST}/game/${GAMEID}
+
+http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+
+EV1INFO=`echo '
+{
+	"type": "move",
+	"details": {
+		"move": "a1b2"
+	}
+}
+' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYERTOKEN}"`
+
+echo ${EV1INFO}
+
+http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+
+EV2INFO=`echo '
+{
+	"type": "surrender"
+}
+' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYERTOKEN}"`
+
+echo ${EV2INFO}
+
+http -vS --timeout=2 ${HOST}/game/${GAMEID}/events

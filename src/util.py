@@ -24,3 +24,11 @@ def checkAuth(dict, token):
 			return id
 
 	return None
+
+def otherPlayer(player):
+	if player == 'playerA':
+		return 'playerB'
+	elif player == 'playerB':
+		return 'playerA'
+
+	return None
