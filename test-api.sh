@@ -36,3 +36,29 @@ echo ${PLAYERTOKEN}
 
 http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYERID}
+
+
+
+
+GAMEINFO=`echo '
+{
+	"name": "Finale",
+	"type": "racingKings",
+	"players": {
+		"playerA":' \"${PLAYERID}\", '
+		"playerB":' \"${PLAYERID}\" '
+	},
+	"settings": {
+		"initialFEN": "a/b/c",
+		"timeBudget": 120000,
+		"timeout": "60000"
+	}
+}
+' | http POST ${HOST}/games`
+
+GAMEID=`echo ${GAMEINFO} | jq -r .id`
+
+echo ${GAMEID}
+
+http -v ${HOST}/games
+http -v ${HOST}/game/${GAMEID}

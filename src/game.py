@@ -1,14 +1,31 @@
 from flask import request
 import json
+from copy import deepcopy
 
 from __main__ import app, storage
 import util
 
+
 @app.route('/games', methods=['POST'])
 def post_game():
-	data = json.loads(request.data.decode('UTF-8'))
-	id = util.randomID()
-	storage['games'][id] = data
+
+	game = json.loads(request.data.decode('UTF-8'))
+	# TODO: Verify format and data
+
+	game['state'] = {
+		'state': 'planned',
+		'winner': None,
+		'fen': game['settings']['initialFEN'],
+		'timeBudgets': {
+			'playerA': game['settings']['timeBudget'],
+			'playerB': game['settings']['timeBudget']
+		}
+	}
+	game['events'] = []
+
+	id = util.id()
+
+	storage['games'][id] = game
 
 	# DEBUG
 	util.showDict(storage)
@@ -17,15 +34,35 @@ def post_game():
 		'id': id
 	}), 201
 
+
 @app.route('/games', methods=['GET'])
 def get_games():
-	# TODO: This won't return _all_ game data, just what's necessary to display a list
-	# TODO: AS ARRAY
-	return json.dumps(storage['games'])
+
+	games = deepcopy(storage['games'])
+
+	# Remove stuff not needed in listing and add player names
+	for id in games:
+		del games[id]['settings']
+		del games[id]['events']
+		del games[id]['state']['fen']
+		del games[id]['state']['timeBudgets']
+		games[id]['playerNames'] = {
+			'playerNameA': storage['players'][games[id]['players']['playerA']]['name'],
+			'playerNameB': storage['players'][games[id]['players']['playerB']]['name']
+		}
+		del games[id]['players']
+
+	return json.dumps(games)
+
 
 @app.route('/game/<id>', methods = ['GET'])
 def get_game(id):
-	if id in storage['games']:
-		return json.dumps(storage['games'][id])
-	else:
+
+	if not id in storage['games']:
 		return 'Error: Not found', 404
+
+	game = deepcopy(storage['games'][id])
+
+	del game['events']
+
+	return json.dumps(game)
