@@ -4,12 +4,14 @@ app = Flask(__name__)
 
 # Will be replaced by storage module/class
 storage = {
-	'games': {},
-	'teams': {}
+	'teams': {},
+	'players': {},
+	'games': {}
 }
 
-import game
 import team
+import player
+import game
 import event
 
 if __name__ == "__main__":

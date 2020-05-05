@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, Response
 import json
 from copy import deepcopy
 
@@ -6,8 +6,8 @@ from __main__ import app, storage
 import util
 
 
-@app.route('/teamlogin', methods = ['GET'])
-def get_teamlogin():
+@app.route('/players', methods=['POST'])
+def post_player():
 
 	authHeader = request.headers.get('Authorization')
 
@@ -20,24 +20,18 @@ def get_teamlogin():
 	if not teamID:
 		return 'Error: invalid authorization', 403
 
-	return json.dumps({
-		'id': teamID,
-		'valid': True
-	}, indent=4), 200
 
-
-@app.route('/teams', methods=['POST'])
-def post_team():
-
-	team = json.loads(request.data.decode('UTF-8'))
+	player = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
+
+	player['team'] = teamID
 
 	id = util.id()
 	token = util.token()
 	# TODO: Hash + Salt?
-	team['token'] = token
+	player['token'] = token
 
-	storage['teams'][id] = team
+	storage['players'][id] = player
 
 	# DEBUG
 	util.showDict(storage)
@@ -48,27 +42,27 @@ def post_team():
 	}, indent=4), 201
 
 
-@app.route('/teams', methods=['GET'])
-def get_teams():
+@app.route('/players', methods=['GET'])
+def get_players():
 
-	teams = deepcopy(storage['teams'])
+	players = deepcopy(storage['players'])
 
 	# Remove tokens, those are secret :P
-	for id in teams:
-		del teams[id]['token']
+	for id in players:
+		del players[id]['token']
 
-	return json.dumps(teams, indent=4)
+	return json.dumps(players, indent=4)
 
 
-@app.route('/team/<id>', methods = ['GET'])
-def get_team(id):
+@app.route('/player/<id>', methods = ['GET'])
+def get_player(id):
 
-	if not id in storage['teams']:
+	if not id in storage['players']:
 		return 'Error: Not found', 404
 
-	team = deepcopy(storage['teams'][id])
+	player = deepcopy(storage['players'][id])
 
 	# Remove token, that's secret :P
-	del team['token']
+	del player['token']
 
-	return json.dumps(team, indent=4)
+	return json.dumps(player, indent=4)
