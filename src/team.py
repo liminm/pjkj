@@ -4,28 +4,50 @@ import json
 from __main__ import app, storage
 import util
 
+
 @app.route('/teams', methods=['POST'])
 def post_team():
-	# TODO: Specify team object standard
+
 	data = json.loads(request.data.decode('UTF-8'))
-	id = util.randomID()
+	# TODO: Verify format and data
+
+	id = util.id()
+	token = util.token()
+	# TODO: Hash + Salt?
+	data['token'] = token
+
 	storage['teams'][id] = data
 
 	# DEBUG
-	print(json.dumps(storage))
+	util.showDict(storage)
 
 	return json.dumps({
-		'id': id
+		'id': id,
+		'token': token
 	}), 201
+
 
 @app.route('/teams', methods=['GET'])
 def get_teams():
-	# TODO: Specify team object standard
-	return json.dumps(storage['teams'])
+
+	teams = storage['teams']
+
+	# Remove tokens, those are secret :P
+	for id in teams:
+		del teams[id]['token']
+
+	return json.dumps(teams)
+
 
 @app.route('/team/<id>', methods = ['GET'])
 def get_team(id):
-	if id in storage['teams']:
-		return json.dumps(storage['teams'][id])
-	else:
+
+	if not id in storage['teams']:
 		return 'Error: Not found', 404
+
+	team = storage['teams'][id]
+
+	# Remove token, that's secret :P
+	del team['token']
+
+	return json.dumps(storage['teams'][id])

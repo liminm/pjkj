@@ -11,7 +11,7 @@ def post_game():
 	storage['games'][id] = data
 
 	# DEBUG
-	print(json.dumps(storage))
+	util.showDict(storage)
 
 	return json.dumps({
 		'id': id
