@@ -39,7 +39,7 @@ def post_player():
 	return json.dumps({
 		'id': id,
 		'token': token
-	}), 201
+	}, indent=4), 201
 
 
 @app.route('/players', methods=['GET'])
@@ -51,7 +51,7 @@ def get_players():
 	for id in players:
 		del players[id]['token']
 
-	return json.dumps(players)
+	return json.dumps(players, indent=4)
 
 
 @app.route('/player/<id>', methods = ['GET'])
@@ -65,4 +65,4 @@ def get_player(id):
 	# Remove token, that's secret :P
 	del player['token']
 
-	return json.dumps(player)
+	return json.dumps(player, indent=4)

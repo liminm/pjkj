@@ -40,7 +40,7 @@ def post_game():
 
 	return json.dumps({
 		'id': id
-	}), 201
+	}, indent=4), 201
 
 
 @app.route('/games', methods=['GET'])
@@ -60,7 +60,7 @@ def get_games():
 		}
 		del games[id]['players']
 
-	return json.dumps(games)
+	return json.dumps(games, indent=4)
 
 
 @app.route('/game/<id>', methods = ['GET'])
@@ -73,4 +73,4 @@ def get_game(id):
 
 	del game['events']
 
-	return json.dumps(game)
+	return json.dumps(game, indent=4)

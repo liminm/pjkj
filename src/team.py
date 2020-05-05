@@ -23,7 +23,7 @@ def get_teamlogin():
 	return json.dumps({
 		'id': teamID,
 		'valid': True
-	}), 200
+	}, indent=4), 200
 
 
 @app.route('/teams', methods=['POST'])
@@ -45,7 +45,7 @@ def post_team():
 	return json.dumps({
 		'id': id,
 		'token': token
-	}), 201
+	}, indent=4), 201
 
 
 @app.route('/teams', methods=['GET'])
@@ -57,7 +57,7 @@ def get_teams():
 	for id in teams:
 		del teams[id]['token']
 
-	return json.dumps(teams)
+	return json.dumps(teams, indent=4)
 
 
 @app.route('/team/<id>', methods = ['GET'])
@@ -71,4 +71,4 @@ def get_team(id):
 	# Remove token, that's secret :P
 	del team['token']
 
-	return json.dumps(team)
+	return json.dumps(team, indent=4)
