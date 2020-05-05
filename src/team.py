@@ -1,5 +1,6 @@
 from flask import request
 import json
+from copy import deepcopy
 
 from __main__ import app, storage
 import util
@@ -8,15 +9,15 @@ import util
 @app.route('/teams', methods=['POST'])
 def post_team():
 
-	data = json.loads(request.data.decode('UTF-8'))
+	team = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
 
 	id = util.id()
 	token = util.token()
 	# TODO: Hash + Salt?
-	data['token'] = token
+	team['token'] = token
 
-	storage['teams'][id] = data
+	storage['teams'][id] = team
 
 	# DEBUG
 	util.showDict(storage)
@@ -30,7 +31,7 @@ def post_team():
 @app.route('/teams', methods=['GET'])
 def get_teams():
 
-	teams = storage['teams']
+	teams = deepcopy(storage['teams'])
 
 	# Remove tokens, those are secret :P
 	for id in teams:
@@ -45,9 +46,9 @@ def get_team(id):
 	if not id in storage['teams']:
 		return 'Error: Not found', 404
 
-	team = storage['teams'][id]
+	team = deepcopy(storage['teams'][id])
 
 	# Remove token, that's secret :P
 	del team['token']
 
-	return json.dumps(storage['teams'][id])
+	return json.dumps(team)

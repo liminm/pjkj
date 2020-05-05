@@ -9,8 +9,9 @@ storage = {
 	'games': {}
 }
 
-import game
 import team
+import player
+import game
 import event
 
 if __name__ == "__main__":

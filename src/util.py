@@ -17,3 +17,10 @@ def token():
 def showDict(dict):
 	print('\033c')
 	print(json.dumps(dict, indent=4))
+
+def checkAuth(dict, token):
+	for id in dict:
+		if dict[id]['token'] == token:
+			return id
+
+	return None
