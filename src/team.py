@@ -6,6 +6,26 @@ from __main__ import app, storage
 import util
 
 
+@app.route('/teamlogin', methods = ['GET'])
+def get_teamlogin():
+
+	authHeader = request.headers.get('Authorization')
+
+	if not authHeader:
+		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
+
+	authToken = authHeader.split(' ')[1]
+	teamID = util.checkAuth(storage['teams'], authToken)
+
+	if not teamID:
+		return 'Error: invalid authorization', 403
+
+	return json.dumps({
+		'id': teamID,
+		'valid': True
+	}), 200
+
+
 @app.route('/teams', methods=['POST'])
 def post_team():
 
