@@ -1,10 +1,26 @@
 import numpy as np
 from bitboard import Board
+from generate_move_bitboard import MoveBoard
 
-#0: Initialales Board
-#...
 
 class ValidCheck:
+    """
+    With
+    ValidCheck().check(FEN-Board-before, FEN-Board-after)
+    you can check if the move is valid
+    """
+
+    def check(self, board_before, board_after):
+        """
+        Check if the given move if valid. Which figure moves and from-to will be calculated automaticly
+
+        :param board_before: FEN-Board before the move
+        :param board_after: FEN-Board after the move
+        :return: True if the move is valid
+        """
+        result = self.calc_positions(board_before, board_after)
+        return self.check_valid_move(result[0], result[1], result[2])
+
 
     def calc_positions(self, board_before, board_after):
         """
@@ -12,14 +28,14 @@ class ValidCheck:
 
         :param board_before: FEN-board before the move
         :param board_after:  FEN-board after the move
-        :return: figure-type, before-position, after-position.    Example: 'r', (1,0), (2,3)
+        :return: figure-type, before-position, after-position-bitboard (string, tuple, bitboard)
         """
         before = Board(board_before)
         after = Board(board_after)
 
         figure = self.get_figure(before, after)
         if figure == "":
-            return figure, (-1, -1), (-1, -1)
+            return figure, -1, -1
 
         if after.player == "w":
             bit_before = before.board[figure] & before.board['wh']
@@ -28,25 +44,25 @@ class ValidCheck:
             bit_before = before.board[figure] & before.board['bl']
             bit_after  = after.board[figure]  & after.board['bl']
 
-        # print("before: ","{0:b}".format(bit_before))
-        # print("after:  ","{0:b}".format(bit_after))
-
         mix = bit_before & bit_after
         bit_before = bit_before - mix
         bit_after = bit_after - mix
 
-        # print("mix:    ","{0:b}".format(mix))
-
         # check if only one figure moves
         if (self.count_bits(bit_before) > 1) or (self.count_bits(bit_after) > 1):
-            return "", (-1, -1), (-1, -1)
+            return "", -1, -1
 
         # todo?: check if figure of other player wasn't moved
 
-        start_pos = self.get_position(bit_before)
-        end_pos = self.get_position(bit_after)
+        return figure, bit_before, bit_after
 
-        return figure, start_pos, end_pos
+        #start_pos = self.get_position(bit_before)
+        #end_pos = self.get_position(bit_after)
+
+        #after.printBoard(bit_after)
+        #print("Endpos:",end_pos)
+
+        #return figure, start_pos, bit_after
 
 
     def get_figure(self, before, after):
@@ -75,13 +91,14 @@ class ValidCheck:
             return curr_fig
         return ""
 
+
     def get_position(self, bitboard):
         """
         :param bitboard: bitboard with ony one bit set
         :return: position of the figure on the bitboard
         """
         x = -1
-        y = 0
+        y = 7
         if bitboard == 0:
             return (-1, -1)
         while bitboard != 0:
@@ -89,8 +106,9 @@ class ValidCheck:
             x += 1
             if x >= 8:
                 x = 0
-                y += 1
+                y -= 1
         return (x, y)
+
 
     def count_bits(self, number):
         i = 0
@@ -99,7 +117,21 @@ class ValidCheck:
             number = number >> np.uint64(1)
         return i
 
-    def check_valid_move(self, figure, x, y, target_x, target_y):
+
+    def check_valid_move(self, figure, before_bit_position, after_bit_position):
+        if (before_bit_position == after_bit_position):
+            return False
+        start_pos = self.get_position(before_bit_position)
+        move_bitboard = np.uint64( MoveBoard().generate(figure, start_pos[0], start_pos[1]) )
+
+        # TODO: check for jump over figures
+
+        if (move_bitboard & after_bit_position != 0):
+            return True
+        return False
+
+
+    def check_valid_move_old(self, figure, x, y, target_x, target_y):
         """
         Check if the move of the specific figure is correct
 
@@ -196,14 +228,22 @@ class ValidCheck:
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    check = ValidCheck()
-    board1 = "1r6/8/8/8/1q6/8/8/r7 w - - 3 2"
-    board2 = "2r5/8/8/8/1q6/8/8/r7 b - - 4 5"
+    board1 = "1k6/8/8/8/1q6/8/8/r7 w - - 3 2"
+    board2 = "2k5/8/8/8/1q6/8/8/r7 b - - 4 5"
+    board3 = "2k5/8/8/8/1q6/8/8/7r b - - 4 5"
+    board4 = "3k4/8/8/8/1q6/8/8/r7 b - - 4 5"
 
-    move = check.calc_positions(board1, board2)
-    print(move)
+    #should be true (king move)
+    valid = ValidCheck().check(board1, board2)
+    print("Valid move?", valid)
 
-    check.check_valid_move(move[0], (move[1])[0], (move[1])[1], (move[2])[0], (move[2])[1])
+    #should be false (too many moves)
+    valid = ValidCheck().check(board1, board3)
+    print("Valid move?", valid)
+
+    #should be false (too many steps)
+    valid = ValidCheck().check(board1, board4)
+    print("Valid move?", valid)
 
 # game.toBitBoard(board1)
 # state = game.cur_state
@@ -223,7 +263,6 @@ if __name__ == "__main__":
 # TODO: check if only one figure moves - ok
 # TODO: check if figure is not out of bounds -> happens before the bitboard-conversion
 # TODO: check if the translation is right (direction, board orientation) -> irrelevant
-# TODO: add actual check ->HeyiLee
+# TODO: add actual check
 
-#todo: generate bitboards for all posible positions for all figures
 #todo: check if figure doesnt 'jump' over other figures
