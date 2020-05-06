@@ -35,7 +35,7 @@ class ValidCheck:
 
         figure = self.get_figure(before, after)
         if figure == "":
-            return figure, -1, -1
+            return "", -1, -1
 
         if after.player == "w":
             bit_before = before.board[figure] & before.board['wh']
@@ -56,14 +56,6 @@ class ValidCheck:
 
         return figure, bit_before, bit_after
 
-        #start_pos = self.get_position(bit_before)
-        #end_pos = self.get_position(bit_after)
-
-        #after.printBoard(bit_after)
-        #print("Endpos:",end_pos)
-
-        #return figure, start_pos, bit_after
-
 
     def get_figure(self, before, after):
         """
@@ -71,17 +63,20 @@ class ValidCheck:
 
         :return: "" if: no figure moved or too many moves
         """
-        player_mask = 0
+        player_mask_1 = 0
+        player_mask_2 = 0
         fig_moved = 0
         curr_fig = ""
         if after.player == 'w':
-            player_mask = after.board['wh']
+            player_mask_1 = before.board['wh']
+            player_mask_2 = after.board['wh']
         elif after.player == "b":
-            player_mask = after.board['bl']
+            player_mask_1 = before.board['bl']
+            player_mask_2 = after.board['bl']
         for fig in "kbrnq":
             try:
-                fig_board_before = before.board[fig] & player_mask
-                fig_board_after = after.board[fig] & player_mask
+                fig_board_before = before.board[fig] & player_mask_1
+                fig_board_after  = after.board[fig]  & player_mask_2
             except KeyError:    # catch Error, if such figure doesn't exist
                 continue
             if fig_board_before != fig_board_after:
@@ -245,6 +240,14 @@ if __name__ == "__main__":
     valid = ValidCheck().check(board1, board4)
     print("Valid move?", valid)
 
+    #board5 = "8/8/8/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
+    board5 = "8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
+    board6 = "8/8/1B6/8/8/8/q1bnN1RQ/krbnNBRK w - - 0 1"
+    #Board().printBoard(Board(board5).board['r'])
+    #Board().printBoard(Board(board6).board['r'])
+    valid = ValidCheck().check(board5, board6)
+    print(valid)
+
 # game.toBitBoard(board1)
 # state = game.cur_state
 # game.printBoard(game.black_board['r'])
@@ -261,8 +264,7 @@ if __name__ == "__main__":
 # print("Figure, (x,y):     ",move)
 
 # TODO: check if only one figure moves - ok
-# TODO: check if figure is not out of bounds -> happens before the bitboard-conversion
-# TODO: check if the translation is right (direction, board orientation) -> irrelevant
-# TODO: add actual check
+# TODO: check if figure is not out of bounds -> happens before the bitboard-conversion -ok
+# TODO: check if the translation is right (direction, board orientation) -> irrelevant -ok
 
 #todo: check if figure doesnt 'jump' over other figures
