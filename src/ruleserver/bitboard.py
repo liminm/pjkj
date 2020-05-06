@@ -35,7 +35,7 @@ class Board:
         self.halfRounds = 0
         self.roundCount = 1
         
-        
+        self.log = []
         
         self.pattern = re.compile("(([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})\/([1-8rnbqkpPRNBQK]{1,8})) ([wb]) (\-|KQ?k?q?|K?Qk?q?|K?Q?kq?|K?Q?k?q) (\-|[a-f][1-8]) (\d+) (\d+)")
         
@@ -66,8 +66,8 @@ class Board:
         self.player = turn_parts[9]
         self.rochade = turn_parts[10]
         self.enPassant = turn_parts[11]
-        self.halfRounds = turn_parts[12]
-        self.roundCount = turn_parts[13]
+        self.halfRounds = int(turn_parts[12])
+        self.roundCount = int(turn_parts[13])
         pos = 0
         for elem in self.fields:
             mask = np.uint64(9223372036854775808>>pos) # 9223372036854775808 == s^63
@@ -124,10 +124,37 @@ class Board:
             elif elem == '/' and pos % 8 != 0:
                 raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
     
+    def movePlayer(self, start, end):
+        """
+        this is for debugging
+        """
+        move = [repr(self), start, end, "True"]
+        
+        # halbzüge
+        newRound = self.halfRounds
+        if self.getField(start) in ["pP"]:
+            newRound = 0
+        elif not self.getField(end) is None:
+            newRound = 0
+        else:
+            newRound+=1
+        
+        self.moveUCI(start, end)
+        
+        self.roundCount+=1
+        if self.player == "w":
+            self.player = "b"
+        else:
+            self.player = "w"
+        self.log.append(move)
+        self.halfRounds = newRound
+    
     def moveUCI(self,start,end):
         character = self.getField(start)
         if character is None:
-            return None
+            raise ValueError("Syntax Error in UCI String!")
+        
+            
         self.setField(end, character)
         self.removeField(start)
     
@@ -225,6 +252,7 @@ class Board:
                 else:
                     if count != 0:
                         fen += str(count)
+                        count = 0
                     fen += c
                     
             if count != 0:
@@ -244,11 +272,15 @@ class Board:
     def __str__(self):
         matrix = self.toMatrix()
         
-        s = ""
+        s = "  abcdefgh\n"
         for i in range(matrix.shape[0]*matrix.shape[1]):
+            if i%8==0:
+                s+= str(8-(int(i/8))) + "|"
+                
             s += matrix[int(i/8)][i%8]
             if (i+1)%8==0:
                 s += "\n"
+        s += ""
         s += "player:"+self.player + ", rochade:"+self.rochade+", enPassant:"+self.enPassant+", halfRounds:"+str(self.halfRounds)+", roundCount:"+str(self.roundCount)
         
         return s

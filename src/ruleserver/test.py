@@ -39,18 +39,15 @@ class MoveCheckTest(unittest.TestCase):
         t[2] == says if the move should be valid
         """
         v = ValidCheck()
-        for t in test_data["moveCheck"]:
+        for t in test_data["moveCheck"]+test_data["sampleGame"]:
             board = Board(t[0])
-            moves = t[1].split()
-            exp = eval(t[2])
+            board_moved = Board(t[0])
+            moves = (t[1], t[2])
+            board_moved.moveUCI(moves[0], moves[1])
+            exp = eval(t[3])
             character = board.getField(moves[0])
             
-            x_before = 7-int(ord(moves[0][0])-ord("a"))
-            y_before = int(moves[0][1])-1
-            x_after = 7-int(ord(moves[1][0])-ord("a"))
-            y_after = int(moves[1][1])-1
-            
-            self.assertEqual(v.check_valid_move(character, x_before, y_before, x_after, y_after), exp, "\nBoard representation:\n" + str(board) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
+            self.assertEqual(v.check(repr(board), repr(board_moved)), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
     
 if __name__ == '__main__':
     with open('test_data.json') as f:
