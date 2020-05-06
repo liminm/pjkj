@@ -27,6 +27,8 @@
 				["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK b - - 0 1", "c2","d4", "False"],
 				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK w - - 0 1", "f2","b6", "True"],
 				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1", "f2","b6", "False"],
+				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK w - - 0 1", "f2","g2", "False"],
+				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK w - - 0 1", "e2","g3", "True"],
 				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK w - - 0 1", "f2","a7", "False"]
 				],
 "sampleGame":[

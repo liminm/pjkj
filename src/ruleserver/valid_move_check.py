@@ -45,15 +45,14 @@ class ValidCheck:
             bit_after  = after.board[figure]  & after.board['bl']
 
         mix = bit_before & bit_after
-        bit_before = bit_before - mix
-        bit_after = bit_after - mix
+        bit_before = bit_before & ~mix
+        bit_after = bit_after & ~mix
 
         # check if only one figure moves
         if (self.count_bits(bit_before) > 1) or (self.count_bits(bit_after) > 1):
             return "", -1, -1
 
         # todo?: check if figure of other player wasn't moved
-
         return figure, bit_before, bit_after
 
 
@@ -117,6 +116,7 @@ class ValidCheck:
         if (before_bit_position == after_bit_position):
             return False
         start_pos = self.get_position(before_bit_position)
+
         move_bitboard = np.uint64( MoveBoard().generate(figure, start_pos[0], start_pos[1]) )
 
         # TODO: check for jump over figures
@@ -227,6 +227,8 @@ if __name__ == "__main__":
     board2 = "2k5/8/8/8/1q6/8/8/r7 b - - 4 5"
     board3 = "2k5/8/8/8/1q6/8/8/7r b - - 4 5"
     board4 = "3k4/8/8/8/1q6/8/8/r7 b - - 4 5"
+    board5 = "8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
+    board6 = "8/8/1r6/8/5N2/8/q1bn1BRQ/krbnNBRK w - - 0 1"
 
     #should be true (king move)
     valid = ValidCheck().check(board1, board2)
@@ -240,13 +242,11 @@ if __name__ == "__main__":
     valid = ValidCheck().check(board1, board4)
     print("Valid move?", valid)
 
-    #board5 = "8/8/8/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
-    board5 = "8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
-    board6 = "8/8/1B6/8/8/8/q1bnN1RQ/krbnNBRK w - - 0 1"
-    #Board().printBoard(Board(board5).board['r'])
-    #Board().printBoard(Board(board6).board['r'])
+    #should be true (ponny test)
     valid = ValidCheck().check(board5, board6)
-    print(valid)
+    print("Valid move?", valid)
+
+
 
 # game.toBitBoard(board1)
 # state = game.cur_state

@@ -40,7 +40,7 @@ class MoveBoard:
 
     def q(self, x, y):
         """
-        Queen (Koenigin)
+        Queen (Dame)
         """
         return self.b(x, y) | self.r(x, y)
 
@@ -97,30 +97,30 @@ class MoveBoard:
         for i in range (0, y):
             for j in range (0,8):
                 pos += 1
-        pos += x
+        pos += 7-x
 
         bit_position = np.uint64(9223372036854775808 >> pos)
 
-        if x>=2:
-            if y>=3:
-                bitboard |= self.shift(bit_position, 2*E, 3*S)
-            if y<=4:
-                bitboard |= self.shift(bit_position, 2*E, 3*N)
-            if x>=3:
-                if y>=2:
-                    bitboard |= self.shift(bit_position, 3*E, 2*S)
-                if y<=5:
-                    bitboard |= self.shift(bit_position, 3*E, 2*N)
-        if x<=4:
+        if x>=1:
             if y>=2:
-                bitboard |= self.shift(bit_position, 3*W, 2*S)
+                bitboard |= self.shift(bit_position, 1*E, 2*S)
             if y<=5:
-                bitboard |= self.shift(bit_position, 3*W, 2*N)
-            if x<=5:
-                if y>=3:
-                    bitboard |= self.shift(bit_position, 2*W, 3*S)
-                if y<=4:
-                    bitboard |= self.shift(bit_position, 2*W, 3*N)
+                bitboard |= self.shift(bit_position, 1*E, 2*N)
+            if x>=2:
+                if y>=1:
+                    bitboard |= self.shift(bit_position, 2*E, 1*S)
+                if y<=6:
+                    bitboard |= self.shift(bit_position, 2*E, 1*N)
+        if x<=5:
+            if y>=1:
+                bitboard |= self.shift(bit_position, 2*W, 1*S)
+            if y<=6:
+                bitboard |= self.shift(bit_position, 2*W, 1*N)
+            if x<=6:
+                if y>=2:
+                    bitboard |= self.shift(bit_position, 1*W, 2*S)
+                if y<=5:
+                    bitboard |= self.shift(bit_position, 1*W, 2*N)
 
         return bitboard
 
