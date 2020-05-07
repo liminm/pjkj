@@ -23,13 +23,10 @@ def post_game():
 	}
 	game['events'] = []
 
-
-	"""
 	# TODO: Check initial state with Ruleserver
-	valid, condition = ruleServer.stateCheck(game['state'])
-	if not valid:
-		return ("Error: Initial board state invalid:\nCondition: " + condition), 400
-	"""
+	#valid, condition = ruleServer.stateCheck(game['state'])
+	#if not valid:
+	#	return ("Error: Initial board state invalid:\nCondition: " + condition), 400
 
 	id = util.id()
 
