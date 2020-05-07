@@ -46,8 +46,8 @@ def post_event(id):
 
 	# We assume events to be generally valid, checks follow later
 	valid = True
+	gameEnd = None
 	reason = ''
-	endEvent = None
 
 	# This is kinda hacky, i wish we could adapt the API to the DB here
 	if event['type'] == 'surrender':
@@ -66,29 +66,9 @@ def post_event(id):
 		else:
 			# TODO: Maybe implement a 'start' signal from which we count
 			event['details']['time'] = 0
-		"""
-		# TODO: Check move with ruleserver
-		# TODO: [Idea] If we could move the changing ot state to the ruleserver (using pass-by-reference), we would save a lot of parameters and it would actually kinda make sense work separation-wise...
-		valid, postFEN, gameEnd, reason = ruleServer.moveCheck(
-			event['details']['move'],
-			event['details']['time'],
-			game['state'],
-			game['events']
-		)
-		event['details']['postFEN'] = postFEN
-		game['state']['fen'] = postFEN
-		if valid:
 
-		if gameEnd:
-			endEvent = {
-				'type': 'gameEnd',
-				'player': event['player'],
-				'timestamp': event['timestamp'],
-				'details': gameEnd
-			}
-			game['state']['state'] = 'completed'
-			game['state']['winner'] = winner
-		"""
+		# TODO: Check move with ruleserver
+		#valid, gameEnd, reason = ruleServer.moveCheck(event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
@@ -98,8 +78,14 @@ def post_event(id):
 		if 'time' in event['details']:
 			game['state']['timeBudgets'][event['player']] -= event['details']['time']
 
-	if endEvent:
-		game['events'].append(endEvent)
+	if gameEnd:
+		game['events'].append({
+			'type': 'gameEnd',
+			'player': event['player'],
+			'timestamp': event['timestamp'],
+			'details': gameEnd
+		})
+		game['state']['state'] = 'completed'
 
 	# DEBUG
 	util.showDict(storage)
