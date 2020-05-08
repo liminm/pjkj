@@ -205,7 +205,26 @@ class Board:
                 break
         
         return None
+    
+    def findCharacter(self, character):
+        if re.compile("[rnbqkpPRNBQK]").match(character) is None:
+            raise SyntaxError("The Syntax of the character is wrong!")
         
+        field = self.field[character.lower()]
+        
+        if character.lower() == character:
+            field &= field["bl"]
+        else:
+            field &= field["wh"]
+    
+        positions = []
+        for i in range(64):
+            mask = 1 << i
+            
+            if mask & field != 0:
+                positions.append(i)
+        return positions
+    
     def removeField(self, position):
         position = position[0].lower() +position[1]
         m = re.compile("[a-h][1-8]").match(position)
