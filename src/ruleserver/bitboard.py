@@ -151,11 +151,12 @@ class Board:
             elif elem == '/' and pos % 8 != 0:
                 raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
     
-    def movePlayer(self, start, end):
+    def movePlayer(self, start, end, logging=False):
         """
         this is for debugging
         """
-        move = [repr(self), start, end, "True"]
+        if logging:
+            move = [repr(self), start, end, "True"]
         
         # halbzüge
         newRound = self.halfRounds
@@ -173,7 +174,9 @@ class Board:
             self.player = "b"
         else:
             self.player = "w"
-        self.log.append(move)
+            
+        if logging:
+            self.log.append(move)
         self.halfRounds = newRound
     
     def moveUCI(self,start,end=None):
@@ -369,6 +372,7 @@ from copy import deepcopy
 if __name__ == "__main__": 
     sample = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     rkStart = "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1"
+    
     b = Board(rkStart)
     
     b2 = deepcopy(b)
