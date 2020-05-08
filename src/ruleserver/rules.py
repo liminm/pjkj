@@ -119,6 +119,7 @@ class racingkings():
         
         # TODO: check if the king is in chess
         
+        
         # check if both kings are at the end of the board
         mask = np.int64(int("1"*8+"0"*8*7))
         if (board.board["k"] & board.board["wh"] & mask != 0) and (board.board["k"] & board.board["bl"] & mask != 0):
@@ -133,10 +134,11 @@ class racingkings():
         
         return True, "", ""
     
-    def moveCheck(self,moveEvent,state, history):
+    def moveCheck(self,moveEvent,state):
         # pick apart the input Data
         player = moveEvent[0]
         
+        hashmap = state["boardHashMap"]
         event = moveEvent
         #set beginning variables
         r = None
@@ -154,8 +156,8 @@ class racingkings():
             FEN = None
         
         try:
-            board_before = bitboard.Board(state["fen"])
-            board_after
+            board_before = bitboard.Board(FEN)
+            board_after = bitboard.Board(FEN)
         except:
             return False, None, "SyntaxError:FEN String is invalid!"
             
@@ -243,6 +245,9 @@ class racingkings():
                     'winner': winner}
             moveEvent['details']['postFen'],state['FEN'] = repr(self.board)
             state['winner']  = winner
+            
+        
+        
         return (valid,gameState,reason[r])
            
           
