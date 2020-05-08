@@ -18,8 +18,8 @@ class MoveBoard:
         elif(figure == 'n'):
             return self.n(x,y)
         elif(figure == 'r'):
-            return self.p(x,y)
-        elif(figure == 'r'):
+            return self.r(x,y)
+        elif(figure == 'p'):
             return self.p(x,y)
         return 0
 
@@ -153,6 +153,6 @@ class MoveBoard:
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    out = MoveBoard().generate('k', 3, 7)
+    out = MoveBoard().generate('q', 7, 1)
     # first position is (0,0) which is equivalent to (h,1)
     Board().printBoard(out)

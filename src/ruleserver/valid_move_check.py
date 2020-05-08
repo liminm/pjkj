@@ -1,5 +1,6 @@
 import numpy as np
 from bitboard import Board
+from check_between import check_betweeen
 from generate_move_bitboard import MoveBoard
 
 
@@ -9,17 +10,32 @@ class ValidCheck:
     ValidCheck().check(FEN-Board-before, FEN-Board-after)
     you can check if the move is valid
     """
+    #def __init__(self):
+    #    self.bit_pos_before = np.uint64(0)
+    #    self.bit_pos_after  = np.uint64(0)
+
 
     def check(self, board_before, board_after):
         """
-        Check if the given move if valid. Which figure moves and from-to will be calculated automaticly
+        Check if the given move if valid. Which figure moves and from-to will be calculated automaticly.
+        IT DOES NOT check, if a king is in check, or if the given player wins
 
         :param board_before: FEN-Board before the move
         :param board_after: FEN-Board after the move
         :return: True if the move is valid
         """
         result = self.calc_positions(board_before, board_after)
-        return self.check_valid_move(result[0], result[1], result[2])
+        if (self.check_valid_move(result[0], result[1], result[2])):
+            if result[0] in "qbr": # check for figures in between
+                board = Board(board_after)
+                all_figures = board.board['wh'] | board.board['bl']
+                if(check_betweeen().check(result[1], result[2], all_figures)):
+                    return True
+                else:
+                    return False
+            else:
+                return True
+        return False
 
 
     def calc_positions(self, board_before, board_after):
@@ -28,7 +44,7 @@ class ValidCheck:
 
         :param board_before: FEN-board before the move
         :param board_after:  FEN-board after the move
-        :return: figure-type, before-position, after-position-bitboard (string, tuple, bitboard)
+        :return: figure-type, before-position, after-position (string, bitboard, bitboard)
         """
         before = Board(board_before)
         after = Board(board_after)
@@ -45,15 +61,15 @@ class ValidCheck:
             bit_after  = after.board[figure]  & after.board['bl']
 
         mix = bit_before & bit_after
-        bit_before = bit_before & ~mix
-        bit_after = bit_after & ~mix
+        bit_pos_before = bit_before & ~mix
+        bit_pos_after  = bit_after & ~mix
 
         # check if only one figure moves
-        if (self.count_bits(bit_before) > 1) or (self.count_bits(bit_after) > 1):
+        if (self.count_bits(bit_pos_before) > 1) or (self.count_bits(bit_pos_after) > 1):
             return "", -1, -1
 
         # todo?: check if figure of other player wasn't moved
-        return figure, bit_before, bit_after
+        return figure, bit_pos_before, bit_pos_after
 
 
     def get_figure(self, before, after):
@@ -113,111 +129,23 @@ class ValidCheck:
 
 
     def check_valid_move(self, figure, before_bit_position, after_bit_position):
+        '''
+        With the given Bitbords (where only one bit for the position is set),
+        this function checks if the given figure does a valid move
+        :param figure: figure as a char
+        :param before_bit_position: bitboard with one bit set
+        :param after_bit_position: bitboard with one bit set
+        :return: true if the figure moves like it should (example: knight-like-move)
+        '''
         if (before_bit_position == after_bit_position):
             return False
         start_pos = self.get_position(before_bit_position)
 
         move_bitboard = np.uint64( MoveBoard().generate(figure, start_pos[0], start_pos[1]) )
-
         # TODO: check for jump over figures
 
         if (move_bitboard & after_bit_position != 0):
             return True
-        return False
-
-
-    def check_valid_move_old(self, figure, x, y, target_x, target_y):
-        """
-        Check if the move of the specific figure is correct
-
-        :param figure: the figure, as char. 'k', 'b', ...
-        :param x: startposition
-        :param y: startposition
-        :param target_x: target position
-        :param target_y: target position
-        :return: valid (True) or not valid (False) move
-        """
-        if ((target_x == x and target_y == y) or not (0 <= target_x <= 7 and 0 <= target_y <= 7)):
-            print("unvalid target position or the start and target position have to be different")
-            return False
-
-        result = []
-        (tmp_x, tmp_y) = (x, y)
-        # Queen possbile moves
-        if figure == 'Q':
-            # diago case
-            while (x < 7 and y < 7):
-                result.append((x + 1, y + 1))
-                x += 1
-                y += 1
-            (x, y) = (tmp_x, tmp_y)
-            # diago case
-            while (x > 0 and y > 0):
-                result.append((x - 1, y - 1))
-                x -= 1
-                y -= 1
-            (x, y) = (tmp_x, tmp_y)
-            # vertical
-            while (x < 7):
-                result.append((x + 1, y))
-                x += 1
-            (x, y) = (tmp_x, tmp_y)
-            # vertical
-            while (x > 0):
-                result.append((x - 1, y))
-                x -= 1
-            # horizontal
-            (x, y) = (tmp_x, tmp_y)
-            while (y < 7):
-                result.append((x, y + 1))
-                y += 1
-
-            # horizontal
-            (x, y) = (tmp_x, tmp_y)
-            while (y > 1):
-                result.append((x, y - 1))
-                y -= 1
-            if (target_x, target_y) in result:
-                return True
-            return False
-        # Rook possible moves
-        if figure == 'R':
-            # vertical
-            while (x < 7):
-                result.append((x + 1, y))
-                x += 1
-            (x, y) = (tmp_x, tmp_y)
-            # vertical
-            while (x > 0):
-                result.append((x - 1, y))
-                x -= 1
-            # horizontal
-            (x, y) = (tmp_x, tmp_y)
-            while (y < 7):
-                result.append((x, y + 1))
-                y += 1
-            # horizontal
-            (x, y) = (tmp_x, tmp_y)
-            while (y > 1):
-                result.append((x, y - 1))
-                y -= 1
-            if (target_x, target_y) in result:
-                return True
-            return False
-        # King possible moves
-        if figure == 'K':
-            if ((target_x - x in (0, 1, -1)) and (target_y - y in (0, 1, -1))):
-                return True
-            return False
-        # Knight possbile moves
-        if figure == 'KN':
-            if ((target_x - x in (2, -2)) and (target_y - y in (1, -1))):
-                return True
-            elif ((target_x - x in (1, -1)) and (target_y - y in (2, -2))):
-                return True
-            return False
-
-        print("the given figure can not be identified or the unvalid position")
         return False
 
 
@@ -232,20 +160,19 @@ if __name__ == "__main__":
 
     #should be true (king move)
     valid = ValidCheck().check(board1, board2)
-    print("Valid move?", valid)
+    print("True?", valid)
 
     #should be false (too many moves)
     valid = ValidCheck().check(board1, board3)
-    print("Valid move?", valid)
+    print("False?", valid)
 
     #should be false (too many steps)
     valid = ValidCheck().check(board1, board4)
-    print("Valid move?", valid)
+    print("False?", valid)
 
     #should be true (ponny test)
     valid = ValidCheck().check(board5, board6)
-    print("Valid move?", valid)
-
+    print("True?", valid)
 
 
 # game.toBitBoard(board1)
