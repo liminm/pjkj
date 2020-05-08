@@ -1,6 +1,33 @@
 import numpy as np
 import re
+"""
+import random
 
+ZOBRIST_INDICES = {"q": np.uint64(0), # queen
+            "k": np.uint64(1), # king
+            "p": np.uint64(2), # pawn
+            "b": np.uint64(3), # bishop
+            "n": np.uint64(4), # knight
+            "r": np.uint64(5), # rook
+            "Q": np.uint64(6), # queen
+            "K": np.uint64(7), # king
+            "P": np.uint64(8), # pawn
+            "B": np.uint64(9), # bishop
+            "N": np.uint64(10), # knight
+            "R": np.uint64(11), # rook
+            }
+
+if not "ZOBRIST_MATRIX" is globals():
+    init_Zobrist()
+
+def init_Zobrist():
+    global ZOBRIST_MATRIX
+    ZOBRIST_MATRIX = np.zeros((64,12), type=np.uint64)
+    
+    for i in range(64):
+        for j in range(12):
+            ZOBRIST_MATRIX[i][j] = np.uint64(randint(0, 2**64))
+"""
 """
 Notation:
 a trun will alway be FEN i.e: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1    
@@ -149,10 +176,19 @@ class Board:
         self.log.append(move)
         self.halfRounds = newRound
     
-    def moveUCI(self,start,end):
+    def moveUCI(self,start,end=None):
+        if end is None:
+            start = start.split("-")
+            if len(start) != 2:
+                raise SyntaxError("Syntax Error in UCI String!")
+            
+            end = start[1]
+            start = start[0]
+        
         character = self.getField(start)
+        self.getField(end)
         if character is None:
-            raise ValueError("Syntax Error in UCI String!")
+            raise SyntaxError("Syntax Error in UCI String!")
         
             
         self.setField(end, character)
@@ -205,7 +241,26 @@ class Board:
                 break
         
         return None
+    
+    def findCharacter(self, character):
+        if re.compile("[rnbqkpPRNBQK]").match(character) is None:
+            raise SyntaxError("The Syntax of the character is wrong!")
         
+        field = self.field[character.lower()]
+        
+        if character.lower() == character:
+            field &= field["bl"]
+        else:
+            field &= field["wh"]
+    
+        positions = []
+        for i in range(64):
+            mask = 1 << i
+            
+            if mask & field != 0:
+                positions.append(i)
+        return positions
+    
     def removeField(self, position):
         position = position[0].lower() +position[1]
         m = re.compile("[a-h][1-8]").match(position)
@@ -284,6 +339,10 @@ class Board:
         s += "player:"+self.player + ", rochade:"+self.rochade+", enPassant:"+self.enPassant+", halfRounds:"+str(self.halfRounds)+", roundCount:"+str(self.roundCount)
         
         return s
+    
+    def __hash__(self):
+        r = repr(self)
+        return hash(r.split(" ")[0])
     
     """
     this function is called if you compare 2 boards with the '==' operator
