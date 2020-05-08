@@ -1,17 +1,19 @@
-#Input:Position bestehend aus: Bitboard der neuen Position      position.position
-#                               Spieler der drann ist           position.spieler
-#Spieler
-#1 = Weiß, Spieler
-#0 = Schwarz
-
-# Output: nichts, Weißgewinnt, Schwarzgewinnt
-
+'''
+Jumpsturdy
+input:board ,player
+player "wh" oder "bl"
+output true => Gewinnzustand
+        false => kein Gewinnzustand spiel geht weiter
+Racing Kings
+input board 
+output true false
+'''
 from bitboard import Board
 
 def reihencheckjs(board,player)
     b1='{0:b}'.format((board.board["wh"])).zfill(64)
     b2='{0:b}'.format((board.board["bl"])).zfill(64)
-     if  player == wh:
+     if  player == "wh":
         for i in range (56, 62):
            if b1(i) != 0:
                 return True
