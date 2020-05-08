@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<body>
+		<script>
+			const evtSource = new EventSource("http://localhost:5000/game/1P6vmuxIdFcOMgma/events");
+			evtSource.onmessage = function(event) {
+				document.body.innerHTML += ("SSE: " + event.data + "<br>")
+				console.log("SSE: " + event.data + "\n")
+			}
+		</script>
+	</body>
+</html>
