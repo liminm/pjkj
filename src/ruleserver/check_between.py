@@ -29,10 +29,6 @@ class check_betweeen:
             return True;
 
         return self.calc_if_figure_betweeen(direction, steps, before_pos, after_pos, board_after)
-        #if (before_pos > after_pos):
-        #    return self.calc_if_figure_betweeen(direction, steps, before_pos, after_pos, board_after)
-        #else:
-        #    return self.calc_if_figure_betweeen(direction, steps, after_pos, before_pos, board_after)
 
 
     def check_direction(self, bigger_bitboard, smaller_bitboard):
@@ -46,10 +42,7 @@ class check_betweeen:
                 a diagonal move means if the bigger bitboard has to be shiftet x times,
                 x is a multiple of 9
 
-            todo edge case 1.00000001 -> 10000000 which is a horizontal move
-                           2.when the shift number is 56 there are 2 moves
-                             7x8(vertical) or 8x7(vertical)
-             input: 2 bitboards
+            input: 2 bitboards
             output:
                     -1 move can not be detected
                     0 no space between
@@ -86,8 +79,13 @@ class check_betweeen:
             dir = 1
             return dir, steps
         if (counter == 7): # horizontal wall-to-wall or one step diagonal right
-            #TODO check if it is a wall-to-wall move
-            return 0, 0
+            wall_check_1 = np.uint64(smaller_bitboard) & np.uint64(9331882296111890817)
+            wall_check_2 = np.uint64(bigger_bitboard) & np.uint64(9331882296111890817)
+            if (wall_check_1 >= 1 and wall_check_2 >= 1):
+                steps = counter
+                dir = 1
+                return dir, steps #wall-to-wall move
+            return 0, 0 #one-step diagonal
 
         return -1, -1;
 
@@ -109,55 +107,13 @@ class check_betweeen:
 
         return True
 
-    def calc_if_figure_betweeen_old(self, dir, steps, bigger_bitboard, smaller_bitboard, board):
-        if (dir == 2):
-            temp = np.uint64(bigger_bitboard | smaller_bitboard | board) >> np.uint64(1)
-            while (temp > 1):
-                if ((temp & np.uint64(1)) == 1):
-                    return True
-            return False
-
-        if (dir == 1):
-            temp = np.uint64(bigger_bitboard | smaller_bitboard | board) >> np.uint64(8)
-            while (steps > 1):
-                if ((temp & np.uint64(1)) == 1):
-                    return True
-                steps -= 1
-                temp = temp >> np.uint64(8)
-            return False
-
-        if (dir == 3):
-            temp = np.uint64(bigger_bitboard | smaller_bitboard | board) >> np.uint64(9)
-            while (steps > 1):
-                if (temp & np.uint64(smaller_bitboard) == smaller_bitboard):
-                    return False
-                steps -= 1
-                temp = temp >> np.uint64(9)
-            return True
-
-        if (dir == 4):
-            temp = np.uint64(bigger_bitboard | smaller_bitboard | board) >> np.uint64(7)
-            while (steps > 1):
-                if ((temp & np.uint64(1)) == 1):
-                    return True
-                steps -= 1
-                temp = temp >> np.uint64(7)
-            return True
-
-
-        print("fail to calculate")
-        return True
-
-
 
 if __name__ == "__main__":
     val = check_betweeen()
     a = np.int64(1)
     b = np.int64(262144)
-    c = np.int64(512)
-    Board().printBoard(a)
-    Board().printBoard(b)
-    Board().printBoard(c)
+    b = np.int64(128)
+    c = np.int64(16)
     print (val.check(a,b,c)) #should be false
 
 

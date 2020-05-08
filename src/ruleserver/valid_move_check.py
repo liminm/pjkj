@@ -10,10 +10,6 @@ class ValidCheck:
     ValidCheck().check(FEN-Board-before, FEN-Board-after)
     you can check if the move is valid
     """
-    #def __init__(self):
-    #    self.bit_pos_before = np.uint64(0)
-    #    self.bit_pos_after  = np.uint64(0)
-
 
     def check(self, board_before, board_after):
         """
@@ -68,7 +64,6 @@ class ValidCheck:
         if (self.count_bits(bit_pos_before) > 1) or (self.count_bits(bit_pos_after) > 1):
             return "", -1, -1
 
-        # todo?: check if figure of other player wasn't moved
         return figure, bit_pos_before, bit_pos_after
 
 
@@ -142,7 +137,6 @@ class ValidCheck:
         start_pos = self.get_position(before_bit_position)
 
         move_bitboard = np.uint64( MoveBoard().generate(figure, start_pos[0], start_pos[1]) )
-        # TODO: check for jump over figures
 
         if (move_bitboard & after_bit_position != 0):
             return True
@@ -173,25 +167,3 @@ if __name__ == "__main__":
     #should be true (ponny test)
     valid = ValidCheck().check(board5, board6)
     print("True?", valid)
-
-
-# game.toBitBoard(board1)
-# state = game.cur_state
-# game.printBoard(game.black_board['r'])
-# game.printBoard(state)
-# print(game.cur_state)
-
-# example
-# a1 = 0b00110000000010
-# a2 = 0b10110000000000
-# print("{0:b}".format(a1))
-# print("{0:b}".format(a2))
-
-# move = check.calc_positions(a1, a2)
-# print("Figure, (x,y):     ",move)
-
-# TODO: check if only one figure moves - ok
-# TODO: check if figure is not out of bounds -> happens before the bitboard-conversion -ok
-# TODO: check if the translation is right (direction, board orientation) -> irrelevant -ok
-
-#todo: check if figure doesnt 'jump' over other figures
