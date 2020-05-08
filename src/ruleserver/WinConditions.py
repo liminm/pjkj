@@ -6,23 +6,24 @@
 
 # Output: nichts, Weißgewinnt, Schwarzgewinnt
 
-function checkwinJS(position):
-    if allowed(position):                   #ist der Zug erlaubt
-       If  reihencheckjs(position):
-            if position.spieler == 1:
-                return weißgewinnt
-        else schwarzgewinnt
-    else
-        return nichts
+def checkwinJS(self,before,after):              #fen string davor und nach dem zug
+    boardafter = getposition(get_figure(before, after))
+    playerafter=Board("dein FEN-String-Danach").player
+    reihencheck=reihencheckjs(boardafter,playerafter)
+    If reihencheck:
+          if player == w:
+            return weißgewinnt
+          else schwarzgewinnt
+    else return nichts
 
-funtion reihencheckjs(position):
-    if position.spieler == 1:
-       for i= 56 to 62:
-           if position.position(i) == 1:
-                returrn true
+def reihencheckjs(board,player):
+    if  player == w:
+        for i=56 to 62:
+           if board(i) == 1:
+                return true
     else:
         for i=1 to 6:
-             if position.position(i) == 1:
+             if board(i) ==1:
                  returrn true
     return false
 
@@ -34,25 +35,30 @@ funtion reihencheckjs(position):
 #Output nichts, weißgewinnt,schwarzgewinnt,draw
 
 Z = true
-function checkwinRK(position, Z)
-    if allowed(position) # ist eingegebener Zug valide
+def checkwinRK(self,position, Z)
+boardafter=getposition(get_figure(before, after))
+playerafter=Board("dein FEN-String-Danach").player
+reihencheck=reihencheckrk(boardafter,playerafter)
         if Z
-            If reihencheckrk(position):
-                if position.Spieler == 1:
+            If reihencheck:
+                if player== w:
                     Z = false #Variable da weiß gewinnen könnte oder draw
                 else:
                     return SchwarzGewinnt
             else:
                    return nichts
         else:
-            if reihencheck(position):
+            if reihencheck:
                 return draw
             else
                 return WeißGewinnt
 
-function reihencheckrk(position):
+def reihencheckrk(board,player):
     for i= 55 to 63:
-        if position.position(i) == 1:
+        if board(i) == 1:
             return true
-        else
-            return false
+    return false
+
+#to do Abklären wie ich an Daten komme vielleicht eigene klasse erstellen
+#to do abklären wo mein Code eingebaut wird
+#to do FEN Parser verstehen
