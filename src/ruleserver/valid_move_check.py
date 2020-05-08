@@ -1,10 +1,10 @@
 import numpy as np
 from bitboard import Board
-from check_between import check_betweeen
+from check_between import CheckBetween
 from generate_move_bitboard import MoveBoard
 
 
-class ValidCheck:
+class ValidCheck: # will be ValidCheckRacingKings later
     """
     With
     ValidCheck().check(FEN-Board-before, FEN-Board-after)
@@ -25,7 +25,7 @@ class ValidCheck:
             if result[0] in "qbr": # check for figures in between
                 board = Board(board_after)
                 all_figures = board.board['wh'] | board.board['bl']
-                if(check_betweeen().check(result[1], result[2], all_figures)):
+                if(CheckBetween().check(result[1], result[2], all_figures)):
                     return True
                 else:
                     return False
@@ -142,6 +142,18 @@ class ValidCheck:
             return True
         return False
 
+class ValidCheckJumpSturdy:
+    def check(self, fen_before, fen_after):
+        # one figure:
+        # move left, right and up
+        # connect (to own figure): like normal move
+        # kill: only diagonal up
+
+        # two figures:
+        # move 2 up 1 left/right    or  1 up 2 left/right
+        # connecting is the same
+        # killing is the same
+        return True
 
 # Only called if you directly execute this code
 if __name__ == "__main__":

@@ -9,17 +9,26 @@ class MoveBoard:
     """
 
     def generate(self, figure, x, y):
-        if  (figure == 'k'):
+        '''
+        Generates possible valid position for the given figure.
+        It's current position is not included
+
+        :param figure: char of the figure
+        :param x: 0 to 7
+        :param y: 0 to 7
+        :return: bitboard as uint64-digit
+        '''
+        if  (figure == 'k'):    # King
             return self.k(x,y)
-        elif(figure == 'q'):
+        elif(figure == 'q'):    # Queen
             return self.q(x,y)
-        elif(figure == 'b'):
+        elif(figure == 'b'):    # Bishop
             return self.b(x,y)
-        elif(figure == 'n'):
+        elif(figure == 'n'):    # Knight
             return self.n(x,y)
-        elif(figure == 'r'):
+        elif(figure == 'r'):    # Rook
             return self.r(x,y)
-        elif(figure == 'p'):
+        elif(figure == 'p'):    # Pawn
             return self.p(x,y)
         return 0
 
@@ -124,7 +133,6 @@ class MoveBoard:
 
         return bitboard
 
-
     def shift(self,position, x, y):
         if y > 0:
             return position << np.uint64(x+y)
@@ -153,6 +161,7 @@ class MoveBoard:
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    out = MoveBoard().generate('q', 7, 1)
+    out = MoveBoard().generate('n', 5, 5)
     # first position is (0,0) which is equivalent to (h,1)
+    print(out)
     Board().printBoard(out)

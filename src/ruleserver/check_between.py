@@ -1,7 +1,7 @@
 import numpy as np
 from bitboard import Board
 
-class check_betweeen:
+class CheckBetween:
 
     def __init__(self):
         self.negative = False
@@ -94,7 +94,7 @@ class check_betweeen:
             temp = np.uint64((before_pos | board) & ~after_pos)
             while(steps > 1):
                 before_pos = np.uint64(before_pos) << np.uint64(direction)
-                if (temp & before_pos >= 1):
+                if (temp & np.uint64(before_pos) >= 1):
                     return False
                 steps -= 1
         else:
