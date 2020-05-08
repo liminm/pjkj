@@ -10,7 +10,7 @@ def checkwinJS(self,before,after):              #fen string davor und nach dem z
     boardafter = getposition(get_figure(before, after))
     playerafter=Board("dein FEN-String-Danach").player
     reihencheck=reihencheckjs(boardafter,playerafter)
-    If reihencheck:
+    If reihencheckjs:
           if player == w:
             return weißgewinnt
           else schwarzgewinnt
@@ -35,7 +35,7 @@ def reihencheckjs(board,player):
 #Output nichts, weißgewinnt,schwarzgewinnt,draw
 
 Z = true
-def checkwinRK(self,position, Z)
+def checkwinRK(self,before, after)
 boardafter=getposition(get_figure(before, after))
 playerafter=Board("dein FEN-String-Danach").player
 reihencheck=reihencheckrk(boardafter,playerafter)
