@@ -1,4 +1,8 @@
-from bitboard import racing_kings
+from bitboard import Board
+
+def checkMate(board):
+    
+    #return True|False
 
 class KingIsAttackedCheck():
 

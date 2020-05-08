@@ -6,6 +6,8 @@
 
 # Output: nichts, Weißgewinnt, Schwarzgewinnt
 
+from bitboard import Board
+
 def checkwinJS(self,before,after):              #fen string davor und nach dem zug
     boardafter = getposition(get_figure(before, after))
     playerafter=Board("dein FEN-String-Danach").player
@@ -24,8 +26,8 @@ def reihencheckjs(board,player):
     else:
         for i=1 to 6:
              if board(i) ==1:
-                 returrn true
-    return false
+                 return True
+    return False
 
 #Racing Kings
 
@@ -36,9 +38,9 @@ def reihencheckjs(board,player):
 
 Z = true
 def checkwinRK(self,before, after)
-boardafter=getposition(get_figure(before, after))
-playerafter=Board("dein FEN-String-Danach").player
-reihencheck=reihencheckrk(boardafter,playerafter)
+    boardafter=getposition(get_figure(before, after))
+    playerafter=Board("dein FEN-String-Danach").player
+    reihencheck=reihencheckrk(boardafter,playerafter)
         if Z
             If reihencheck:
                 if player== w:
@@ -53,11 +55,12 @@ reihencheck=reihencheckrk(boardafter,playerafter)
             else
                 return WeißGewinnt
 
-def reihencheckrk(board,player):
-    for i= 55 to 63:
-        if board(i) == 1:
-            return true
-    return false
+def reihencheckrk(board):
+    b = '{0:b}'.format((board.board["k"] & board.board["wh"]) | (board.board["k"] & board.board["bl"])).zfill(64)
+    for i in range(55, 64):
+        if b[i] == 1:
+            return True
+    return False
 
 #to do Abklären wie ich an Daten komme vielleicht eigene klasse erstellen
 #to do abklären wo mein Code eingebaut wird

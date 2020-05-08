@@ -7,7 +7,8 @@ Created on Sun May  3 14:47:31 2020
 """
 import bitboard
 import valid_move_check as vm
-#import racing_kings_check_check as rk_win
+from WinConditions import checkwinRK
+from racing_kings_check_check import checkMate
 #import test
 
 class racingkings():
@@ -148,7 +149,7 @@ class racingkings():
         
         
         #Set FEN for easier testing
-        if type(state) == str :
+        if type(state) == str:
              FEN = state
         elif type(state) == dict:
             FEN = state['fen']
@@ -227,8 +228,13 @@ class racingkings():
             r = 'K'
         
         
+        # TODO: checkmate
+        # checkMate(board) --> True | False
+        
         #check for winning conditions
-        pass
+        # TODO: reihencheckrk(board) --> True|False
+        if not checkwinRK(board_before) and win(board) and board.player == "w":
+            
     
         # everything is good
         
