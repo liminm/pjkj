@@ -1,10 +1,154 @@
 import numpy as np
+import re
 from bitboard import Board
 from check_between import CheckBetween
 from generate_move_bitboard import MoveBoard
 
 
-class ValidCheck: # will be ValidCheckRacingKings later
+class ValidCheck:
+    def check(self, first_string, second_string, game_mode="RK"):
+        '''
+        Function to check , if the givent movement is valid. Default GameMode is RacingKings (RK).
+        Consider different input for RacingKings and JumpSturdy! RK accepts two FEN-Strings.
+        JS accepts FEN-String before the move and a UCI-Move-String (like "a2-a3").
+
+        :param first_string: FEN-Board before the move
+        :param second_string:
+         RacingKings: FEN-Board after the move  -
+         JumpSturdy: UCI-Move-String
+        :param game_mode: "RK" for RacingKings or "JS" for JumpSturdy.
+        :return: True if the move is valid
+        '''
+        if game_mode == "RK":
+            return ValidCheckRacingKings().check(first_string, second_string)
+        elif game_mode == "JS":
+            return ValidCheckJumpSturdy(first_string).check(second_string)
+        else:
+            raise SyntaxError("game_mode is not valid! Needs to be \"RK\" or \"JS\"!")
+            return False
+
+
+    def tranaslate_uci(self, uci_string):
+        m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(uci_string.lower())
+        if m is None:
+            raise SyntaxError("The UCI-String is not valid!")
+        a = m.group(1)
+        b = m.group(2)
+        x1 = 7 - int(ord(a[0]) - ord("a"))
+        y1 = int(a[1]) - 1
+        x2 = 7 - int(ord(b[0]) - ord("a"))
+        y2 = int(b[1]) - 1
+        return x1, y1, x2, y2
+
+
+class ValidCheckJumpSturdy:
+
+    def __init__(self, fen_before = None):
+        if fen_before == None:
+            self.board_before = None
+        else:
+            self.board_before = Board(fen_before)
+
+
+    def check(self, fen_before, uci_move):
+        '''
+        Check if the given move is valid. Includes checking figures compability.
+
+        :param fen_before: FEN-Board before the move
+        :param uci_move: string. example: "a2-b3"
+        :return: True if the move is valid
+        '''
+        if self.board_before is None:
+            self.board_before = Board(fen_before)
+
+        x1, y1, x2, y2 = ValidCheck().tranaslate_uci(uci_move)
+        start_figure = self.get_figure(x1, y2, self.board_before)
+        end_figure   = self.get_figure(x1, y2, self.board_before)
+        if (start_figure == ''):
+            return False    # no figure at start position
+
+        if ((x1 == 0 or x1 == 7) and (y1 == 0 or y1 == 7)) or ((x2 == 0 or x2 == 7) and (y2 == 0 or y2 == 7)):
+            return False    # movement out of borders
+
+        valid_movement = self.check_movement(start_figure, end_figure, x1, y1, x2, y2)
+        return valid_movement
+
+
+    def get_figure(self, x, y, board):
+        bit_position = self.get_bitposition(x, y)
+        for fig in "bBkKqQ":
+            try:
+                fig_board = board.board[fig]
+            except KeyError:    # catch Error, if such figure doesn't exist
+                continue
+            if (fig_board & bit_position >= 0):
+                return fig
+
+        return ''
+
+
+    def check_movement(self, fig1, fig2, x1, y1, x2, y2):
+        if not self.compare_figures(fig1, fig2):
+            return False    # figures are not compatible
+
+        bit_pos2 = self.get_bitposition(x2, y2)
+        if bit_pos2 & MoveBoard().generate(fig1, x1, y2, "JS") == 0:
+            return False    # wrong figure movement
+
+        if ("bB" in fig1):  # check single-level-figure movement
+            return self.check_single(fig1, fig2, x1, y1, x2, y2)
+
+        return True
+
+
+    def check_single(self, fig1, fig2, x1, y1, x2, y2):
+        if "bB" not in fig1:
+            return False
+
+        x_diff = abs(x1-x2)
+        y_diff = abs(y1-y2)
+
+        # check for black/white because there needs to be a certain figure in case of attack/normal_move
+
+        if x_diff == y_diff:
+            # normal move
+            if fig1.islower() and (fig2 == 'b' or fig2 == ''):   # black player
+                return True
+            elif fig1.isupper() and (fig2 == 'B' or fig2 == ''): # white player
+                return True
+        else:
+            # attack move
+            if fig1.islower() and "BKQ" in fig2:    # black player
+                return True
+            elif fig1.isupper() and "bkq" in fig2:  # white player
+                return True
+
+        return False
+
+
+    def compare_figures(self, fig1, fig2):
+        '''
+        Check figures compability
+
+        :param fig1: attacking figure
+        :param fig2: attacked figure
+        :return: can fig1 attack fig2? (True/False)
+        '''
+        if fig2 == '':
+            return True
+        if ("BK" in fig1 and fig2 == 'Q') or ("bk" in fig1 and fig2 == 'q'):
+            return False
+        elif (fig1 == 'B' and fig2 == 'K') or (fig2 == 'b' and fig2 == 'k'):
+            return False
+        return True
+
+
+    def get_bitposition(self, x, y):
+        return np.uint64(9223372036854775808) >> np.uint64(8 * y + 7 - x)
+
+
+
+class ValidCheckRacingKings: # will be ValidCheckRacingKings later
     """
     With
     ValidCheck().check(FEN-Board-before, FEN-Board-after)
@@ -142,18 +286,7 @@ class ValidCheck: # will be ValidCheckRacingKings later
             return True
         return False
 
-class ValidCheckJumpSturdy:
-    def check(self, fen_before, fen_after):
-        # one figure:
-        # move left, right and up
-        # connect (to own figure): like normal move
-        # kill: only diagonal up
 
-        # two figures:
-        # move 2 up 1 left/right    or  1 up 2 left/right
-        # connecting is the same
-        # killing is the same
-        return True
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
@@ -179,3 +312,10 @@ if __name__ == "__main__":
     #should be true (ponny test)
     valid = ValidCheck().check(board5, board6)
     print("True?", valid)
+
+    #jump_board = "8/8/1q6/8/8/8/8/8 b - - 0 1"
+    #move = "h1 b2"
+    #result = ValidCheckJumpSturdy().get_bitposition(0 ,0)
+    #Board().printBoard(result)
+    #ress = tranaslate_uci(start)
+    #print(ress)
