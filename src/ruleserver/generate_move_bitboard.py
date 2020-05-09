@@ -8,29 +8,47 @@ class MoveBoard:
     Current field is not included
     """
 
-    def generate(self, figure, x, y):
+    def generate(self, figure, x, y, game_mode="RK"):
         '''
         Generates possible valid position for the given figure.
-        It's current position is not included
+        It's current position is not included.
+        Standard GameMode is RacingKings
 
         :param figure: char of the figure
         :param x: 0 to 7
         :param y: 0 to 7
+        :param game_mode: "RK" for RacingKings, "JS" for JumpSturdy
         :return: bitboard as uint64-digit
         '''
-        if  (figure == 'k'):    # King
-            return self.k(x,y)
-        elif(figure == 'q'):    # Queen
-            return self.q(x,y)
-        elif(figure == 'b'):    # Bishop
-            return self.b(x,y)
-        elif(figure == 'n'):    # Knight
-            return self.n(x,y)
-        elif(figure == 'r'):    # Rook
-            return self.r(x,y)
-        elif(figure == 'p'):    # Pawn
-            return self.p(x,y)
+        if game_mode == "RK":
+            if  (figure == 'k'):    # King
+                return self.k(x,y)
+            elif(figure == 'q'):    # Queen
+                return self.q(x,y)
+            elif(figure == 'b'):    # Bishop
+                return self.b(x,y)
+            elif(figure == 'n'):    # Knight
+                return self.n(x,y)
+            elif(figure == 'r'):    # Rook
+                return self.r(x,y)
+            elif(figure == 'p'):    # Pawn
+                return self.p(x,y)
+
+        elif game_mode == "JS":     # (up, down)
+            if  (figure == 'b'):    # black
+                return self.js_b(x, y, False)
+            elif(figure == 'B'):    # white
+                return self.js_b(x, y, True)
+            elif(figure in "qk"):   # black-white or black-black
+                return self.js_qk(x, y, False)
+            elif(figure in "QK"):   # white-black or white-white
+                return self.js_qk(x, y, True)
+
+        raise SyntaxError("Invalid input in MoveBoardGenerator!")
         return 0
+
+
+# Racing Kings
 
     def k(self, x, y):
         """
@@ -98,8 +116,8 @@ class MoveBoard:
         """
         N = -8  # North
         S = 8   # South
-        E = 1   # East
-        W = -1  # West
+        E = -1   # East
+        W = 1  # West
 
         bitboard = np.uint64(0)
         pos = 0
@@ -133,6 +151,7 @@ class MoveBoard:
 
         return bitboard
 
+
     def shift(self,position, x, y):
         if y > 0:
             return position << np.uint64(x+y)
@@ -158,10 +177,56 @@ class MoveBoard:
     def xor(self, first, second):
         return (first or second) and not (first and second)
 
+# Jump Sturdy
+
+    def js_b(self, x, y, white):
+        """
+        JumpSturdy: Singe figure
+        """
+        bitboard = bit_position = np.uint64(1) << np.uint64(7 - x + 8 * y)
+        if x > 0:
+            bitboard |= bitboard >> np.uint64(1)
+        if x < 7:
+            bitboard |= bitboard << np.uint64(1)
+
+        if white and y<7:
+            bitboard |= bitboard >> np.uint(8)
+        elif not white and y>0:
+            bitboard |= bitboard << np.uint(8)
+
+        return self.del_edges(bitboard & ~bit_position)
+
+
+    def js_qk(self, x, y, white):
+        """
+        JumpSturdy: Double figure
+        """
+        bit_position = np.uint64(9223372036854775808) >> np.uint64(8 * y + 7 - x)
+        if bit_position == 0:
+            raise SyntaxError("Invalid position!")
+            return 0
+        bitboard = self.n(x, y)
+
+        temp = np.uint(1)
+        while bit_position & temp == 0:
+            temp |= temp << np.uint64(1)
+
+        if white:
+            bitboard &= temp
+        else:
+            bitboard &= ~temp
+
+        return self.del_edges(bitboard)
+
+
+    def del_edges(self, bitboard):
+        edges = np.uint64(9295429630892703873)
+        return np.uint64(bitboard) & ~edges
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    out = MoveBoard().generate('n', 5, 5)
+    out = MoveBoard().generate('Q', 2, 0, "JS")
+    #out = MoveBoard().generate('q', 0, 0)
     # first position is (0,0) which is equivalent to (h,1)
-    print(out)
+    #print(out)
     Board().printBoard(out)
