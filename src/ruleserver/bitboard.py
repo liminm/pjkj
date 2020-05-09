@@ -181,12 +181,12 @@ class Board:
     
     def moveUCI(self,start,end=None):
         if end is None:
-            start = start.split("-")
-            if len(start) != 2:
+            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+            if m is None:
                 raise SyntaxError("Syntax Error in UCI String!")
             
-            end = start[1]
-            start = start[0]
+            start = m.group(1)
+            end = m.group(2)
         
         character = self.getField(start)
         self.getField(end)
@@ -374,12 +374,18 @@ if __name__ == "__main__":
     rkStart = "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1"
     
     b = Board(rkStart)
+    print(b)
+    b.moveUCI("a2 a3")
+    b.moveUCI("a3-a2")
+    b.moveUCI("a2a3")
+    print(b)
     
-    b2 = deepcopy(b)
+    #b2 = deepcopy(b)
+    
     
     # default string representation
-    print(b)
-    print(b==b2)
-    b.setField("h3", "p")
-    print(b==b2)
-    print(repr(Board()))
+    #print(b)
+    #print(b==b2)
+    #b.setField("h3", "p")
+    #print(b==b2)
+    #print(repr(Board()))
