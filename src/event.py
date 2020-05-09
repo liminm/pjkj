@@ -106,15 +106,13 @@ def get_events(id):
 
 	def stream_events():
 
-		yield '[\n'
-
 		# We get the current length before we print old stuff, just to be sure
 		# that we don't miss anything coming in while we send this out
 		prevLen = len(game['events'])
 
 		# Serve past events
 		for event in game['events']:
-			yield json.dumps(event, indent=4) + ',\n'
+			yield 'data: ' + json.dumps(event) + '\n\n'
 
 		# Just in case new events arrived while the state was set to completed,
 		# we give the option to print those regardless of the state
@@ -131,10 +129,8 @@ def get_events(id):
 			# order, by using range from negative to 0, we get exactly that:
 			# range(-3, 0) -> [-3, -2, -1]
 			for i in range(-newEventCount, 0):
-				yield json.dumps(game['events'][i], indent=4) + ',\n'
+				yield 'data: ' + json.dumps(game['events'][i]) + '\n\n'
 
 			prevLen = newLen
-
-		yield ']'
 
 	return Response(stream_events(), mimetype='text/event-stream')

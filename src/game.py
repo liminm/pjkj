@@ -19,14 +19,15 @@ def post_game():
 		'timeBudgets': {
 			'playerA': game['settings']['timeBudget'],
 			'playerB': game['settings']['timeBudget']
-		}
+		},
+		'boardHashMap': {}
 	}
 	game['events'] = []
 
 	# TODO: Check initial state with Ruleserver
-	#valid, condition = ruleServer.stateCheck(game['state'])
+	#valid, reason = ruleServer.stateCheck(game['state'])
 	#if not valid:
-	#	return ("Error: Initial board state invalid:\nCondition: " + condition), 400
+	#	return json.dumps(reason), 400
 
 	id = util.id()
 

@@ -119,12 +119,12 @@ echo ${EV2INFO}
 
 
 
-EV3INFO=`echo '
-{
-	"type": "surrender"
-}
-' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
-
-echo ${EV3INFO}
-
-http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+#EV3INFO=`echo '
+#{
+#	"type": "surrender"
+#}
+#' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
+#
+#echo ${EV3INFO}
+#
+#http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
