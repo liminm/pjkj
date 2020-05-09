@@ -1,7 +1,7 @@
 from bitboard import Board
 
 def checkMate(board):
-    
+    pass
     #return True|False
 
 class KingIsAttackedCheck():

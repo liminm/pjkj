@@ -139,9 +139,9 @@ class racingkings():
         return True, "", ""
     
     def moveCheck(self,moveEvent,state):
-        v,_,_ = fenStateCheck(state)
+        v,c,r = fenStateCheck(state)
         if not v:
-            return False, None, "SyntaxError:FEN String is invalid!"
+            return False, None, c+":"+r
             
         
         # pick apart the input Data

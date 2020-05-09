@@ -10,17 +10,17 @@ output true false
 '''
 from bitboard import Board
 
-def reihencheckjs(board,player)
+def reihencheckjs(board,player):
     b1='{0:b}'.format((board.board["wh"])).zfill(64)
     b2='{0:b}'.format((board.board["bl"])).zfill(64)
-     if  player == "wh":
+    if  player == "wh":
         for i in range (56, 62):
-           if b1(i) != 0:
+            if b1(i) != 0:
                 return True
-        else
-          for i=1 to 6:
-              if b2(i) !=0:
-                 return True
+        else:
+            for i in range(1, 7):
+                if b2(i) !=0:
+                    return True
     return False
         
 def reihencheckrk(board):
