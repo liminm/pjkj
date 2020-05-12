@@ -8,7 +8,7 @@ class MoveBoard:
     Current field is not included
     """
 
-    def generate(self, figure, x, y, game_mode="RK"):
+    def generate(self, figure, x, y, player='w', game_mode="RK"):
         '''
         Generates possible valid position for the given figure.
         It's current position is not included.
@@ -34,15 +34,15 @@ class MoveBoard:
             elif(figure == 'p'):    # Pawn
                 return self.p(x,y)
 
-        elif game_mode == "JS":     # (up, down)
-            if  (figure == 'b'):    # black
-                return self.js_b(x, y, False)
-            elif(figure == 'B'):    # white
-                return self.js_b(x, y, True)
-            elif(figure in "qk"):   # black-white or black-black
-                return self.js_qk(x, y, False)
-            elif(figure in "QK"):   # white-black or white-white
-                return self.js_qk(x, y, True)
+        white = True
+        if player == 'b':
+            white = False
+
+        if game_mode == "JS":     # (up-down)
+            if  (figure in "bB"):    # white or black
+                return self.js_b(x, y, white)
+            elif(figure in "qkQK"):   # white-black / white-white or black-white / black-black
+                return self.js_qk(x, y, white)
 
         raise SyntaxError("Invalid input in MoveBoardGenerator!")
         return 0
@@ -181,18 +181,19 @@ class MoveBoard:
 
     def js_b(self, x, y, white):
         """
-        JumpSturdy: Singe figure
+        JumpSturdy: Single figure
         """
-        bitboard = bit_position = np.uint64(1) << np.uint64(7 - x + 8 * y)
+        bitboard = bit_position = np.uint64(1) << np.uint64(x + 8 * y)
+
         if x > 0:
             bitboard |= bitboard >> np.uint64(1)
         if x < 7:
             bitboard |= bitboard << np.uint64(1)
 
         if white and y<7:
-            bitboard |= bitboard >> np.uint(8)
-        elif not white and y>0:
             bitboard |= bitboard << np.uint(8)
+        elif not white and y>0:
+            bitboard |= bitboard >> np.uint(8)
 
         return self.del_edges(bitboard & ~bit_position)
 
@@ -201,32 +202,36 @@ class MoveBoard:
         """
         JumpSturdy: Double figure
         """
-        bit_position = np.uint64(9223372036854775808) >> np.uint64(8 * y + 7 - x)
+        bit_position = np.uint64(1) << np.uint64(x + 8 * y)
         if bit_position == 0:
             raise SyntaxError("Invalid position!")
             return 0
-        bitboard = self.n(x, y)
+        bitboard = self.n(x, (7-y)) # Earlier funtions assumed a mirrored y-achsis
 
         temp = np.uint(1)
         while bit_position & temp == 0:
             temp |= temp << np.uint64(1)
 
         if white:
-            bitboard &= temp
-        else:
             bitboard &= ~temp
+        else:
+            bitboard &= temp
 
         return self.del_edges(bitboard)
 
 
     def del_edges(self, bitboard):
+        '''
+        Delete edges from bitboard (useful for JumpSturdy)
+        :param bitboard:
+        :return:
+        '''
         edges = np.uint64(9295429630892703873)
         return np.uint64(bitboard) & ~edges
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    out = MoveBoard().generate('Q', 2, 0, "JS")
+    out = MoveBoard().generate('b', 5, 7, 'b', "JS")
     #out = MoveBoard().generate('q', 0, 0)
-    # first position is (0,0) which is equivalent to (h,1)
     #print(out)
     Board().printBoard(out)

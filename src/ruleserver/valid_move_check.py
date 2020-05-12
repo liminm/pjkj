@@ -22,16 +22,21 @@ class ValidCheck:
         if game_mode == "RK":
             return ValidCheckRacingKings().check(first_string, second_string)
         elif game_mode == "JS":
-            return ValidCheckJumpSturdy(first_string).check(second_string)
+            return ValidCheckJumpSturdy().check(first_string, second_string)
         else:
             raise SyntaxError("game_mode is not valid! Needs to be \"RK\" or \"JS\"!")
             return False
 
 
     def tranaslate_uci(self, uci_string):
+        '''
+        Translates the UCI-String to intern-used format
+        :param uci_string:
+        :return: x1, y1, x2, y2 (all Int)
+        '''
         m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(uci_string.lower())
         if m is None:
-            raise SyntaxError("The UCI-String is not valid!")
+            raise SyntaxError("The UCI-String \"" + uci_string+  "\" is not valid!")
         a = m.group(1)
         b = m.group(2)
         x1 = 7 - int(ord(a[0]) - ord("a"))
@@ -62,8 +67,8 @@ class ValidCheckJumpSturdy:
             self.board_before = Board(fen_before)
 
         x1, y1, x2, y2 = ValidCheck().tranaslate_uci(uci_move)
-        start_figure = self.get_figure(x1, y2, self.board_before)
-        end_figure   = self.get_figure(x1, y2, self.board_before)
+        start_figure = self.get_figure(x1, y1, self.board_before)
+        end_figure   = self.get_figure(x2, y2, self.board_before)
         if (start_figure == ''):
             return False    # no figure at start position
 
@@ -75,33 +80,71 @@ class ValidCheckJumpSturdy:
 
 
     def get_figure(self, x, y, board):
+        '''
+        Returns which figure is at given coordinates. Capitalization is retained.
+
+        :param x: Integer
+        :param y: Integer
+        :param board: Board()
+        :return: Char
+        '''
         bit_position = self.get_bitposition(x, y)
         for fig in "bBkKqQ":
             try:
-                fig_board = board.board[fig]
+                player = "bl"
+                fig_temp = fig
+                if fig.isupper():
+                    player = "wh"
+                    fig_temp = fig.lower()
+                fig_board = board.board[fig_temp] & board.board[player]
             except KeyError:    # catch Error, if such figure doesn't exist
                 continue
-            if (fig_board & bit_position >= 0):
+            if (fig_board & bit_position > 0):
                 return fig
-
         return ''
 
 
     def check_movement(self, fig1, fig2, x1, y1, x2, y2):
+        '''
+        Check if the the given figure at given coordinates can move to destination coordinates on the second figure.
+
+        :param fig1: Figure at start-position
+        :param fig2: Figure at destination (can be empty '')
+        :param x1: start-position
+        :param y1: start-position
+        :param x2: destination
+        :param y2: destination
+        :return: True, if the movement is valid
+        '''
         if not self.compare_figures(fig1, fig2):
             return False    # figures are not compatible
 
+        player = self.board_before.player
+
         bit_pos2 = self.get_bitposition(x2, y2)
-        if bit_pos2 & MoveBoard().generate(fig1, x1, y2, "JS") == 0:
+
+        if bit_pos2 & MoveBoard().generate(fig1, x1, y1, player, "JS") == 0:
             return False    # wrong figure movement
 
-        if ("bB" in fig1):  # check single-level-figure movement
+        if ("bB" in fig1):  # check single-figure movement
             return self.check_single(fig1, fig2, x1, y1, x2, y2)
 
         return True
 
 
     def check_single(self, fig1, fig2, x1, y1, x2, y2):
+        '''
+        If the figure is a single one ('b' or 'B'), this funktion checks if it is
+        a normal or attack-move and if the figure can move on the other figure.
+
+        :param fig1: Figure from start-coordinates
+        :param fig2: Figure at destination (can be '')
+        :param x1: start-coordinates
+        :param y1: start-coordinates
+        :param x2: destination
+        :param y2: destination
+        :return: False, if it is another figure or a wrong move was made
+        '''
         if "bB" not in fig1:
             return False
 
@@ -110,7 +153,7 @@ class ValidCheckJumpSturdy:
 
         # check for black/white because there needs to be a certain figure in case of attack/normal_move
 
-        if x_diff == y_diff:
+        if x_diff != y_diff:
             # normal move
             if fig1.islower() and (fig2 == 'b' or fig2 == ''):   # black player
                 return True
@@ -136,15 +179,15 @@ class ValidCheckJumpSturdy:
         '''
         if fig2 == '':
             return True
-        if ("BK" in fig1 and fig2 == 'Q') or ("bk" in fig1 and fig2 == 'q'):
+        if ("BKQ" in fig1 and fig2 == 'Q') or ("bkq" in fig1 and fig2 == 'q'):
             return False
-        elif (fig1 == 'B' and fig2 == 'K') or (fig2 == 'b' and fig2 == 'k'):
+        elif ("BKQ" in fig1 and fig2 == 'K') or ("bkq" in fig1 and fig2 == 'k'):
             return False
         return True
 
 
     def get_bitposition(self, x, y):
-        return np.uint64(9223372036854775808) >> np.uint64(8 * y + 7 - x)
+        return np.uint64(1) << np.uint64(8 * y + x)
 
 
 
@@ -288,8 +331,7 @@ class ValidCheckRacingKings: # will be ValidCheckRacingKings later
 
 
 
-# Only called if you directly execute this code
-if __name__ == "__main__":
+def test_rk():
     board1 = "1k6/8/8/8/1q6/8/8/r7 w - - 3 2"
     board2 = "2k5/8/8/8/1q6/8/8/r7 b - - 4 5"
     board3 = "2k5/8/8/8/1q6/8/8/7r b - - 4 5"
@@ -297,25 +339,30 @@ if __name__ == "__main__":
     board5 = "8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b - - 0 1"
     board6 = "8/8/1r6/8/5N2/8/q1bn1BRQ/krbnNBRK w - - 0 1"
 
-    #should be true (king move)
+    # should be true (king move)
     valid = ValidCheck().check(board1, board2)
     print("True?", valid)
 
-    #should be false (too many moves)
+    # should be false (too many moves)
     valid = ValidCheck().check(board1, board3)
     print("False?", valid)
 
-    #should be false (too many steps)
+    # should be false (too many steps)
     valid = ValidCheck().check(board1, board4)
     print("False?", valid)
 
-    #should be true (ponny test)
+    # should be true (ponny test)
     valid = ValidCheck().check(board5, board6)
     print("True?", valid)
 
-    #jump_board = "8/8/1q6/8/8/8/8/8 b - - 0 1"
-    #move = "h1 b2"
-    #result = ValidCheckJumpSturdy().get_bitposition(0 ,0)
-    #Board().printBoard(result)
-    #ress = tranaslate_uci(start)
-    #print(ress)
+def test_js():
+    b1 = "1bbbbbb1/1b1k1b2/8/4b3/4B3/8/1B1KBB2/1BBB1BB1 b - - 0 12"
+    b2 = "2bbbbb1/1k1k1b2/8/4b3/4B3/8/1B1KBB2/1BBB1BB1 w - - 0 13"
+    m1 = "b8" + "b7"
+    v1 = ValidCheck().check(b1, m1, "JS")
+    print(v1)
+
+# Only called if you directly execute this code
+if __name__ == "__main__":
+    test_rk()
+    test_js()

@@ -5,10 +5,9 @@ import numpy as np
 # test imports
 from bitboard import Board
 from valid_move_check import ValidCheck
-from valid_move_check import ValidCheckJumpSturdy
 #from WinConditions import reihencheckrk
 #from WinConditions import reihencheckjs
-from racing_kings_check_check import checkMate
+from racing_kings_check_check import KingIsAttackedCheck
 
 global test_data
 
@@ -107,12 +106,12 @@ class MoveCheckTest(unittest.TestCase):
         for t in test_data["jumpStirdy"]["moveCheck"] + test_data["jumpStirdy"]["sampleGame"]:
             board = Board(t[0])
             board_moved = Board(t[0])
-            uci = t[1] + "-" + t[2]
+            uci = t[1] + t[2]
             board_moved.moveUCI(uci)
             exp = eval(t[3])
             character = board.getField(t[1])
             
-            self.assertEqual(v.check(repr(board), repr(board_moved), "JS"), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
+            self.assertEqual(v.check(repr(board), uci, "JS"), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
 
 class WinConditionsTest(unittest.TestCase):
     
