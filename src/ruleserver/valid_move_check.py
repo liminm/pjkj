@@ -179,9 +179,9 @@ class ValidCheckJumpSturdy:
         '''
         if fig2 == '':
             return True
-        if ("BKQ" in fig1 and fig2 == 'Q') or ("bkq" in fig1 and fig2 == 'q'):
+        if (fig1 in "BKQ" and fig2 == 'Q') or (fig1 in "bkq" and fig2 == 'q'):
             return False
-        elif ("BKQ" in fig1 and fig2 == 'K') or ("bkq" in fig1 and fig2 == 'k'):
+        elif (fig1 in "BKQ"  and fig2 == 'K') or (fig1 in "bkq" and fig2 == 'k'):
             return False
         return True
 
