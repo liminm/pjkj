@@ -151,10 +151,18 @@ class Board:
             elif elem == '/' and pos % 8 != 0:
                 raise RuntimeError("ParseError: Each line on the board has to contain exactly 8 fields.")
     
-    def movePlayer(self, start, end, logging=False):
+    def movePlayer(self, start, end=None, logging=False):
         """
         this is for debugging
         """
+        if end is None:
+            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+            if m is None:
+                raise SyntaxError("Syntax Error in UCI String!")
+            
+            start = m.group(1)
+            end = m.group(2)
+        
         if logging:
             move = [repr(self), start, end, "True"]
         
@@ -197,12 +205,13 @@ class Board:
         self.setField(end, character)
         self.removeField(start)
     
-    def setField(self, position, character):
+    def setField(self, position, character, logging=False):
         """
     
         this functions sets a field on the bitboard. You have to give a location, for example 'f2' and a character in fen style, like 'Q' or 'q', for white and black queens.
         
         """
+        
         position = position[0].lower() + position[1]
         m = re.compile("[a-h][1-8] [qQkKrRpPnNbB]").match(position + " " + character)
         

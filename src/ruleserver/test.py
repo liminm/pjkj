@@ -5,8 +5,9 @@ import numpy as np
 # test imports
 from bitboard import Board
 from valid_move_check import ValidCheck
-from WinConditions import reihencheckrk
-from WinConditions import reihencheckjs
+from valid_move_check import ValidCheckJumpSturdy
+#from WinConditions import reihencheckrk
+#from WinConditions import reihencheckjs
 from racing_kings_check_check import checkMate
 
 global test_data
@@ -30,8 +31,54 @@ class FenParserTest(unittest.TestCase):
             expBoard.board.update(exp)
             
             self.assertEqual(repr(expBoard), t[0])
-            
-    # TODO: has to be implemented
+    
+    def testSetField(self):
+        """
+        tests if setField sets the correct field
+        t[0] = location on the field (f2)
+        t[1] = symbol of the figure (q)
+        t[2] = string representation of the figures bitboard
+        """
+
+        for t in test_data["fen"]["testSetField"]:
+            board = Board()
+            board.setField(t[0], t[1])
+            self.assertEqual(board.board[t[1].lower()], int(t[2], base = 2))
+            if t[1].lower() == t[1]:
+                self.assertEqual(board.board["bl"], int(t[2], base = 2))
+            else:
+                self.assertEqual(board.board["wh"], int(t[2], base=2))
+
+    def testGetField(self):
+        """
+        tests if board.getField returns the correct figure ()
+        t[0] = a FEN string to set the field
+        t[1] = position
+        t[2] = correct figure
+        """
+
+        for t in test_data["fen"]["testGetField"]:
+            board = Board(t[0])
+            self.assertEqual(board.getField(t[1]), t[2])
+    
+    def testScan(self):
+        """
+        tests if board.scan split a FEN string correct
+        tests if board.scan raises an error when the syntax of a FEN is incorrect
+        t[0] = FEN String
+        t[1] = expected array
+        """
+        board = Board()
+        pos = 0
+        for t in test_data['fen']['testScan']:
+            if pos < 2:
+                self.assertEqual(board.scan(t[0]), t[1])
+            else:
+                self.assertRaises(SyntaxError, board.scan, t[0])
+            pos += 1
+    
+    # TODO: the Board.movePlayer function simulates the given UCI move and changes all relevant information in the fen string
+    # this function is called in the moveCheck to simulate a move
     def testMovePlayer(self):
         pass
 
@@ -56,7 +103,16 @@ class MoveCheckTest(unittest.TestCase):
     
     # TODO: has to be implemented
     def testMoveCheckJumpStirdy(self):
-        pass
+        v = ValidCheck()
+        for t in test_data["jumpStirdy"]["moveCheck"]:
+            board = Board(t[0])
+            board_moved = Board(t[0])
+            uci = t[1] + "-" + t[2]
+            board_moved.moveUCI(uci)
+            exp = eval(t[3])
+            character = board.getField(t[1])
+            
+            self.assertEqual(v.check(repr(board), repr(board_moved), "JS"), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
 
 class WinConditionsTest(unittest.TestCase):
     

@@ -15,7 +15,28 @@
 																"b":"('0'*8*6) + '00100100'*2",
 																"n":"('0'*8*6) + '00011000'*2",
 																"r":"('0'*8*6) + '01000010'*2"}]
-					]
+					],
+	"testScan": [
+			["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK b - - 0 1",
+				["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK", "8", "8", "8", "8", "8", "8", "qrbnNBRQ", "krbnNBRK", "b", "-", "-", "0", "1"]],
+			["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK w - - 0 1",
+				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK", "8", "8", "1r6", "8", "8", "8", "q1bnNBRQ", "krbnNBRK", "w", "-", "-", "0", "1"]],
+			["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK b 7 4 1 8",
+				["8/8/1r6/8/8/8/q1bnNBRQ/krbnNBRK", "8", "8", "1r6", "8", "8", "8", "q1bnNBRQ", "krbnNBRK", "b", "7", "4", "1", "8"]]
+		],
+	"testSetField": [
+		["f5", "k", "10000000000000000000000000000000000"],
+		["b2", "Q", "100000000000000"],
+		["d7", "R", "10000000000000000000000000000000000000000000000000000"],
+		["h3", "n", "10000000000000000"]
+	],
+	"testGetField": [
+		["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK b - - 0 1", "g1", "R"],
+		["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK b - - 0 1", "c2", "b"],
+		["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK b - - 0 1", "c1", "b"],
+		["8/7K/8/8/q1k1b1R1/5N2/5B2/2rn1nR1 w - - 8 21", "h7", "K"],
+		["8/7K/8/8/q1k1b1R1/5N2/5B2/2rn1nR1 w - - 8 21", "e4", "b"]
+	]
 },
 "racingKings":{
 "comment1":"format: 0: fen string; 1: move in uci format space separated; 2:expected boolean value as string",
@@ -89,7 +110,12 @@
 
 "jumpStirdy":{
 "commentWinConditions":"pattern: 0: FEN String of board position, 1: player --> 'w' or 'b', 2: expected return value",
-"winConditions":[]	
+"winConditions":[],
+
+"comment1":"format: 0: fen string; 1: first uci move; 2:second uci move; 3:expected boolean value as string",
+"moveCheck":[["1kkkkkk1/1kkkkkk1/8/8/8/8/1KKKKKK1/1KKKKKK1 w - - 0 1", "e1", "e2", "True"]],
+
+"sampleGame":[["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True"], ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBKBB1/1BBB1BB1 b - - 0 2", "e7", "d7", "True"], ["1bbbbbb1/1bbk1bb1/8/8/8/8/1BBBKBB1/1BBB1BB1 w - - 0 3", "e2", "d4", "True"], ["1bbbbbb1/1bbk1bb1/8/8/3B4/8/1BBBBBB1/1BBB1BB1 b - - 1 4", "g7", "f7", "True"], ["1bbbbbb1/1bbk1k2/8/8/3B4/8/1BBBBBB1/1BBB1BB1 w - - 0 5", "g2", "f2", "True"], ["1bbbbbb1/1bbk1k2/8/8/3B4/8/1BBBBK2/1BBB1BB1 b - - 0 6", "f7", "e5", "True"], ["1bbbbbb1/1bbk1b2/8/4b3/3B4/8/1BBBBK2/1BBB1BB1 w - - 1 7", "d4", "e5", "True"], ["1bbbbbb1/1bbk1b2/8/4B3/8/8/1BBBBK2/1BBB1BB1 b - - 0 8", "d7", "e5", "True"], ["1bbbbbb1/1bbb1b2/8/4b3/8/8/1BBBBK2/1BBB1BB1 w - - 0 9", "f2", "e4", "True"], ["1bbbbbb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BB1 b - - 1 10", "c7", "d7", "True"], ["1bbbbbb1/1b1k1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BB1 w - - 0 11", "c2", "d2", "True"], ["1bbbbbb1/1b1k1b2/8/4b3/4B3/8/1B1KBB2/1BBB1BB1 b - - 0 12", "b8", "b7", "True"], ["2bbbbb1/1k1k1b2/8/4b3/4B3/8/1B1KBB2/1BBB1BB1 w - - 0 13", "d2", "e4", "True"], ["2bbbbb1/1k1k1b2/8/4b3/4K3/8/1B1BBB2/1BBB1BB1 b - - 0 14", "f7", "f6", "True"], ["2bbbbb1/1k1k4/5b2/4b3/4K3/8/1B1BBB2/1BBB1BB1 w - - 1 15", "b1", "b2", "True"], ["2bbbbb1/1k1k4/5b2/4b3/4K3/8/1K1BBB2/2BB1BB1 b - - 0 16", "e8", "e7", "True"], ["2bb1bb1/1k1kb3/5b2/4b3/4K3/8/1K1BBB2/2BB1BB1 w - - 1 17", "b2", "c4", "True"], ["2bb1bb1/1k1kb3/5b2/4b3/2B1K3/8/1B1BBB2/2BB1BB1 b - - 2 18", "e7", "e6", "True"], ["2bb1bb1/1k1k4/4bb2/4b3/2B1K3/8/1B1BBB2/2BB1BB1 w - - 3 19", "b2", "b3", "True"], ["2bb1bb1/1k1k4/4bb2/4b3/2B1K3/1B6/3BBB2/2BB1BB1 b - - 4 20", "f6", "f5", "True"], ["2bb1bb1/1k1k4/4b3/4bb2/2B1K3/1B6/3BBB2/2BB1BB1 w - - 5 21", "f2", "f3", "True"], ["2bb1bb1/1k1k4/4b3/4bb2/2B1K3/1B3B2/3BB3/2BB1BB1 b - - 6 22", "g8", "f8", "True"], ["2bb1k2/1k1k4/4b3/2B1bb2/4K3/1B3B2/3BB3/2BB1BB1 b - - 8 24", "c4", "c5", "True"], ["2bb1k2/1k1k4/4b3/2B1bb2/4K3/1B3B2/3BB3/2BB1BB1 b - - 8 24", "d7", "f6", "True"], ["2bb1k2/1k1b4/4bb2/2B1bb2/4K3/1B3B2/3BB3/2BB1BB1 w - - 9 25", "b3", "b4", "True"], ["2bb1k2/1k1b4/4bb2/2B1bb2/1B2K3/5B2/3BB3/2BB1BB1 b - - 10 26", "e6", "f6", "True"], ["2bb1k2/1k1b4/5k2/2B1bb2/1B2K3/5B2/3BB3/2BB1BB1 w - - 0 27", "e4", "f6", "True"], ["2bb1k2/1k1b4/5Q2/2B1bb2/1B6/5B2/3BB3/2BB1BB1 b - - 0 28", "d8", "d7", "True"], ["2b2k2/1k1k4/5Q2/1BB1bb2/8/5B2/3BB3/2BB1BB1 b - - 1 30", "b4", "b5", "True"], ["2b2k2/1k1k4/5Q2/1BB1bb2/8/5B2/3BB3/2BB1BB1 b - - 1 30", "d7", "f6", "True"], ["2b2k2/1k6/5q2/1BB1bb2/8/5B2/3BB3/2BB1BB1 w - - 0 31", "b5", "c5", "True"], ["2b2k2/1k6/5q2/2K1bb2/8/5B2/3BB3/2BB1BB1 b - - 0 32", "b7", "a5", "True"], ["2b2k2/1b6/5q2/b1K1bb2/8/5B2/3BB3/2BB1BB1 w - - 1 33", "c5", "f6", "True"]]
 
 }
 }
