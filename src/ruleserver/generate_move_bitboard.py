@@ -206,7 +206,7 @@ class MoveBoard:
         if bit_position == 0:
             raise SyntaxError("Invalid position!")
             return 0
-        bitboard = self.n(x, (7-y)) # Earlier funtions assumed a mirrored y-achsis
+        bitboard = self.n(x, (7-y)) # Earlier funtions assumed a mirrored y-axsis
 
         temp = np.uint(1)
         while bit_position & temp == 0:

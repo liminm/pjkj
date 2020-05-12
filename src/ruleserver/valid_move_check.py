@@ -126,7 +126,7 @@ class ValidCheckJumpSturdy:
         if bit_pos2 & MoveBoard().generate(fig1, x1, y1, player, "JS") == 0:
             return False    # wrong figure movement
 
-        if ("bB" in fig1):  # check single-figure movement
+        if (fig1 in "bB"):  # check single-figure movement
             return self.check_single(fig1, fig2, x1, y1, x2, y2)
 
         return True
@@ -145,7 +145,7 @@ class ValidCheckJumpSturdy:
         :param y2: destination
         :return: False, if it is another figure or a wrong move was made
         '''
-        if "bB" not in fig1:
+        if fig1 not in "bB":
             return False
 
         x_diff = abs(x1-x2)
@@ -161,9 +161,9 @@ class ValidCheckJumpSturdy:
                 return True
         else:
             # attack move
-            if fig1.islower() and "BKQ" in fig2:    # black player
+            if fig1.islower() and fig2 in "BKQ":    # black player
                 return True
-            elif fig1.isupper() and "bkq" in fig2:  # white player
+            elif fig1.isupper() and fig2 in "bkq":  # white player
                 return True
 
         return False
