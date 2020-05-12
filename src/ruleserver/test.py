@@ -104,7 +104,7 @@ class MoveCheckTest(unittest.TestCase):
     # TODO: has to be implemented
     def testMoveCheckJumpStirdy(self):
         v = ValidCheck()
-        for t in test_data["jumpStirdy"]["moveCheck"]:
+        for t in test_data["jumpStirdy"]["moveCheck"] + test_data["jumpStirdy"]["sampleGame"]:
             board = Board(t[0])
             board_moved = Board(t[0])
             uci = t[1] + "-" + t[2]
