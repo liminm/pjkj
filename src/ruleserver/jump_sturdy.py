@@ -8,7 +8,7 @@ Created on Sun May  3 14:47:31 2020
 import bitboard
 import numpy as np
 from valid_move_check import ValidCheckJumpSturdy
-#from WinConditions import checkwinRK
+from WinConditions import reihencheckjs
 
 
 
@@ -22,49 +22,64 @@ def fenStateCheck(state):
     """
     
 
-    #FEN = state['fen']
-    FEN = state
+    #Set FEN for easier testing
+    if type(state) == str:
+        FEN = state
+    elif type(state) == dict:
+        FEN = state['fen']
         
     #check for valid FEN
     try:
         board = bitboard.Board(FEN)
     except: # syntax error on fen string
-        return False, "SyntaxError", "FEN parsing error, seems to be invalid"
+        return False,None ,"SyntaxError :FEN parsing error, seems to be invalid"
+    
+    #check for invalid figures
+    if "r" in FEN :
+         return False,None,"SyntaxError :FEN parsing error, no rooks allowed in jump sturdy"
+     
+    if "k" in FEN :
+        return False,None ,"SyntaxError :FEN parsing error, no knights allowed in jump sturdy"
+    
+    if "p" in FEN :
+        return False,None ,"SyntaxError :FEN parsing error, no pawns allowed in jump sturdy"
+    
     """          
     #check for timebudget
     if (state['timeBudgets']['playerA'] <= 0) and (state['timeBudgets']['playerB'] <= 0):
-        return False, "timeBudget", "Both players have no time left"
+        return False,timeBudget ,"timeBudget : Both players have no time left"
     
     if (state['timeBudgets']['playerA'] <= 0):
-        return False, "timeBudget", "Player A has no time left"
+        return False,timeBudget ,"timeBudget : Player A has no time left"
     
     if (state['timeBudgets']['playerB'] <= 0):
-        return False, "timeBudget", "Player B has no time left"
+        return False,timeBudget ,"timeBudget : Player B has no time left"
    """ 
-    #TODO mittlere Rückgabe
+   
+    # Check for four corners
     figs = board.board['wh'] | board.board['bl']
-    print('{0:b}'.format(figs).zfill(64))
-    test = '1000000100000000000000000000000000000000000000000000000010000001'
-    print(test)
-    print(str(board))
-    #print('{0:b}'.format(figs & test).zfill(64))
-    if all & test != 0:
-        return False, None, "Figures in the corners"
-    print(str(board))
+    mask = 0b1000000100000000000000000000000000000000000000000000000010000001
+    if (figs & mask) > 0:
+        return False, None, "StateError:Figures in the corners"
 
-    #TODO  check if the count of characters is valid
-    pass
-    """    
-   # check if both kings are at the end of the board
-    mask = np.int64(int("1"*8+"0"*8*7))
+    #check if the count of characters is valid
+    if not len(board.findCharacter("B")) in range(12) or not len(board.findCharacter("b")) in range(12):
+            return False, None,"StateError: Each side has to have 0-12 singles!"
+    
+    if not len(board.findCharacter("K")) in range(6) or not len(board.findCharacter("k")) in range(6):
+            return False,None ,"StateError: Each side has to have 0-6 monocoloured doubles!"
+    
+    if not len(board.findCharacter("Q")) + len(board.findCharacter("q")) in range(12):
+            return False,None ,"StateError: there can only be 0-12 doubles!"
         
-   # check if one of the kings won the game
-    #if (board.board["k"] & board.board["wh"] & mask != 0):
-       return True, "won", "white"
-        
-    if (board.board["k"] & board.board["bl"] & mask != 0):
-       return True, "won", "black"
-    """    
+    if not (len(board.findCharacter("Q")) + len(board.findCharacter("q")) + len(board.findCharacter("B")) + len(board.findCharacter("b")) + len(board.findCharacter("K")) + len(board.findCharacter("k")))in range(24):
+            return False,None ,"StateError : there can only be 0-24 figures on the board at any time!"
+    
+    #check for win
+    if reihencheckjs(board,board.player) :
+        pass
+        #TODO set winner 
+         
     return True, "", ""
 
     
@@ -125,14 +140,20 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:UCI String is invalid!"    
         
-    # for check valid  movement
+    #for check valid  movement
     try:
         if not moveCheck.check(FEN,uci):
             return False, None, "MoveError:Not a valid move!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
+    
+    #check for win
+    if reihencheckjs(board,board.player) :
+        pass
+        #TODO set winner 
+         
         
-    # update hashmap
+    #update hashmap
     if not board_after in hashmap:
         hashmap[board_after] = 1
     else:
@@ -140,7 +161,7 @@ def moveCheck(moveEvent,state):
         if hashmap[board_after] >= 3:
             winner, status = "draw"
             
-     #set the game state and other returns
+    #set the game state and other returns
     if not status is None:
          gameState = {
                  'type': status,
@@ -149,6 +170,3 @@ def moveCheck(moveEvent,state):
          state['winner']  = winner
     
     return valid,gameState,"Alles Super!"
-
-print(fenStateCheck("8/8/8/8/8/8/k7/8 w - - 0 1"))
-           
