@@ -36,19 +36,18 @@ from racing_kings_check_check import checkMate
         try:
             board = bitboard.Board(FEN)
         except error: # syntax error on fen string
-            return False, "SyntaxError", ""
+            return False, None, "SyntaxError:The FEN String is invalid!"
                
          #check for timebudget
         if (state['timeBudgets']['playerA'] <= 0) and (state['timeBudgets']['playerB'] <= 0):
-            return False, "timeBudget", "Both players have no time left"
+            return False, None, "timeBudget:Both players have no time left"
         if (state['timeBudgets']['playerA'] <= 0):
-            return False, "timeBudget", "Player A has no time left"
+            return False, None, "timeBudget:Player A has no time left"
         if (state['timeBudgets']['playerB'] <= 0):
             valid = False
             con = 'B'
             ret = 'timeBudget'
-            return False, "timeBudget", "Player B has no time left"
-        
+            return False, None, "timeBudget:Player B has no time left"
         
         # with given data we cant check for timeout and do we need to do this ? 
         #check for timeout
@@ -61,38 +60,46 @@ from racing_kings_check_check import checkMate
         # check if the count of characters is valid
         #check if there are exactly two kings
         if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
-            return False, "StateError", "There are not exactly 1 king on each side!"
+            return False, None, "StateError:There are not exactly 1 king on each side!"
         
         if not len(board.findCharacter("q")) in range(2) or not len(board.findCharacter("Q")) in range(2):
-            return False, "StateError", "Each side has to have 0-2 queens!"
+            return False, None, "StateError:Each side has to have 0-2 queens!"
         
         if not len(board.findCharacter("n")) in range(2) or not len(board.findCharacter("N")) in range(2):
-            return False, "StateError", "Each side has to have 0-2 knights!"
+            return False, None, "StateError:Each side has to have 0-2 knights!"
         
         if not len(board.findCharacter("b")) in range(2) or not len(board.findCharacter("B")) in range(2):
-            return False, "StateError", "Each side has to have 0-2 bishops!"
+            return False, None, "StateError:Each side has to have 0-2 bishops!"
         
         if not len(board.findCharacter("r")) in range(2) or not len(board.findCharacter("R")) in range(2):
-            return False, "StateError", "Each side has to have 0-2 rooks!"
+            return False, None, "StateError:Each side has to have 0-2 rooks!"
         
         if len(board.findCharacter("p")) !=0 or len(board.findCharacter("P")) != 0:
-            return False, "StateError", "There are no pawns allowed in this game!"
+            return False, None, "StateError:There are no pawns allowed in this game!"
         
         # TODO: check if the king is in chess
         if checkMate(board):
-            return False, "StateError", "King can not be in check!"
+            return False, None, "StateError:King can not be in check!"
+        
+        
+        # 50 moves rule
+        if (board.halfRounds >= 50):
+            return True, {"type":"50Move", "winner":"draw"}, ""
         
         # check if both kings are at the end of the board
         mask = np.int64(int("1"*8+"0"*8*7))
         
         # check if one of the kings won the game
+        if ((board.board["k"] & board.board["wh"] & mask != 0) and (board.board["k"] & board.board["bl"] & mask != 0)):
+            return True {"type":"draw", "winner":"draw"}, ""
+        
         if (board.board["k"] & board.board["wh"] & mask != 0):
-            return True, "won", "white"
+            return True, {"type": "win", "winner":"PlayerA"}, ""
         
         if (board.board["k"] & board.board["bl"] & mask != 0):
-            return True, "won", "black"
+            return True, {"type": "win", "winner":"PlayerB"}, ""
         
-        return True, "", ""
+        return True, None, "Alles Super!"
     
     def moveCheck(self,moveEvent,state):
         v,c,r = fenStateCheck(state)
