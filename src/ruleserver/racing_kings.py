@@ -10,52 +10,7 @@ import numpy as np
 import valid_move_check as vm
 from WinConditions import checkwinRK
 from racing_kings_check_check import checkMate
-#import test
 
-def implication(a,b):
-    return not a or b
-
-class racingkings():
-    """
-    start is the FEN string, if it is none we wil start with the standart board and standart start player (white)
-    Time is the max Time a gameis allowed to run
-    the class has to be called once with the starting configueratioon before setting a turn 
-    
-    """
-
-    def __init__(self, FEN = None, gameTime = None, turnTime = None):
-    
-        self.curPlayer = '' 
-        self.turnTime = 60000
-        self.playerA = ''
-        
-        self.board = bitboard.Board()
-    
-        self.start = "8/8/8/8/8/8/krbnKRBN/qrbnQRBN w - - 0 1"
-        
-        if not(gameTime == None):
-            self.maxTime = gameTime
-        if not(turnTime == None):
-            self.turnTime = turnTime
-       
-        
-            
-        
-    def setup(self, uci , history = None):
-        """
-        setups the Last and current boardstate, current board state is saved in self.board last board is save in self.lastBoard
-        we also set current player
-        """
-        
-        try:
-            self.lastBoard = bitboard.Board(history)
-            self.curPlayer = self.lastBoard.palyer
-        except:
-            return 'F'
-        try:
-            self.board.moveUCI(uci[:2],uci[2:4])
-        except:
-            return 'U'
 
     """
     things to check:
@@ -124,7 +79,8 @@ class racingkings():
             return False, "StateError", "There are no pawns allowed in this game!"
         
         # TODO: check if the king is in chess
-        
+        if checkMate(board):
+            return False, "StateError", "King can not be in check!"
         
         # check if both kings are at the end of the board
         mask = np.int64(int("1"*8+"0"*8*7))
@@ -264,31 +220,5 @@ class racingkings():
             moveEvent['details']['postFen'],state['FEN'] = repr(board_after)
             state['winner']  = winner
         
-        
-        
         return True,gameState,"Alles Super!"
-           
-          
-    def validUCI(self,uci):
-        ret = True
-        if len(uci) == 4:
-            for i in range(0,4):
-                if (i== 0 or i == 2) and not(uci[i] in 'abcdefgh'):
-                    ret = False
-                    break
-                if (i== 1 or i == 3) and not(uci[i] in '12345678'):
-                    ret = False
-                    break
-        else :
-            ret = False
-        return ret
 
-           
-        
-    
-
-
-#TODO checkmate einbindung
-#TODO exceptions bitbaord
-#TODO check if valid move checks for own figure
-#ToDo check if valid moves checks for any figure
