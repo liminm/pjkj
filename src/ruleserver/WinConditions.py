@@ -8,27 +8,30 @@ Racing Kings
 input board 
 output true false
 '''
+import numpy as np
 from bitboard import Board
 
 def reihencheckjs(board,player):
-    b1='{0:b}'.format((board.board["wh"])).zfill(64)
-    b2='{0:b}'.format((board.board["bl"])).zfill(64)
+    mask1=0111111000000000000000000000000000000000000000000000000000000000
+    mask2 = 0000000000000000000000000000000000000000000000000000000001111110
     if  player == "wh":
-        for i in range (56, 62):
-            if b1(i) != 0:
-                return True
+        if (board.board["wh"] & mask1) > 0:
+            return True
         else:
-            for i in range(1, 7):
-                if b2(i) !=0:
+            for i in
+                if (board.board["bl"] & mask2) >0:
                     return True
     return False
-        
+
+
+
+
 def reihencheckrk(board):
-    b = '{0:b}'.format((board.board["k"] & board.board["wh"]) | (board.board["k"] & board.board["bl"])).zfill(64)
-    for i in range(55, 63):
-        if b[i] != 0:
+    mask=1111111100000000000000000000000000000000000000000000000000000000
+    if (board.board["k"] & mask) > 0:
             return True
     return False
+
 
 #to do Abklären wie ich an Daten komme vielleicht eigene klasse erstellen
 #to do abklären wo mein Code eingebaut wird
