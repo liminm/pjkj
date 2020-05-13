@@ -2,8 +2,8 @@
 Jumpsturdy
 input:board ,player
 player "w" oder "b"
-output true => Gewinnzustand
-        false => kein Gewinnzustand spiel geht weiter
+output true
+        false
 Racing Kings
 input board 
 output true false
