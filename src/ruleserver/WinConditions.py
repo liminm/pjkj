@@ -11,19 +11,21 @@ output true false
 import numpy as np
 from bitboard import Board
 
-def reihencheckjs(board,player):
-    mask1=0111111000000000000000000000000000000000000000000000000000000000
-    mask2 = 0000000000000000000000000000000000000000000000000000000001111110
-    if  player == "wh":
+
+
+def reihencheckjs(board , player=None):
+    mask1 = np.uint64(9079256848778919936)
+    mask2 = np.uint64(126)
+    if player==None:
+        player = board.player
+    if player == 'w':
         if (board.board["wh"] & mask1) > 0:
             return True
-        else:
-            for i in
-                if (board.board["bl"] & mask2) >0:
-                    return True
+    else:
+        if (board.board["bl"] & mask2) > 0:
+            return True
+
     return False
-
-
 
 
 def reihencheckrk(board):

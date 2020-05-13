@@ -5,8 +5,8 @@ import numpy as np
 # test imports
 from bitboard import Board
 from valid_move_check import ValidCheck
-#from WinConditions import reihencheckrk
-#from WinConditions import reihencheckjs
+from WinConditions import reihencheckrk
+from WinConditions import reihencheckjs
 from racing_kings_check_check import KingIsAttackedCheck
 
 global test_data
@@ -129,10 +129,10 @@ class WinConditionsTest(unittest.TestCase):
         """
         for t in test_data["jumpStirdy"]["winConditions"]:
             board = Board(t[0])
-            player = t[1] # w | b
-            expected = eval(t[2])
+            player = None # w | b
+            expected = eval(t[1])
             
-            self.assertEqual(reihencheckjs(board, player), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[2])
+            self.assertEqual(reihencheckjs(board, player), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
 
 class checkTest(unittest.TestCase):
     def testCheck(self):

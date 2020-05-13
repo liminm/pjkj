@@ -110,7 +110,21 @@
 
 "jumpStirdy":{
 "commentWinConditions":"pattern: 0: FEN String of board position, 1: player --> 'w' or 'b', 2: expected return value",
-"winConditions":[],
+"winConditions":[["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "False"],
+	["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBKBB1/1BBB1BB1 b - - 0 2", "False"],
+	["1bbbbbb1/1bbk1bb1/8/8/8/8/1BBBKBB1/1BBB1BB1 w - - 0 3", "False"],
+	["1bbbbbb1/1bbk1bb1/8/8/3B4/8/1BBBBBB1/1BBB1BB1 b - - 1 4", "False"],
+	["1bbbbbb1/1bbk1k2/8/8/3B4/8/1BBBBBB1/1BBB1BB1 w - - 0 5", "False"],
+	["1bbbbbb1/1bbk1k2/8/8/3B4/8/1BBBBK2/1BBB1BB1 b - - 0 6", "False"],
+	["1bbbbbb1/1bbk1b2/8/4b3/3B4/8/1BBBBK2/1BBB1BB1 w - - 1 7", "False"],
+	["1bbbbbb1/1bbk1b2/8/4B3/8/8/1BBBBK2/1BBB1BB1 b - - 0 8",  "False"],
+	["Bbbbbbb1/1bbb1b2/8/4b3/8/8/1BBBBK2/1BBB1BB1 w - - 0 9", "False"],
+	["1bbbbbb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BB1 b - - 1 10", "False"],
+	["1bb1bbb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1Bb1 b - - 1 10", "True"],
+	["1bbbbKb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BB1 w - - 1 10", "True"],
+	["Kbbbbbb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BB1 w - - 1 10", "False"],
+	["1bb1bbb1/1bbb1b2/8/4b3/4B3/8/1BBBBB2/1BBB1BBb b - - 1 10", "False"]
+	],
 
 "comment1":"format: 0: fen string; 1: first uci move; 2:second uci move; 3:expected boolean value as string",
 "moveCheck":[
