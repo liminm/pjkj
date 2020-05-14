@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 
 from __main__ import app, storage
+import rules
 import util
 
 
@@ -65,8 +66,8 @@ def post_event(id):
 		else:
 			event['details']['time'] = 0
 
-		# TODO: Check move with ruleserver
-		#valid, gameEnd, reason = ruleServer.moveCheck(event, game['state'])
+		# Check move with ruleserver
+		valid, gameEnd, reason = ruleServer.moveCheck(game['type'], event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
