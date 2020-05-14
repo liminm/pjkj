@@ -25,6 +25,7 @@ def post_game():
 		},
 		'boardHashMap': {}
 	}
+	game['settings']['timeout'] = int(game['settings']['timeout'])
 	game['events'] = []
 
 	# TODO: Check initial state with Ruleserver

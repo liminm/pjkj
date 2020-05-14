@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 
 from __main__ import app, storage
+import timer
 import util
 
 
@@ -33,10 +34,8 @@ def post_event(id):
 
 	# Get player who did move (playerA/playerB)
 	# (by getting the key corresponding to the ID value)
-	# TODO: Prohibit same player?
-	event['player'] = list(game['players'].keys())[
-		list(game['players'].values()).index(playerID)
-	]
+	player = util.playerFromID(game['players'], playerID)
+	event['player'] = player
 
 	# Add timestamp
 	now = datetime.utcnow()
@@ -45,48 +44,43 @@ def post_event(id):
 	# Initialize details dict if it doesn't exist yet
 	event.setdefault('details', {})
 
-	# We assume events to be generally valid, checks follow later
+	# We assume this is a valid event, checks follow later
 	valid = True
 	gameEnd = None
 	reason = ''
 
 	if event['type'] == 'surrender':
-		valid = False
 		gameEnd = {
 			'type': 'surrender',
-			'winner': util.otherPlayer(event['player'])
+			'winner': util.opponent(player)
 		}
 
 	elif event['type'] == 'move':
-		if len(game['events']) > 0:
-			lastTime = datetime.fromisoformat(game['events'][-1]['timestamp'])
-			timeDiff = (now - lastTime)
-			event['details']['time'] = int(timeDiff.total_seconds() * 1000)
-		else:
-			event['details']['time'] = 0
-
 		# TODO: Check move with ruleserver
 		#valid, gameEnd, reason = ruleServer.moveCheck(event, game['state'])
+		print('NYI')
 
 	else:
 		return 'Error: unknown event type', 400
 
+	if gameEnd:
+		game['state']['state'] = 'completed'
+		game['state']['winner'] = gameEnd['winner']
+		event['type'] = 'gameEnd'
+		event['details'] = gameEnd
 
 	if valid:
-		game['state']['state'] = 'running' # TODO: RuleServer?
+		duration = timer.stopWatcher(id)
+		event['details']['time'] = duration
+		game['state']['timeBudgets'][player] -= duration
 		game['events'].append(event)
-		if 'time' in event['details']:
-			game['state']['timeBudgets'][event['player']] -= event['details']['time']
 
-	if gameEnd:
-		game['state']['state'] = 'completed' # TODO: RuleServer?
-		game['state']['winner'] = gameEnd['winner']
-		game['events'].append({
-			'type': 'gameEnd',
-			'player': event['player'],
-			'timestamp': event['timestamp'],
-			'details': gameEnd
-		})
+		if not gameEnd:
+			game['state']['state'] = 'running'
+			opponent = util.opponent(player)
+			timer.startWatcher(id, opponent,
+				game['settings']['timeout'],
+				game['state']['timeBudgets'][opponent])
 
 	# DEBUG
 	util.showDict(storage)
