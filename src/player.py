@@ -51,6 +51,11 @@ def get_players():
 	for id in players:
 		del players[id]['token']
 
+	start = request.args.get('start', default = 0, type = int)
+	count = request.args.get('count', default = None, type = int)
+
+	players = util.paginate(players, start, count)
+
 	return json.dumps(players, indent=4)
 
 

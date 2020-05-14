@@ -58,6 +58,13 @@ def get_games():
 		}
 		del games[id]['players']
 
+	start = request.args.get('start', default = 0, type = int)
+	count = request.args.get('count', default = None, type = int)
+	state = request.args.get('state', default = '*', type = str)
+
+	games = util.paginate(games, start, count)
+	games = util.filterState(games, state)
+
 	return json.dumps(games, indent=4)
 
 

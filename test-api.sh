@@ -2,6 +2,10 @@
 
 HOST=localhost:5000
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CREATING GROUP'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
 TEAMINFO=`echo '
 {
 	"name":"Team Rocket",
@@ -20,6 +24,9 @@ http -v ${HOST}/teams
 http -v ${HOST}/team/${TEAMID}
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CREATING PLAYER 1'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
 PLAYER1INFO=`echo '
@@ -38,6 +45,9 @@ http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER1ID}
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CREATING PLAYER 2'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
 PLAYER2INFO=`echo '
@@ -56,6 +66,18 @@ http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER2ID}
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CHECKING PAGINATION'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+
+http -v "${HOST}/players?start=0&count=1"
+http -v "${HOST}/players?start=1&count=2"
+
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CREATING GAME'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
 GAMEINFO=`echo '
@@ -81,10 +103,22 @@ echo ${GAMEID}
 http -v ${HOST}/games
 http -v ${HOST}/game/${GAMEID}
 
-http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CHECKING FILTER'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
+
+http -v ${HOST}/games?state=planned
+http -v ${HOST}/games?state=running
+http -v ${HOST}/games?state=completed
+
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'SENDING EVENT 1'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
 EV1INFO=`echo '
@@ -98,10 +132,22 @@ EV1INFO=`echo '
 
 echo ${EV1INFO}
 
-http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CHECKING FILTER'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
+
+http -v ${HOST}/games?state=planned
+http -v ${HOST}/games?state=running
+http -v ${HOST}/games?state=completed
+
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'SENDING EVENT 2'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
 EV2INFO=`echo '
@@ -116,15 +162,27 @@ EV2INFO=`echo '
 echo ${EV2INFO}
 
 
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'SENDING EVENT 3'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
 
+EV3INFO=`echo '
+{
+	"type": "surrender"
+}
+' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
 
-#EV3INFO=`echo '
-#{
-#	"type": "surrender"
-#}
-#' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
-#
-#echo ${EV3INFO}
-#
-#http -vS --timeout=2 ${HOST}/game/${GAMEID}/events
+echo ${EV3INFO}
+
+http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
+
+
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+echo 'CHECKING FILTER'
+printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+
+http -v ${HOST}/games?state=planned
+http -v ${HOST}/games?state=running
+http -v ${HOST}/games?state=completed
