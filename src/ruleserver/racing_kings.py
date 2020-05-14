@@ -206,7 +206,6 @@ from racing_kings_check_check import checkMate
         
         # everything is good
             
-        # TODO: Wenn weiß gewinnt, hat schwarz noch ein zug
         if checkwinRK(board_after) and status is None:
             winner = if board_before.player=="w" : "playerA" else "playerB" # TODO: ask if playera is white or black
             status = "won"

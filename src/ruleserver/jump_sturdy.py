@@ -9,7 +9,7 @@ import bitboard
 import numpy as np
 from valid_move_check import ValidCheckJumpSturdy
 from WinConditions import reihencheckjs
-
+import re
 
 
 
@@ -133,12 +133,6 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
          
-    #Try the move
-    uci = event["details"]['uci']
-    try:
-        board_after.movePlayer(uci)
-    except:
-        return False, None, "SyntaxError:UCI String is invalid!"    
         
     #for check valid  movement
     try:
@@ -146,6 +140,14 @@ def moveCheck(moveEvent,state):
             return False, None, "MoveError:Not a valid move!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
+         
+    #Try the move
+    uci = event["details"]['uci']
+    try:
+        board_after.movePlayer(uci)
+    except:
+        return False, None, "SyntaxError:UCI String is invalid!"
+        
     
     #check for win
     if reihencheckjs(board,board.player) :
@@ -170,3 +172,56 @@ def moveCheck(moveEvent,state):
          state['winner']  = winner
     
     return valid,gameState,"Alles Super!"
+    
+def movePlayerJS(self, start, end=None, logging=False):
+    if end is None:
+        m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+        if m is None:
+            raise SyntaxError("Syntax Error in UCI String!")
+        
+        start = m.group(1)
+        end = m.group(2)
+        
+    if logging:
+        move = [repr(self), start, end, "True"]
+        
+    # halbzüge
+    newRound = self.halfRounds
+    startField = self.getField(start)
+    endField = self.getField(end)
+    startFieldOwner = self.getOwner(start)
+    endFieldOwner = self.getOwner(end)
+    
+    # handling end field
+    if startFieldOwner == endFieldOwner and endField.lower() == "b": # jumping on own character
+        self.setField(end, "k" if startField.lower() == startField else "K")
+    elif endField is None: # jumping on empty field
+        self.setField(end, "b" if startField.lower() == startField else "B")
+    elif startFieldOwner != endFieldOwner: # attacking enemy
+        newRound = -1
+        if endField.lower() == "q":
+            self.setField(end, "k" if startField.lower() == startField else "K")
+        elif endField.lower() == "k":
+            self.setField(end, "q" if startField.lower() == startField else "Q")
+        else:
+            self.setField(end, "b" if startField.lower() == startField else "B")
+    else:
+        raise ValueError("")
+    
+    # handling start field
+    if startField.lower() == "b":
+        self.removeField(start)
+    elif startField.lower() == "q":
+        self.setField(start, "B" if startField.lower() == startField else "b")
+    elif startField.lower() == "k":
+        self.setField(start, "b" if startField.lower() == startField else "B")
+    
+    self.roundCount+=1
+    if self.player == "w":
+        self.player = "b"
+    else:
+        self.player = "w"
+            
+    if logging:
+        self.log.append(move)
+    self.halfRounds = newRound+1

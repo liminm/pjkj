@@ -156,7 +156,7 @@ class Board:
         this is for debugging
         """
         if end is None:
-            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start.lower())
             if m is None:
                 raise SyntaxError("Syntax Error in UCI String!")
             
@@ -189,7 +189,7 @@ class Board:
     
     def moveUCI(self,start,end=None):
         if end is None:
-            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+            m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start.lower())
             if m is None:
                 raise SyntaxError("Syntax Error in UCI String!")
             
@@ -205,7 +205,17 @@ class Board:
         self.setField(end, character)
         self.removeField(start)
     
-    def setField(self, position, character, logging=False):
+    def getOwner(self, position):
+        field = self.getField(position)
+        if field is None:
+            return None
+            
+        if field.lower() == field:
+            return "bl"
+        else:
+            return "wh"
+    
+    def setField(self, position, character):
         """
     
         this functions sets a field on the bitboard. You have to give a location, for example 'f2' and a character in fen style, like 'Q' or 'q', for white and black queens.

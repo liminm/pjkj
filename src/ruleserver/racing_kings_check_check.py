@@ -164,7 +164,7 @@ class KingIsAttackedCheck():
             return False
 
     def checkmate(self, q, k, b, n, r, wh, bl, player):
-
+        pass
 
     def count_Set_Bits(self, binary):
 
