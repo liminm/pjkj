@@ -26,7 +26,7 @@ def post_event(id):
 
 
 	if game['state']['state'] == 'completed':
-		return 'Error: game already ended', 400
+		return 'Error: game already ended', 409
 
 	event = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
