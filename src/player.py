@@ -6,6 +6,26 @@ from __main__ import app, storage
 import util
 
 
+@app.route('/playerlogin', methods = ['GET'])
+def get_playerlogin():
+
+	authHeader = request.headers.get('Authorization')
+
+	if not authHeader:
+		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
+
+	authToken = authHeader.split(' ')[1]
+	playerID = util.checkAuth(storage['players'], authToken)
+
+	if not playerID:
+		return 'Error: invalid authorization', 403
+
+	return json.dumps({
+		'id': playerID,
+		'valid': True
+	}, indent=4), 200
+
+
 @app.route('/players', methods=['POST'])
 def post_player():
 
