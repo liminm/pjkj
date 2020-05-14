@@ -138,16 +138,17 @@ class MoveBoard:
                     bitboard |= self.shift(bit_position, 2*E, 1*S)
                 if y<=6:
                     bitboard |= self.shift(bit_position, 2*E, 1*N)
-        if x<=5:
-            if y>=1:
-                bitboard |= self.shift(bit_position, 2*W, 1*S)
-            if y<=6:
-                bitboard |= self.shift(bit_position, 2*W, 1*N)
-            if x<=6:
-                if y>=2:
-                    bitboard |= self.shift(bit_position, 1*W, 2*S)
-                if y<=5:
-                    bitboard |= self.shift(bit_position, 1*W, 2*N)
+
+        if x<=6:
+            if y >= 2:
+                bitboard |= self.shift(bit_position, 1 * W, 2 * S)
+            if y <= 5:
+                bitboard |= self.shift(bit_position, 1 * W, 2 * N)
+            if x<=5:
+                if y>=1:
+                    bitboard |= self.shift(bit_position, 2 * W, 1 * S)
+                if y<=6:
+                    bitboard |= self.shift(bit_position, 2 * W, 1 * N)
 
         return bitboard
 
@@ -231,7 +232,7 @@ class MoveBoard:
 
 # Only called if you directly execute this code
 if __name__ == "__main__":
-    out = MoveBoard().generate('b', 5, 7, 'b', "JS")
+    out = MoveBoard().generate('k', 6, 6, 'b', "JS")
     #out = MoveBoard().generate('q', 0, 0)
     #print(out)
     Board().printBoard(out)
