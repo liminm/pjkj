@@ -3,6 +3,7 @@ import json
 from copy import deepcopy
 
 from __main__ import app, storage
+import rules
 import util
 
 
@@ -27,10 +28,12 @@ def post_game():
 	}
 	game['events'] = []
 
-	# TODO: Check initial state with Ruleserver
-	#valid, reason = ruleServer.stateCheck(game['state'])
-	#if not valid:
-	#	return json.dumps(reason), 400
+	# Check initial state with Ruleserver
+	valid, gameEnd, reason = rules.stateCheck(game['type'], game['state'])
+	if not valid:
+		return 'Error: Game state invalid\nReason:' + reason, 400
+	if gameEnd:
+		return 'Error: Game already ended\ngameEnd:' + gameEnd, 409
 
 	id = util.id()
 
