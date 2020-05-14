@@ -48,15 +48,17 @@ def get_games():
 
 	# Remove stuff not needed in listing and add player names
 	for id in games:
-		del games[id]['settings']
-		del games[id]['events']
-		del games[id]['state']['fen']
-		del games[id]['state']['timeBudgets']
-		games[id]['playerNames'] = {
-			'playerNameA': storage['players'][games[id]['players']['playerA']]['name'],
-			'playerNameB': storage['players'][games[id]['players']['playerB']]['name']
+		game = games[id]
+		del game['settings']
+		del game['events']
+		del game['state']['fen']
+		del game['state']['timeBudgets']
+		del game['state']['boardHashMap']
+		game['playerNames'] = {
+			'playerNameA': storage['players'][game['players']['playerA']]['name'],
+			'playerNameB': storage['players'][game['players']['playerB']]['name']
 		}
-		del games[id]['players']
+		del game['players']
 
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
@@ -77,5 +79,20 @@ def get_game(id):
 	game = deepcopy(storage['games'][id])
 
 	del game['events']
+	del game['state']['boardHashMap']
+
+	playerNameA = storage['players'][game['players']['playerA']]['name']
+	playerNameB = storage['players'][game['players']['playerB']]['name']
+
+	game['players'] = {
+		'playerA': {
+			'id': game['players']['playerA'],
+			'name': playerNameA
+		},
+		'playerB': {
+			'id': game['players']['playerB'],
+			'name': playerNameB
+		}
+	}
 
 	return json.dumps(game, indent=4)
