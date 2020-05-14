@@ -33,6 +33,7 @@ def post_event(id):
 
 	# Get player who did move (playerA/playerB)
 	# (by getting the key corresponding to the ID value)
+	# TODO: Prohibit same player?
 	event['player'] = list(game['players'].keys())[
 		list(game['players'].values()).index(playerID)
 	]
@@ -49,14 +50,12 @@ def post_event(id):
 	gameEnd = None
 	reason = ''
 
-	# This is kinda hacky, i wish we could adapt the API to the DB here
 	if event['type'] == 'surrender':
-		event['details']['type'] = 'surrender'
-		event['details']['winner'] = util.otherPlayer(event['player'])
-		event['type'] = 'gameEnd'
-		game['state']['state'] = 'completed'
-		game['state']['winner'] = event['details']['winner']
-
+		valid = False
+		gameEnd = {
+			'type': 'surrender',
+			'winner': util.otherPlayer(event['player'])
+		}
 
 	elif event['type'] == 'move':
 		if len(game['events']) > 0:
@@ -64,7 +63,6 @@ def post_event(id):
 			timeDiff = (now - lastTime)
 			event['details']['time'] = int(timeDiff.total_seconds() * 1000)
 		else:
-			# TODO: Maybe implement a 'start' signal from which we count
 			event['details']['time'] = 0
 
 		# TODO: Check move with ruleserver
@@ -73,19 +71,22 @@ def post_event(id):
 	else:
 		return 'Error: unknown event type', 400
 
+
 	if valid:
+		game['state']['state'] = 'running' # TODO: RuleServer?
 		game['events'].append(event)
 		if 'time' in event['details']:
 			game['state']['timeBudgets'][event['player']] -= event['details']['time']
 
 	if gameEnd:
+		game['state']['state'] = 'completed' # TODO: RuleServer?
+		game['state']['winner'] = gameEnd['winner']
 		game['events'].append({
 			'type': 'gameEnd',
 			'player': event['player'],
 			'timestamp': event['timestamp'],
 			'details': gameEnd
 		})
-		game['state']['state'] = 'completed'
 
 	# DEBUG
 	util.showDict(storage)

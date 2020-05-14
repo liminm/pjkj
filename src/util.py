@@ -32,3 +32,18 @@ def otherPlayer(player):
 		return 'playerA'
 
 	return None
+
+def paginate(listDict, start, count):
+	dictList = list(listDict.items())
+	end = start + count if count else None
+	truncList = dictList[start:end]
+	return dict(truncList)
+
+def filterState(listDict, state):
+	if (state == '*'):
+		return listDict
+
+	dictList = list(listDict.items())
+	filteredList = list(
+		filter(lambda el: el[1]['state']['state'] == state, dictList))
+	return dict(filteredList)

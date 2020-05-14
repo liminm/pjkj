@@ -57,6 +57,11 @@ def get_teams():
 	for id in teams:
 		del teams[id]['token']
 
+	start = request.args.get('start', default = 0, type = int)
+	count = request.args.get('count', default = None, type = int)
+
+	teams = util.paginate(teams, start, count)
+
 	return json.dumps(teams, indent=4)
 
 
