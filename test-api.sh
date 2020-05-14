@@ -161,6 +161,8 @@ EV2INFO=`echo '
 
 echo ${EV2INFO}
 
+#http -vS ${HOST}/game/${GAMEID}/events
+#exit 0
 
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 echo 'SENDING EVENT 3'

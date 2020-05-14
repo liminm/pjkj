@@ -25,13 +25,16 @@ def checkAuth(dict, token):
 
 	return None
 
-def otherPlayer(player):
+def opponent(player):
 	if player == 'playerA':
 		return 'playerB'
 	elif player == 'playerB':
 		return 'playerA'
 
 	return None
+
+def playerFromID(players, id):
+	return list(players.keys())[ list(players.values()).index(id) ]
 
 def paginate(listDict, start, count):
 	dictList = list(listDict.items())
