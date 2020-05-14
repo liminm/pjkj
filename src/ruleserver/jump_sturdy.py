@@ -11,7 +11,7 @@ from valid_move_check import ValidCheckJumpSturdy
 from WinConditions import reihencheckjs
 import re
 
-
+INITIAL_FEN = "1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1"
 
 def fenStateCheck(state):
     """ 
@@ -81,13 +81,12 @@ def fenStateCheck(state):
         #TODO set winner 
          
     return True, "", ""
-
     
 def moveCheck(moveEvent,state):
     #set beginning variables
     hashmap = state["boardHashMap"]
     event = moveEvent
-    player = moveEvent[0]
+    player = moveEvent["player"]
     status,winner = None
     valid = True
     gameState = None
@@ -105,26 +104,6 @@ def moveCheck(moveEvent,state):
         FEN = state
     elif type(state) == dict:
         FEN = state['fen']
-            
-    #check for timebudget
-    if (state['timeBudgets'][player]-moveEvent[1][1] ) <= 0:
-        valid = False
-        status = 'timeBudget'
-        if player == 'playerA':
-            winner = 'playerB'
-        else:
-            winner = 'playerA'
-    else:
-        state['timeBudgets'][player] = state['timeBudgets'][player]-moveEvent[1][1]
-        
-   #check for timeout
-    if(60000 - state['timeBudgets'][player]) <= 0:
-       valid = False
-       status = 'timeOut'
-       if player == 'playerA':
-           winner = 'playerB'
-    else:
-            winner = 'playerA'
                 
     #create Boards
     try:
@@ -133,6 +112,7 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
          
+    uci = event["details"]['move']
         
     #for check valid  movement
     try:
@@ -142,9 +122,8 @@ def moveCheck(moveEvent,state):
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
          
     #Try the move
-    uci = event["details"]['uci']
     try:
-        board_after.movePlayer(uci)
+        movePlayerJS(board, uci)
     except:
         return False, None, "SyntaxError:UCI String is invalid!"
         

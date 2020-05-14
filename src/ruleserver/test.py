@@ -9,6 +9,7 @@ from WinConditions import reihencheckrk
 from WinConditions import reihencheckjs
 from racing_kings_check_check import KingIsAttackedCheck
 from jump_sturdy import movePlayerJS
+from jump_sturdy import fenStateCheck
 
 global test_data
 
@@ -83,8 +84,8 @@ class FenParserTest(unittest.TestCase):
         pass
     
     def testMovePlayerJSValidness(self):
-        for i in range(len(test_data["jumpStirdy"]["sampleGame"])-1):
-            t = test_data["jumpStirdy"]["sampleGame"][i]
+        for i in range(len(test_data["jumpStirdy"]["sampleGames"][0])-1):
+            t = test_data["jumpStirdy"]["sampleGames"][0][i]
             after = test_data["jumpStirdy"]["sampleGame"][i+1]
             board = Board(t[0])
             board_moved = Board(after[0])
@@ -122,7 +123,7 @@ class MoveCheckTest(unittest.TestCase):
     # TODO: has to be implemented
     def testMoveCheckJumpStirdy(self):
         v = ValidCheck()
-        for t in test_data["jumpStirdy"]["moveCheck"] + test_data["jumpStirdy"]["sampleGame"]:
+        for t in test_data["jumpStirdy"]["moveCheck"] + test_data["jumpStirdy"]["sampleGames"][0]:
             board = Board(t[0])
             board_moved = Board(t[0])
             uci = t[1] + t[2]
@@ -169,16 +170,62 @@ class checkTest(unittest.TestCase):
 # TODO: has to be implemented
 class mainFunctionTest(unittest.TestCase):
     def testJumpStirdyStateCheck(self):
-        pass
+        # TODO: create sample games
+        for game in test_data["jumpStirdy"]["sampleGames"]:
+            for t in game:
+                board = Board(t[0])
+                state = {"fen":t[0]}
+                expected = (eval(t[3]), eval(t[4]))
+                
+                r = fenStateCheck(state)
+                r = (r[0], r[1])
+                
+                self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
         
     def testJumpStirdyMoveCheck(self):
-        pass
-        
-    def testRacingKingsMoveCheck(self):
-        pass
+        for game in test_data["jumpStirdy"]["sampleGames"]:
+            for t in game:
+                board = Board(t[0])
+                state = {"fen":t[0], "boardHashMap":{}}
+                moveEvent = {"type":"move",
+                            "player":"playerA" if b.player == "wh" else "playerB",
+                            "details": {"move":t[1]+t[2]}}
+                
+                expected = (eval(t[3]), eval(t[4]))
+                
+                r = fenStateCheck(state)
+                r = (r[0], r[1])
+                
+                self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
 
     def testRacingKingsStateCheck(self):
-        pass
+        # TODO: create sample games
+        for game in test_data["racingKings"]["sampleGames"]:
+            for t in game:
+                board = Board(t[0])
+                state = {"fen":t[0]}
+                expected = (eval(t[3]), eval(t[4]))
+                
+                r = fenStateCheck(state)
+                r = (r[0], r[1])
+                
+                self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
+    
+    def testRacingKingsMoveCheck(self):
+        for game in test_data["racingKings"]["sampleGames"]:
+            for t in game:
+                board = Board(t[0])
+                state = {"fen":t[0], "boardHashMap":{}}
+                moveEvent = {"type":"move",
+                            "player":"playerA" if b.player == "wh" else "playerB",
+                            "details": {"move":t[1]+t[2]}}
+                
+                expected = (eval(t[3]), eval(t[4]))
+                
+                r = fenStateCheck(state)
+                r = (r[0], r[1])
+                
+                self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
 
 
 if __name__ == '__main__':

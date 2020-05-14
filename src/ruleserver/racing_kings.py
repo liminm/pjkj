@@ -11,6 +11,8 @@ import valid_move_check as vm
 from WinConditions import reihencheckrk
 from racing_kings_check_check import checkMate
 
+INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
+
 def fenStateCheck(self,state):
     """
     This will be only called at the beginning of a game and report if the enterd FEN string is valid
@@ -29,14 +31,6 @@ def fenStateCheck(self,state):
         board = bitboard.Board(FEN)
     except error: # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
-
-    #check for timebudget
-    if (state['timeBudgets']['playerA'] <= 0) and (state['timeBudgets']['playerB'] <= 0):
-        return False, None, "timeBudget:Both players have no time left"
-    if (state['timeBudgets']['playerA'] <= 0):
-        return False, None, "timeBudget:Player A has no time left"
-    if (state['timeBudgets']['playerB'] <= 0):
-        return False, None, "timeBudget:Player B has no time left"
 
     # check if the count of characters is valid
     if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
@@ -88,7 +82,7 @@ def moveCheck(self,moveEvent,state):
     status,winner = None
     valid = True
     gameState = None
-    player = moveEvent[0]
+    player = moveEvent["player"]
     hashmap = state["boardHashMap"]
     event = moveEvent
 
@@ -106,87 +100,58 @@ def moveCheck(self,moveEvent,state):
     if not v:
         return False, None,r
 
-    #TODO state ?
-    #check for timebudget
-    if (state['timeBudgets'][player]-moveEvent[1][1] ) <= 0:
-        valid = False
-        state = 'timeBudget'
-        if player == 'playerA':
-            winner = 'playerB'
-        else:
-            winner = 'playerA'
+
+    #try the move
+    uci = event["details"]['move']
+    try:
+        board_after.movePlayer(uci)
+    except:
+        return False, None, "SyntaxError:UCI String is invalid!"
+
+
+    # for check valid  movement
+    try:
+        if not vmc.check(repr(self.lastBoard),repr(self.board)):
+            return False, None, "MoveError:Not a valid move!"
+    except:
+        return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
+
+    #check for checkmate
+    king = self.curBoard[self.curPlayer]&self.board['k']
+    moves = wc.calc_movesboard(wc.set_occupied_pos,)
+    if checkMate(board_after):
+        return False, None, "MoveError:The king is checked!"
+
+    # update hashmap
+    if not board_after in hashmap:
+        hashmap[board_after] = 1
     else:
-        state['timeBudgets'][player] = state['timeBudgets'][player]-moveEvent[1][1]
+        hashmap[board_after] +=1
 
-    #check for timeout
-    if (self.turnTime - state['timeBudgets'][player]) <= 0:
-        valid = False
-        r = 'O'
-        state = 'timeOut'
-        if player == 'playerA':
-            winner = 'playerB'
-        else:
-            winner = 'playerA'
+    if hashmap[board_after] >= 3:
+        winner, status = "draw"
 
-        #create boards
-        try:
-            board_before = bitboard.Board(FEN)
-            board_after = bitboard.Board(FEN)
-        except:
-            return False, None, "SyntaxError:FEN String is invalid!"
-
-
-        #try the move
-        uci = event["details"]['uci']
-        try:
-            board_after.movePlayer(uci)
-        except:
-            return False, None, "SyntaxError:UCI String is invalid!"
-
-
-        # for check valid  movement
-        try:
-            if not vmc.check(repr(self.lastBoard),repr(self.board)):
-                return False, None, "MoveError:Not a valid move!"
-        except:
-            return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
-
-        #check for checkmate
-        king = self.curBoard[self.curPlayer]&self.board['k']
-        moves = wc.calc_movesboard(wc.set_occupied_pos,)
-        if checkMate(board_after):
-            return False, None, "MoveError:The king is checked!"
-
-        # update hashmap
-        if not board_after in hashmap:
-            hashmap[board_after] = 1
-        else:
-            hashmap[board_after] +=1
-
-        if hashmap[board_after] >= 3:
-            winner, status = "draw"
-
-        # everything is good
+    # everything is good
             
-        if checkwinRK(board_after) and status is None:
-            winner = if board_before.player=="w" : "playerA" else "playerB" # TODO: ask if playera is white or black
+    if checkwinRK(board_after) and status is None:
+        winner = if board_before.player=="w" : "playerA" else "playerB" # TODO: ask if playerA is white or black
+        status = "won"
+
+    # checks if the white has already won before
+    if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "won"]:
+        if status == "won":
+            winner, status = "draw"
+        else:
+            winner = "playerA"
             status = "won"
+    
+    if not (status is None):
+        #set the game state and other returns
+        gameState = {
+                'type': status,
+                'winner': winner}
+        moveEvent['details']['postFen'],state['fen'] = repr(board_after)
+        state['winner']  = winner
 
-        # checks if the white has already won before
-        if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "won"]:
-            if status == "won":
-                winner, status = "draw"
-            else:
-                winner = "playerA"
-                status = "won"
-
-        if not (status is None):
-            #set the game state and other returns
-            gameState = {
-                    'type': status,
-                    'winner': winner}
-            moveEvent['details']['postFen'],state['FEN'] = repr(board_after)
-            state['winner']  = winner
-
-        return True,gameState,"Alles Super!"
+    return True,gameState,"Alles Super!"
 

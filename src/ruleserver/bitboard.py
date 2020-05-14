@@ -268,16 +268,16 @@ class Board:
         if re.compile("[rnbqkpPRNBQK]").match(character) is None:
             raise SyntaxError("The Syntax of the character is wrong!")
         
-        field = self.field[character.lower()]
+        field = self.board[character.lower()]
         
         if character.lower() == character:
-            field &= field["bl"]
+            field &= self.board["bl"]
         else:
-            field &= field["wh"]
+            field &= self.board["wh"]
     
         positions = []
         for i in range(64):
-            mask = 1 << i
+            mask = np.uint64(1 << i)
             
             if mask & field != 0:
                 positions.append(i)
