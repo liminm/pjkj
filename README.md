@@ -5,7 +5,52 @@ This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 
 To run, simply call `python3 src/main.py`.
 
-# Storage Setup
+It currently provides the games "Racing Kings" and "Jump Sturdy".
+
+Both AIs and humans on web clients connect to the same REST API, specified in
+[$636](https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/636).
+
+The backend is based on [Flask](https://flask.palletsprojects.com/en/1.1.x/).
+
+# Software architechture
+
+The entire system consists of 4 Parts:
+
+```
++-----------------------------------------------------------+
+| +------------+   +--------------------------------------+ |
+| |  FRONTEND  |   |                BACKEND               | |
+| |            |   | +--------------+   +---------------+ | |
+| | - Views    |   | |  CONTROLLER  |   |  RULESERVER   | | |
+| | - Settings |   | |              |<->|               | | |
+| | - Manage   |   | | - Manage DB  |   | - Check move  | | |
+| |  - Teams   |   | | - REST API   |   | - Check state | | |
+| |  - Players |   | | - Combine    |   +---------------+ | |
+| |  - Games   |<->| |   Everything |                     | |
+| | - Play     |   | | - Time       |   +---------------+ | |
+| |            |   | |   Management |   |    STORAGE    | | |
+| |            |   | |              |   |               | | |
+| |            |   | |              |<->| - Persistent  | | |
+| |            |   | |              |   |   Database    | | |
+| |            |   | +--------------+   +---------------+ | |
+| +------------+   +--------------------------------------+ |
++-----------------------------------------------------------+
+```
+
+For the frontend, see the
+[web-client](https://gitlab.tubit.tu-berlin.de/PJ-KI/web-client) repo.
+
+# Controller
+
+The controller is divided into 7 files:
+
+- `main.py`: Flask initialization and loading of modules
+- `team.py`, `player.py`, `game.py`: Endpoints and handling for those resources
+- `event.py`: The event system ([SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)-Based) and related endpoints.
+- `timer.py`: Timekeeping and timeout handling
+- `util.py`: Various helper functions
+
+# Storage
 
 ## How to setup Docker the first time
 `sudo docker pull mongo  // just download the image
