@@ -12,6 +12,9 @@ def post_game():
 	game = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
 
+	if game['players']['playerA'] == game['players']['playerB']:
+		return "Error: player can't play against itself", 409
+
 	game['state'] = {
 		'state': 'planned',
 		'winner': None,
