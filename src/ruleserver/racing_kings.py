@@ -61,7 +61,7 @@ def fenStateCheck(state):
         return True, {"type":"50Move", "winner":"draw"}, ""
 
     # check if both kings are at the end of the board
-    mask = np.int64(int("1"*8+"0"*8*7))
+    mask = np.uint64(int("1"*8+"0"*8*7, 2))
 
     # check if one of the kings won the game
     if ((board.board["k"] & board.board["wh"] & mask != 0) and (board.board["k"] & board.board["bl"] & mask != 0)):

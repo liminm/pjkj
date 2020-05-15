@@ -7,10 +7,11 @@ from bitboard import Board
 from valid_move_check import ValidCheck
 from WinConditions import reihencheckrk
 from WinConditions import reihencheckjs
-from racing_kings_check_check import checkmate
 from jump_sturdy import movePlayerJS
 import jump_sturdy
 import racing_kings
+import racing_kings_check_check
+
 
 global test_data
 
@@ -174,7 +175,7 @@ class checkTest(unittest.TestCase):
             expected = eval(t[1])
             
             # TODO: make it run the check mate function and implement some more tests
-            self.assertEqual(checkmate(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
+            self.assertEqual(racing_kings_check_check.checkmate(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
 
 # TODO: has to be implemented
 class mainFunctionTest(unittest.TestCase):
