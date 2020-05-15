@@ -9,11 +9,11 @@ import bitboard
 import numpy as np
 import valid_move_check as vm
 from WinConditions import reihencheckrk
-from racing_kings_check_check import checkMate
+from racing_kings_check_check import checkmate
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
-def fenStateCheck(self,state):
+def fenStateCheck(state):
     """
     This will be only called at the beginning of a game and report if the enterd FEN string is valid
     FEN --> The FEN string wil be cheked for format and if there is at least two kings on the field
@@ -36,23 +36,23 @@ def fenStateCheck(self,state):
     if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
         return False, None, "StateError:There are not exactly 1 king on each side!"
 
-    if not len(board.findCharacter("q")) in range(2) or not len(board.findCharacter("Q")) in range(2):
+    if not len(board.findCharacter("q")) in range(3) or not len(board.findCharacter("Q")) in range(3):
         return False, None, "StateError:Each side has to have 0-2 queens!"
 
-    if not len(board.findCharacter("n")) in range(2) or not len(board.findCharacter("N")) in range(2):
+    if not len(board.findCharacter("n")) in range(3) or not len(board.findCharacter("N")) in range(3):
         return False, None, "StateError:Each side has to have 0-2 knights!"
 
-    if not len(board.findCharacter("b")) in range(2) or not len(board.findCharacter("B")) in range(2):
+    if not len(board.findCharacter("b")) in range(3) or not len(board.findCharacter("B")) in range(3):
         return False, None, "StateError:Each side has to have 0-2 bishops!"
 
-    if not len(board.findCharacter("r")) in range(2) or not len(board.findCharacter("R")) in range(2):
+    if not len(board.findCharacter("r")) in range(3) or not len(board.findCharacter("R")) in range(3):
         return False, None, "StateError:Each side has to have 0-2 rooks!"
 
     if len(board.findCharacter("p")) !=0 or len(board.findCharacter("P")) != 0:
         return False, None, "StateError:There are no pawns allowed in this game!"
 
         
-    if checkMate(board):
+    if checkmate(board):
         return False, None, "StateError:King can not be in check!"
 
 
@@ -75,11 +75,12 @@ def fenStateCheck(self,state):
 
     return True, None, "Alles Super!"
 
-def moveCheck(self,moveEvent,state):
+def moveCheck(moveEvent,state):
     #--------------------------Setup-----------------------
     #set beginning variables
     r = None
-    status,winner = None
+    status = None
+    winner = None
     valid = True
     gameState = None
     player = moveEvent["player"]
@@ -119,7 +120,7 @@ def moveCheck(self,moveEvent,state):
     #check for checkmate
     king = self.curBoard[self.curPlayer]&self.board['k']
     moves = wc.calc_movesboard(wc.set_occupied_pos,)
-    if checkMate(board_after):
+    if checkmate(board_after):
         return False, None, "MoveError:The king is checked!"
 
     # update hashmap
@@ -134,7 +135,7 @@ def moveCheck(self,moveEvent,state):
     # everything is good
             
     if checkwinRK(board_after) and status is None:
-        winner = if board_before.player=="w" : "playerA" else "playerB" # TODO: ask if playerA is white or black
+        winner = "playerA" if board_before.player=="w" else "playerB" # TODO: ask if playerA is white or black
         status = "won"
 
     # checks if the white has already won before

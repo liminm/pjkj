@@ -177,7 +177,8 @@ class Board:
         
         self.moveUCI(start, end)
         
-        self.roundCount+=1
+        if self.player == "b":
+            self.roundCount+=1
         if self.player == "w":
             self.player = "b"
         else:

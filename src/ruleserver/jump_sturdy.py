@@ -77,7 +77,8 @@ def moveCheck(moveEvent,state):
     hashmap = state["boardHashMap"]
     event = moveEvent
     player = moveEvent["player"]
-    status,winner = None
+    status = None
+    winner = None
     valid = True
     gameState = None
         
@@ -187,7 +188,8 @@ def movePlayerJS(self, start, end=None, logging=False):
     elif startField.lower() == "k":
         self.setField(start, "b" if startField.lower() == startField else "B")
     
-    self.roundCount+=1
+    if self.player == "b":
+        self.roundCount+=1
     if self.player == "w":
         self.player = "b"
     else:
