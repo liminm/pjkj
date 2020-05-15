@@ -107,7 +107,7 @@
 	["8/7K/8/8/q1k3R1/5N2/2b2B2/2rn1nR1 b - - 7 20", "c2", "e4", "True"],
 	["8/7K/8/8/q1k1b1R1/5N2/5B2/2rn1nR1 w - - 8 21", "h7", "h8", "True"]],
 
-"mainFunction":[]
+"mainFunction":[[]]
 },
 
 "jumpStirdy":{
@@ -170,7 +170,7 @@
 	
 	],
 	
-"mainFunction": []
+"mainFunction": [["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBK1/1BBBBB2 b - - 1 2", "g8", "g7", "True", "None"] ]
 
 }
 }
