@@ -177,9 +177,14 @@ class Checkmate():
                                 [2 ** num for num in range(len(diag_minus_range))])):
                             diag_minus_right_line_moves = diag_minus_mask
                         else:
-                            diag_minus_right_line_moves = int(form_string.format(
-                                int(form_string.format(diag_minus_mask)[::-1], 2) - 2 * int(
-                                    form_string.format(diag_minus_fig_slider)[::-1], 2))[::-1], 2)
+                            #TODO FIX ERROR
+                            #diag_minus_right_line_moves = int(form_string.format(
+                            #    int(form_string.format(diag_minus_mask)[::-1], 2) - 2 * int(
+                            #        form_string.format(diag_minus_fig_slider)[::-1], 2))[::-1], 2)
+
+                            # TODO DELETE; ONLY TEMP
+                            diag_minus_right_line_moves = 0
+
                     # TODO test if case is working
                     else:
                         diag_minus_right_line_moves = int(form_string.format(([2 ** num for num in
@@ -197,6 +202,7 @@ class Checkmate():
                     elif (diag_plus_mask < 2 * diag_plus_fig_slider):
                         diag_plus_left_line_moves = (sum([2 ** num for num in range(len(diag_plus_range))]) - (
                                     2 * diag_plus_fig_slider - diag_plus_mask - 1))
+
                     if (int(form_string.format(diag_plus_mask)[::-1], 2) >= - 2 * int(
                             form_string.format(diag_plus_fig_slider)[::-1], 2)):
 
@@ -204,9 +210,13 @@ class Checkmate():
                                 [2 ** num for num in range(len(diag_plus_range))])):
                             diag_plus_right_line_moves = diag_plus_mask
                         else:
-                            diag_plus_right_line_moves = int(form_string.format(
-                                int(form_string.format(diag_plus_mask)[::-1], 2) - 2 * int(
-                                    form_string.format(diag_plus_fig_slider)[::-1], 2))[::-1], 2)
+                            # TODO FIX ERROR
+                            #diag_plus_right_line_moves = int(form_string.format(
+                            #    int(form_string.format(diag_plus_mask)[::-1], 2) - 2 * int(
+                            #        form_string.format(diag_plus_fig_slider)[::-1], 2))[::-1], 2)
+
+                            # TODO remove; only added temporarily
+                            diag_plus_right_line_moves = 0
                     # TODO test if case is working
                     else:
                         diag_plus_right_line_moves = int(form_string.format(([2 ** num for num in
@@ -267,16 +277,15 @@ class Checkmate():
                     vert_mask = vert_move & occupied_positions
                     vert_mask = sum([2 ** exp for exp in range(8) if ((255 << (8 * exp) & vert_mask))])
 
-                    hor_line_moves = (np.uint8(hor_mask - 2 * hor_fig_slider)) ^ int('{:08b}'.format(np.uint8(
+                    hor_line_moves = (np.uint8(hor_mask - 2 * hor_fig_slider).item()) ^ int('{:08b}'.format(np.uint8(
                         int('{:08b}'.format(hor_mask)[::-1], 2) - 2 * int('{:08b}'.format(hor_fig_slider)[::-1], 2)))[
                                                                                      ::-1], 2)
-                    vert_line_moves = (np.uint8(vert_mask - 2 * vert_fig_slider)) ^ int('{:08b}'.format(np.uint8(
+                    vert_line_moves = (np.uint8(vert_mask - 2 * vert_fig_slider).item()) ^ int('{:08b}'.format(np.uint8(
                         int('{:08b}'.format(vert_mask)[::-1], 2) - 2 * int('{:08b}'.format(vert_fig_slider)[::-1], 2)))[
                                                                                         ::-1], 2)
 
-                    rook_moves = ((hor_line_moves << 8 * (int(pos_exp / 8))) | sum(
-                        [2 ** ((pos_exp % 8) + 8 * num) for num in range(8) if
-                         (((int('{:>08b}'.format((vert_line_moves >> num))[::-1], 2)) >> (7)) != 0)]))
+                    rook_moves = ((hor_line_moves << 8 * (int(pos_exp / 8))) | sum([2 ** ((pos_exp % 8) + 8 * num) for num in range(8) if(((int('{:>08b}'.format((vert_line_moves >> num))[::-1], 2)) >> (7)) != 0)]))
+
                     # print("Rook Moves: ",rook_moves)
                     # print(bin(rook_moves))
                     moves_board = moves_board | rook_moves
@@ -306,14 +315,18 @@ class Checkmate():
 
     def checkmate(self, q, k, b, n, r, wh, bl, player):
         board = Checkmate()
+        bitboards = [q,k,b,n,r,wh,bl]
+        for i in range(len(bitboards)):
+            if(type(bitboards[i]).__module__ == np.__name__ ):
+                bitboards[i] = bitboards[i].item()
 
-        q = q.item()
-        k = k.item()
-        b = b.item()
-        n = n.item()
-        r = r.item()
-        wh = wh.item()
-        bl = bl.item()
+        q = bitboards[0]
+        k = bitboards[1]
+        b = bitboards[2]
+        n = bitboards[3]
+        r = bitboards[4]
+        wh = bitboards[5]
+        bl = bitboards[6]
 
         white_figs, black_figs = board.split_color_figs(q, k, b, n, r, wh, bl)
         occupied_positions = board.set_occupied_pos(q, k, b, n, r)
@@ -335,6 +348,7 @@ class Checkmate():
         #print(own_move_board)
         #print(enemy_move_board)
 
+        # result == True if King is in chess; False if King is not attacked
         result = board.king_is_attacked(own_king, enemy_king, own_move_board, enemy_move_board)
 
         return result
@@ -346,17 +360,14 @@ class Checkmate():
 
         return white_figs, black_figs
 
-    def form(self, moves, num):
-        form = '{:0' + str(len(np.binary_repr(moves)) - num) + 'b}'
-        return form
 
 
 if __name__ == '__main__':
     board = Checkmate()
-    # 1. Queen 2. King 3. Bishop 4. Knight 5. Rook 6. White 7. Black
-    # Numbers set to starting position
 
 
     # 1. Queen 2. King 3. Bishop 4. Knight 5. Rook 6. White 7. Black 8. Player
-    result = board.checkmate(np.uint64(129), np.uint64(33024), np.uint64(9252), np.uint64(6168), np.uint64(16962), np.uint64(3855), np.uint64(61680), 'playerA')
-    print(result)
+    # Numbers set to start position
+    # result == True if King is in chess; False if King is not attacked
+    result = board.checkmate(129, np.uint64(33024), np.uint64(9252), np.uint64(6168), np.uint64(16962), np.uint64(3855), np.uint64(61680), 'playerA')
+    #print(result)
