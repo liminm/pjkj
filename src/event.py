@@ -3,7 +3,8 @@ import json
 import time
 from datetime import datetime
 
-from __main__ import app, storage
+from __main__ import app
+from data import storage
 import timer
 import util
 

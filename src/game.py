@@ -2,7 +2,8 @@ from flask import request
 import json
 from copy import deepcopy
 
-from __main__ import app, storage
+from __main__ import app
+from data import storage
 import util
 
 

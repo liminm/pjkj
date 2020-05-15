@@ -1,6 +1,6 @@
 import threading, time, datetime
 
-from __main__ import storage
+from data import storage
 import util
 
 # Get the current unix time epoch in milliseconds
