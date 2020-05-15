@@ -2,6 +2,16 @@
 import math
 import numpy as np
 
+def checkmate(board):
+    cm = Checkmate()
+    
+    player = "playerA"
+    if board.player == "b":
+        player = "playerB"
+    
+    return cm.checkmate(board.board["q"], board.board["k"], board.board["b"], board.board["n"], board.board["r"], board.board["wh"], board.board["bl"], player)
+    
+
 class Checkmate():
 
     def find_indiv_figs(self, moves_arr):
