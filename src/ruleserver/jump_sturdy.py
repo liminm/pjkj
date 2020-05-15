@@ -43,18 +43,6 @@ def fenStateCheck(state):
     
     if "p" in FEN :
         return False,None ,"SyntaxError :FEN parsing error, no pawns allowed in jump sturdy"
-    
-    """          
-    #check for timebudget
-    if (state['timeBudgets']['playerA'] <= 0) and (state['timeBudgets']['playerB'] <= 0):
-        return False,timeBudget ,"timeBudget : Both players have no time left"
-    
-    if (state['timeBudgets']['playerA'] <= 0):
-        return False,timeBudget ,"timeBudget : Player A has no time left"
-    
-    if (state['timeBudgets']['playerB'] <= 0):
-        return False,timeBudget ,"timeBudget : Player B has no time left"
-   """ 
    
     # Check for four corners
     figs = board.board['wh'] | board.board['bl']
@@ -77,8 +65,10 @@ def fenStateCheck(state):
     
     #check for win
     if reihencheckjs(board,board.player) :
-        pass
-        #TODO set winner 
+       if board.player == 'w' :
+           return True,{'type' : "win", 'winner' : "playerA"},""
+       else : 
+           return True,{'type' : "win", 'winner' : "playerB"},""
          
     return True, "", ""
     
@@ -113,7 +103,7 @@ def moveCheck(moveEvent,state):
         return False, None, "SyntaxError:FEN String is invalid!  "
          
     uci = event["details"]['move']
-        
+    
     #for check valid  movement
     try:
         if not moveCheck.check(FEN,uci):
@@ -123,15 +113,17 @@ def moveCheck(moveEvent,state):
          
     #Try the move
     try:
-        movePlayerJS(board, uci)
+        movePlayerJS(board_after, uci)
     except:
         return False, None, "SyntaxError:UCI String is invalid!"
         
     
     #check for win
-    if reihencheckjs(board,board.player) :
-        pass
-        #TODO set winner 
+    if reihencheckjs(board_after,board_after.player) :
+        if board_after.player == 'w' :
+            return True,{'type' : "win", 'winner' : "playerA"},""
+        else : 
+            return True,{'type' : "win", 'winner' : "playerB"},""
          
         
     #update hashmap
