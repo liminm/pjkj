@@ -38,7 +38,7 @@ def fenStateCheck(state):
     if "r" in FEN :
          return False,None,"SyntaxError :FEN parsing error, no rooks allowed in jump sturdy"
      
-    if "k" in FEN :
+    if "n" in FEN :
         return False,None ,"SyntaxError :FEN parsing error, no knights allowed in jump sturdy"
     
     if "p" in FEN :
@@ -51,16 +51,16 @@ def fenStateCheck(state):
         return False, None, "StateError:Figures in the corners"
 
     #check if the count of characters is valid
-    if not len(board.findCharacter("B")) in range(12) or not len(board.findCharacter("b")) in range(12):
+    if (not len(board.findCharacter("B")) in range(13)) or (not len(board.findCharacter("b")) in range(13)):
             return False, None,"StateError: Each side has to have 0-12 singles!"
     
-    if not len(board.findCharacter("K")) in range(6) or not len(board.findCharacter("k")) in range(6):
+    if not len(board.findCharacter("K")) in range(7) or not len(board.findCharacter("k")) in range(7):
             return False,None ,"StateError: Each side has to have 0-6 monocoloured doubles!"
     
-    if not len(board.findCharacter("Q")) + len(board.findCharacter("q")) in range(12):
+    if not len(board.findCharacter("Q")) + len(board.findCharacter("q")) in range(13):
             return False,None ,"StateError: there can only be 0-12 doubles!"
         
-    if not (len(board.findCharacter("Q")) + len(board.findCharacter("q")) + len(board.findCharacter("B")) + len(board.findCharacter("b")) + len(board.findCharacter("K")) + len(board.findCharacter("k")))in range(24):
+    if not (len(board.findCharacter("Q")) + len(board.findCharacter("q")) + len(board.findCharacter("B")) + len(board.findCharacter("b")) + len(board.findCharacter("K")) + len(board.findCharacter("k")))in range(25):
             return False,None ,"StateError : there can only be 0-24 figures on the board at any time!"
     
     #check for win
@@ -70,7 +70,7 @@ def fenStateCheck(state):
        else : 
            return True,{'type' : "win", 'winner' : "playerB"},""
          
-    return True, "", ""
+    return True,None, ""
     
 def moveCheck(moveEvent,state):
     #set beginning variables
