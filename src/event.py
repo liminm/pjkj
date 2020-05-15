@@ -15,29 +15,15 @@ def post_event(id):
 
 	# Only players are allowed to send events to a game. Therefore, we
 	# authenticate them.
-	# Authentication tokens are sent with the Authorization header as follows:
-	# Authorization: Basic abcdefgXYZ123...
-	# Where the last part is the token.
-	authHeader = request.headers.get('Authorization')
+	playerID, response = util.auth(storage['players'], request)
 
-	# If the header is not present, we inform the client that this endpoint
-	# requires authentication
-	if not authHeader:
-		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
+	# If authentication fails, send error message and -code
+	if not playerID:
+		return Response(*response)
 
-	# Remove the 'Basic '-part to get the token
-	authToken = authHeader.split(' ')[1]
-
-	# Search this token in the database to find the corresponding player
-	playerID = util.checkAuth(storage['players'], authToken)
-
-	# Verify that the authenticated player is a member of this game
-	isInGame = playerID in game['players'].values()
-
-	# If no player has this token or the player is not a member of this game,
-	# the token is invalid
-	if not playerID or not isInGame:
-		return 'Error: invalid authorization', 403
+	# If the player is not a member of this game, the token is invalid as well
+	if not playerID in game['players'].values():
+		return 'Error: token owner not in this game', 403
 
 
 	# Events can only be sent to planned or running games, never completed ones

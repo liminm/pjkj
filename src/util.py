@@ -32,6 +32,30 @@ def checkAuth(dict, token):
 			return id
 	return None
 
+def auth(dict, request):
+
+	# Authentication tokens are sent with the Authorization header as follows:
+	# Authorization: Basic abcdefgXYZ123...
+	# Where the last part is the token.
+	authHeader = request.headers.get('Authorization')
+
+	# If the header is not present, we inform the client that this endpoint
+	# requires authentication
+	if not authHeader:
+		return None, ['Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'}]
+
+	# Remove the 'Basic '-part to get the token
+	authToken = authHeader.split(' ')[1]
+
+	# Search this token in the database to find the corresponding player
+	id = checkAuth(dict, authToken)
+
+	# If no entity has this token, it's invalid
+	if not id:
+		return None, ['Error: invalid authorization', 403]
+
+	return id, None
+
 # Utility function to find the opposite player
 def opponent(player):
 	if player == 'playerA':
