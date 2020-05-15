@@ -10,25 +10,12 @@ import util
 @app.route('/teamlogin', methods = ['GET'])
 def get_teamlogin():
 
-	# Authentication tokens are sent with the Authorization header as follows:
-	# Authorization: Basic abcdefgXYZ123...
-	# Where the last part is the token.
-	authHeader = request.headers.get('Authorization')
+	# Verify Authorization
+	teamID, response = util.auth(storage['teams'], request)
 
-	# If the header is not present, we inform the client that this endpoint
-	# requires authentication
-	if not authHeader:
-		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
-
-	# Remove the 'Basic '-part to get the token
-	authToken = authHeader.split(' ')[1]
-
-	# Search this token in the database to find the corresponding team
-	teamID = util.checkAuth(storage['teams'], authToken)
-
-	# If no team has this token, it's invalid
+	# If authentication fails, send error message and -code
 	if not teamID:
-		return 'Error: invalid authorization', 403
+		return Response(*response)
 
 	return json.dumps({
 		'id': teamID,
