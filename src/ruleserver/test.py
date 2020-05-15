@@ -177,9 +177,9 @@ class mainFunctionTest(unittest.TestCase):
             expected = (eval(t[3]), eval(t[4]))
                 
             r = fenStateCheck(state)
-            r = (r[0], r[1])
+            actual = (r[0], r[1])
                 
-            self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
+            self.assertEqual(actual, expected, "\nBoard representation:\n" + str(board) + "\nmessage:"+r[2])
         
     def testJumpStirdyMoveCheck(self):
         for t in test_data["jumpStirdy"]["mainFunction"] + test_data["jumpStirdy"]["sampleGame"]:
@@ -192,9 +192,9 @@ class mainFunctionTest(unittest.TestCase):
             expected = (eval(t[3]), eval(t[4]))
                 
             r = fenStateCheck(state)
-            r = (r[0], r[1])
+            actual = (r[0], r[1])
                 
-            self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
+            self.assertEqual(actual, expected, "\nBoard representation:\n" + str(board) + "\nmessage:"+r[2])
 
     def testRacingKingsStateCheck(self):
         # TODO: create sample games
@@ -204,9 +204,9 @@ class mainFunctionTest(unittest.TestCase):
             expected = (eval(t[3]), eval(t[4]))
                 
             r = fenStateCheck(state)
-            r = (r[0], r[1])
+            actual = (r[0], r[1])
              
-            self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
+            self.assertEqual(actual, expected, "\nBoard representation:\n" + str(board) + "\nmessage:"+r[2])
     
     def testRacingKingsMoveCheck(self):
         for t in test_data["racingKings"]["mainFunction"]:
@@ -219,9 +219,9 @@ class mainFunctionTest(unittest.TestCase):
             expected = (eval(t[3]), eval(t[4]))
                 
             r = fenStateCheck(state)
-            r = (r[0], r[1])
+            actual = (r[0], r[1])
                 
-            self.assertEqual(r, expected, "\nBoard representation:\n" + str(board))
+            self.assertEqual(actual, expected, "\nBoard representation:\n" + str(board) + "\nmessage:"+r[2])
 
 
 if __name__ == '__main__':
