@@ -3,7 +3,9 @@ import json
 import time
 from datetime import datetime
 
-from __main__ import app, storage
+from __main__ import app
+from data import storage
+import timer
 import rules
 import util
 
@@ -13,81 +15,87 @@ def post_event(id):
 
 	game = storage['games'][id]
 
-	authHeader = request.headers.get('Authorization')
+	# Only players are allowed to send events to a game. Therefore, we
+	# authenticate them.
+	playerID, response = util.auth(storage['players'], request)
 
-	if not authHeader:
-		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
+	# If authentication fails, send error message and -code
+	if not playerID:
+		return Response(*response)
 
-	authToken = authHeader.split(' ')[1]
-	playerID = util.checkAuth(storage['players'], authToken)
-	isInGame = playerID in game['players'].values()
-
-	if not playerID or not isInGame:
-		return 'Error: invalid authorization', 403
+	# If the player is not a member of this game, the token is invalid as well
+	if not playerID in game['players'].values():
+		return 'Error: token owner not in this game', 403
 
 
+	# Events can only be sent to planned or running games, never completed ones
 	if game['state']['state'] == 'completed':
 		return 'Error: game already ended', 409
 
+	# Get the payload and parse it
 	event = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
 
 	# Get player who did move (playerA/playerB)
-	# (by getting the key corresponding to the ID value)
-	# TODO: Prohibit same player?
-	event['player'] = list(game['players'].keys())[
-		list(game['players'].values()).index(playerID)
-	]
+	player = util.playerFromID(game['players'], playerID)
+	event['player'] = player
 
-	# Add timestamp
+	# Add current timestamp to all events
 	now = datetime.utcnow()
 	event['timestamp'] = now.isoformat()
 
 	# Initialize details dict if it doesn't exist yet
 	event.setdefault('details', {})
 
-	# We assume events to be generally valid, checks follow later
+	# We assume this is a valid event, checks follow later
 	valid = True
 	gameEnd = None
 	reason = ''
 
+	# The 'surrender' is the only non-move event clients can submit. It results
+	# in a 'gameEnd' event with type 'surrender', while the opponent wins.
 	if event['type'] == 'surrender':
-		valid = False
 		gameEnd = {
 			'type': 'surrender',
-			'winner': util.otherPlayer(event['player'])
+			'winner': util.opponent(player)
 		}
 
+	# The most common event clients submit is the move, which is processed by
+	# the ruleserver.
 	elif event['type'] == 'move':
-		if len(game['events']) > 0:
-			lastTime = datetime.fromisoformat(game['events'][-1]['timestamp'])
-			timeDiff = (now - lastTime)
-			event['details']['time'] = int(timeDiff.total_seconds() * 1000)
-		else:
-			event['details']['time'] = 0
-
 		# Check move with ruleserver
-		valid, gameEnd, reason = ruleServer.moveCheck(game['type'], event, game['state'])
+		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
 
-
-	if valid:
-		game['state']['state'] = 'running' # TODO: RuleServer?
-		game['events'].append(event)
-		if 'time' in event['details']:
-			game['state']['timeBudgets'][event['player']] -= event['details']['time']
-
+	# If the move check indicated that this move ends the game or a player
+	# surrendered, we mark the game as completed and declare the winner.
+	# We also prepare the event that informs clients of the game end.
 	if gameEnd:
-		game['state']['state'] = 'completed' # TODO: RuleServer?
+		game['state']['state'] = 'completed'
 		game['state']['winner'] = gameEnd['winner']
-		game['events'].append({
-			'type': 'gameEnd',
-			'player': event['player'],
-			'timestamp': event['timestamp'],
-			'details': gameEnd
-		})
+		event['type'] = 'gameEnd'
+		event['details'] = gameEnd
+
+	# If everything is valid (meaning either a valid move or a game end), we
+	# log the time the move took and adjust the time Budget. Then we send out
+	# the event indicating what happened.
+	if valid:
+		duration = timer.stopWatcher(id)
+		event['details']['time'] = duration
+		game['state']['timeBudgets'][player] -= duration
+		game['events'].append(event)
+
+		# If the game continues, we start the timer for the next move.
+		# The state is set to 'running' here because a game starts as soon as
+		# the first valid move is made.
+		if not gameEnd:
+			game['state']['state'] = 'running'
+			opponent = util.opponent(player)
+			timer.startWatcher(id, opponent,
+				game['settings']['timeout'],
+				game['state']['timeBudgets'][opponent])
 
 	# DEBUG
 	util.showDict(storage)
@@ -106,6 +114,13 @@ def get_events(id):
 
 	game = storage['games'][id]
 
+	# A GET on the events results in a continuous eventstream in the SSE format
+	# (See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+	# This means a JS client can easily retrieve each chunk of data as an event
+	# almost instantly after is arrives on the server.
+	# That means this function and its while-loop stay running in their handler
+	# thread as long as a) the client is connected or b) the game is running,
+	# while continuously feeding back data with the `yield` keyword.
 	def stream_events():
 
 		# We get the current length before we print old stuff, just to be sure
@@ -135,4 +150,6 @@ def get_events(id):
 
 			prevLen = newLen
 
+	# Start the eventstream. The mimetype is necessary for the JS EventSource
+	# API.
 	return Response(stream_events(), mimetype='text/event-stream')

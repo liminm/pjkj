@@ -9,9 +9,9 @@ import bitboard
 import numpy as np
 from valid_move_check import ValidCheckJumpSturdy
 from WinConditions import reihencheckjs
+import re
 
-
-
+INITIAL_FEN = "1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1"
 
 def fenStateCheck(state):
     """ 
@@ -38,23 +38,11 @@ def fenStateCheck(state):
     if "r" in FEN :
          return False,None,"SyntaxError :FEN parsing error, no rooks allowed in jump sturdy"
      
-    if "k" in FEN :
+    if "n" in FEN :
         return False,None ,"SyntaxError :FEN parsing error, no knights allowed in jump sturdy"
     
     if "p" in FEN :
         return False,None ,"SyntaxError :FEN parsing error, no pawns allowed in jump sturdy"
-    
-    """          
-    #check for timebudget
-    if (state['timeBudgets']['playerA'] <= 0) and (state['timeBudgets']['playerB'] <= 0):
-        return False,timeBudget ,"timeBudget : Both players have no time left"
-    
-    if (state['timeBudgets']['playerA'] <= 0):
-        return False,timeBudget ,"timeBudget : Player A has no time left"
-    
-    if (state['timeBudgets']['playerB'] <= 0):
-        return False,timeBudget ,"timeBudget : Player B has no time left"
-   """ 
    
     # Check for four corners
     figs = board.board['wh'] | board.board['bl']
@@ -63,32 +51,34 @@ def fenStateCheck(state):
         return False, None, "StateError:Figures in the corners"
 
     #check if the count of characters is valid
-    if not len(board.findCharacter("B")) in range(12) or not len(board.findCharacter("b")) in range(12):
+    if (not len(board.findCharacter("B")) in range(13)) or (not len(board.findCharacter("b")) in range(13)):
             return False, None,"StateError: Each side has to have 0-12 singles!"
     
-    if not len(board.findCharacter("K")) in range(6) or not len(board.findCharacter("k")) in range(6):
+    if not len(board.findCharacter("K")) in range(7) or not len(board.findCharacter("k")) in range(7):
             return False,None ,"StateError: Each side has to have 0-6 monocoloured doubles!"
     
-    if not len(board.findCharacter("Q")) + len(board.findCharacter("q")) in range(12):
+    if not len(board.findCharacter("Q")) + len(board.findCharacter("q")) in range(13):
             return False,None ,"StateError: there can only be 0-12 doubles!"
         
-    if not (len(board.findCharacter("Q")) + len(board.findCharacter("q")) + len(board.findCharacter("B")) + len(board.findCharacter("b")) + len(board.findCharacter("K")) + len(board.findCharacter("k")))in range(24):
+    if not (len(board.findCharacter("Q")) + len(board.findCharacter("q")) + len(board.findCharacter("B")) + len(board.findCharacter("b")) + len(board.findCharacter("K")) + len(board.findCharacter("k")))in range(25):
             return False,None ,"StateError : there can only be 0-24 figures on the board at any time!"
     
     #check for win
     if reihencheckjs(board,board.player) :
-        pass
-        #TODO set winner 
+       if board.player == 'w' :
+           return True,{'type' : "win", 'winner' : "playerA"},""
+       else : 
+           return True,{'type' : "win", 'winner' : "playerB"},""
          
-    return True, "", ""
-
+    return True,None, ""
     
 def moveCheck(moveEvent,state):
     #set beginning variables
     hashmap = state["boardHashMap"]
     event = moveEvent
-    player = moveEvent[0]
-    status,winner = None
+    player = moveEvent["player"]
+    status = None
+    winner = None
     valid = True
     gameState = None
         
@@ -105,26 +95,6 @@ def moveCheck(moveEvent,state):
         FEN = state
     elif type(state) == dict:
         FEN = state['fen']
-            
-    #check for timebudget
-    if (state['timeBudgets'][player]-moveEvent[1][1] ) <= 0:
-        valid = False
-        status = 'timeBudget'
-        if player == 'playerA':
-            winner = 'playerB'
-        else:
-            winner = 'playerA'
-    else:
-        state['timeBudgets'][player] = state['timeBudgets'][player]-moveEvent[1][1]
-        
-   #check for timeout
-    if(60000 - state['timeBudgets'][player]) <= 0:
-       valid = False
-       status = 'timeOut'
-       if player == 'playerA':
-           winner = 'playerB'
-    else:
-            winner = 'playerA'
                 
     #create Boards
     try:
@@ -133,24 +103,28 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
          
-    #Try the move
-    uci = event["details"]['uci']
-    try:
-        board_after.movePlayer(uci)
-    except:
-        return False, None, "SyntaxError:UCI String is invalid!"    
-        
+    uci = event["details"]['move']
+    
     #for check valid  movement
     try:
         if not moveCheck.check(FEN,uci):
             return False, None, "MoveError:Not a valid move!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
+         
+    #Try the move
+    try:
+        movePlayerJS(board_after, uci)
+    except:
+        return False, None, "SyntaxError:UCI String is invalid!"
+        
     
     #check for win
-    if reihencheckjs(board,board.player) :
-        pass
-        #TODO set winner 
+    if reihencheckjs(board_after,board_after.player) :
+        if board_after.player == 'w' :
+            return True,{'type' : "win", 'winner' : "playerA"},""
+        else : 
+            return True,{'type' : "win", 'winner' : "playerB"},""
          
         
     #update hashmap
@@ -170,3 +144,57 @@ def moveCheck(moveEvent,state):
          state['winner']  = winner
     
     return valid,gameState,"Alles Super!"
+    
+def movePlayerJS(self, start, end=None, logging=False):
+    if end is None:
+        m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start)
+        if m is None:
+            raise SyntaxError("Syntax Error in UCI String!")
+        
+        start = m.group(1)
+        end = m.group(2)
+        
+    if logging:
+        move = [repr(self), start, end, "True"]
+        
+    # halbzüge
+    newRound = self.halfRounds
+    startField = self.getField(start)
+    endField = self.getField(end)
+    startFieldOwner = self.getOwner(start)
+    endFieldOwner = self.getOwner(end)
+    
+    # handling end field
+    if startFieldOwner == endFieldOwner and endField.lower() == "b": # jumping on own character
+        self.setField(end, "k" if startField.lower() == startField else "K")
+    elif endField is None: # jumping on empty field
+        self.setField(end, "b" if startField.lower() == startField else "B")
+    elif startFieldOwner != endFieldOwner: # attacking enemy
+        newRound = -1
+        if endField.lower() == "q":
+            self.setField(end, "k" if startField.lower() == startField else "K")
+        elif endField.lower() == "k":
+            self.setField(end, "q" if startField.lower() == startField else "Q")
+        else:
+            self.setField(end, "b" if startField.lower() == startField else "B")
+    else:
+        raise ValueError("")
+    
+    # handling start field
+    if startField.lower() == "b":
+        self.removeField(start)
+    elif startField.lower() == "q":
+        self.setField(start, "B" if startField.lower() == startField else "b")
+    elif startField.lower() == "k":
+        self.setField(start, "b" if startField.lower() == startField else "B")
+    
+    if self.player == "b":
+        self.roundCount+=1
+    if self.player == "w":
+        self.player = "b"
+    else:
+        self.player = "w"
+            
+    if logging:
+        self.log.append(move)
+    self.halfRounds = newRound+1

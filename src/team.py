@@ -2,23 +2,21 @@ from flask import request
 import json
 from copy import deepcopy
 
-from __main__ import app, storage
+from __main__ import app
+from data import storage
 import util
 
 
+# This endpoint is only for the frontend to verify tokens before saving them
 @app.route('/teamlogin', methods = ['GET'])
 def get_teamlogin():
 
-	authHeader = request.headers.get('Authorization')
+	# Verify Authorization
+	teamID, response = util.auth(storage['teams'], request)
 
-	if not authHeader:
-		return Response('Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'})
-
-	authToken = authHeader.split(' ')[1]
-	teamID = util.checkAuth(storage['teams'], authToken)
-
+	# If authentication fails, send error message and -code
 	if not teamID:
-		return 'Error: invalid authorization', 403
+		return Response(*response)
 
 	return json.dumps({
 		'id': teamID,
@@ -29,14 +27,17 @@ def get_teamlogin():
 @app.route('/teams', methods=['POST'])
 def post_team():
 
+	# Get the payload and parse it
 	team = json.loads(request.data.decode('UTF-8'))
 	# TODO: Verify format and data
 
+	# Generate new id and token for this new team
 	id = util.id()
 	token = util.token()
 	# TODO: Hash + Salt?
 	team['token'] = token
 
+	# Add the team to the database
 	storage['teams'][id] = team
 
 	# DEBUG
@@ -51,12 +52,16 @@ def post_team():
 @app.route('/teams', methods=['GET'])
 def get_teams():
 
+	# In order to not accidentally remove the tokens from the database, we copy
+	# the entire dict here.
 	teams = deepcopy(storage['teams'])
 
-	# Remove tokens, those are secret :P
+	# Remove tokens, since they're secrets :P
 	for id in teams:
 		del teams[id]['token']
 
+	# Clients might only want a slice of the collection, which they can specify
+	# using these URL parameters
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
 
@@ -71,9 +76,11 @@ def get_team(id):
 	if not id in storage['teams']:
 		return 'Error: Not found', 404
 
+	# In order to not accidentally remove the tokens from the database, we copy
+	# the entire dict here.
 	team = deepcopy(storage['teams'][id])
 
-	# Remove token, that's secret :P
+	# Remove token, since it's a secret :P
 	del team['token']
 
 	return json.dumps(team, indent=4)
