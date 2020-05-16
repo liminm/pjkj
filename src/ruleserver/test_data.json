@@ -82,7 +82,22 @@
 
 "commentCheck":"pattern: 0: FEN String, 1: expected value",
 "check":[["8/8/8/8/8/6rK/q1bnNBR1/krbnNBR1 w - - 2 3", "True"],
-				["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1", "False"]],
+		["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1", "False"],
+		["8/8/8/8/8/6rK/q1bnNBR1/krbnNBR1 w - - 2 3", "True"],
+        ["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1", "False"],
+        ["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1" ,"False"],
+        ["8/8/8/8/8/7Q/qrbnNBR1/krbnNBRK w - - 0 2" ,"False"],
+        ["8/8/8/8/r6K/8/q1bnNBR1/krbnNBR1 w - - 0 8" ,"True"],
+        ["8/8/8/8/k6R/8/1rbnNB1Q/1rbnNBRK w - - 0 8" ,"True"],
+        ["7Q/7K/8/8/8/8/qrbnNBR1/krbnNBR1 w - - 0 1" ,"True"],
+        ["q7/k7/8/8/8/8/1rbnNBRQ/1rbnNBRK w - - 0 1" ,"True"],
+        ["7q/8/8/1k6/3N4/8/1rbn1BRQ/1rbnNBRK w - - 0 1" ,"True"],
+        ["Q7/8/8/6K1/4n3/8/qrb1NBR1/krbnNBR1 w - - 0 1" ,"True"],
+        ["8/8/3q4/8/8/7Q/1rbnNBRK/krbnNBR1 w - - 0 1" ,"True"],
+        ["8/8/3Q4/8/8/q7/krbnNBR1/1rbnNBRK w - - 0 1" ,"True"],
+        ["8/8/8/8/8/6Q1/qrbnNBR1/krbnNBRK b - - 1 2","False"],
+        ["8/8/8/8/8/1r4Q1/q1bnNBR1/krbnNBRK w - - 2 3", "False"],
+        ["8/8/8/8/8/1r4Q1/q1bnNBRK/krbnNBR1 b - - 3 4", "False"]],
 
 "sampleGameMoveCheck":[
 	["8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1", "h2", "g3", "True"],
@@ -203,7 +218,30 @@
 	
 	],
 	
-"mainFunction": [ ]
+"mainFunction": [ ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True", "None"],
+["1bbbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbrbbb1/1bbbbbb1/8/8/8/8/1BBRBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbnbbb1/1bbbbbb1/8/8/8/8/1BBBNBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbqbbb1/1bbbbbb1/8/8/8/8/1BBBQBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["bbbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/BBBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/1bb5/8/8/8/111BBBB1/BBBBBBB1 w - - 0 6", "e1", "e2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/1BB5/8/8/8/1BBBBBB1/BBBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["8/1K1K1K1K/K1K1K1K1/8/8/1BBBBBB1/8/1BBBBBB1 w - - 0 13", "b2", "d3", "False", "None"],
+["1bbbbbb1/1bbbbbb1/1Kk5/8/8/8/1BBBBBB1/BBBBBBB1 w - - 0 6", "e1", "e2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/1Kk5/8/8/8/1BBBBBB1/BBBBBBB1 w - - 0 6", "e1", "e2", "False", "None"],
+["8/1kkkkkk1/8/8/8/8/1K1K1KB1/1BBBBBB1 w - - 0 6", "e2", "d4", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/2B5/1B1BBBB1/1BBBBBB1 w - - 0 1", "c3", "c2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b2", "c3", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b2", "b1", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b2", "a1", "False", "None"],
+["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 1", "b1", "b1", "False", "None"],
+["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 4", "b2", "b3", "False", "None"],
+["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 4", "f2", "h1", "False", "None"],
+["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 4", "f2", "f3", "False", "None"],
+["1bbbbbb1/1bbbb3/8/4k3/4B3/8/1BBB1K2/1BBBBBB1 b - - 0 3", "e5", "e4", "False", "None"],
+["1bbbbbb1/1bbbb3/8/4k3/4B3/8/1BBB1K2/1BBBBBB1 w - - 0 3", "e4", "e5", "False", "None"]
+]
 
 }
 }
