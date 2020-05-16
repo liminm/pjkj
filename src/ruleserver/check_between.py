@@ -1,5 +1,4 @@
 import numpy as np
-from bitboard import Board
 
 class CheckBetween:
 
@@ -109,7 +108,7 @@ class CheckBetween:
 
 
 if __name__ == "__main__":
-    val = check_betweeen()
+    val = CheckBetween()
     a = np.int64(1)
     b = np.int64(262144)
     b = np.int64(128)

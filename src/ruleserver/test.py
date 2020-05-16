@@ -127,8 +127,8 @@ class MoveCheckTest(unittest.TestCase):
             board_moved.moveUCI(moves[0], moves[1])
             exp = eval(t[3])
             character = board.getField(moves[0])
-            
-            self.assertEqual(v.check(repr(board), repr(board_moved)), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
+            is_valid, reason = v.check(repr(board), repr(board_moved))
+            self.assertEqual(is_valid, exp, "\nReason: " + reason + "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
     
     def testMoveCheckJumpStirdy(self):
         v = ValidCheck()
@@ -142,8 +142,8 @@ class MoveCheckTest(unittest.TestCase):
                 pass
             exp = eval(t[3])
             character = board.getField(t[1])
-            
-            self.assertEqual(v.check(repr(board), uci, "JS"), exp, "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+t[2]+"\ncharacter:"+character+"\nvalid:"+t[3])
+            is_valid, reason = v.check(repr(board), uci, "JS")
+            self.assertEqual(is_valid, exp, "\nReason: " + reason + "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+t[2]+"\ncharacter:"+character+"\nvalid:"+t[3])
 
 class WinConditionsTest(unittest.TestCase):
     

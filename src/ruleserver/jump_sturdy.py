@@ -107,8 +107,9 @@ def moveCheck(moveEvent,state):
     
     #for check valid  movement
     try:
-        if not moveCheck.check(FEN,uci):
-            return False, None, "MoveError:Not a valid move!"
+        valid_move, reason = moveCheck.check(FEN,uci)
+        if not valid_move:
+            return False, None, "MoveError:" + reason + "!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
          

@@ -17,7 +17,7 @@ class ValidCheck:
          RacingKings: FEN-Board after the move  -
          JumpSturdy: UCI-Move-String
         :param game_mode: "RK" for RacingKings or "JS" for JumpSturdy.
-        :return: True if the move is valid
+        :return: True if the move is valid + reason-string if False
         '''
         if game_mode == "RK":
             return ValidCheckRacingKings().check(first_string, second_string)
@@ -25,7 +25,7 @@ class ValidCheck:
             return ValidCheckJumpSturdy().check(first_string, second_string)
         else:
             raise SyntaxError("game_mode is not valid! Needs to be \"RK\" or \"JS\"!")
-            return False
+            return False, "Invalid GameMode"
 
 
     def tranaslate_uci(self, uci_string):
@@ -70,13 +70,13 @@ class ValidCheckJumpSturdy:
         start_figure = self.get_figure(x1, y1, self.board_before)
         end_figure   = self.get_figure(x2, y2, self.board_before)
         if (start_figure == ''):
-            return False    # no figure at start position
+            return False, "No figure at start position"
 
         if ((x1 == 0 or x1 == 7) and (y1 == 0 or y1 == 7)) or ((x2 == 0 or x2 == 7) and (y2 == 0 or y2 == 7)):
-            return False    # movement out of borders
+            return False, "Movement out of borders"
 
-        valid_movement = self.check_movement(start_figure, end_figure, x1, y1, x2, y2)
-        return valid_movement
+        valid_movement, text = self.check_movement(start_figure, end_figure, x1, y1, x2, y2)
+        return valid_movement, text
 
 
     def get_figure(self, x, y, board):
@@ -117,19 +117,19 @@ class ValidCheckJumpSturdy:
         :return: True, if the movement is valid
         '''
         if not self.compare_figures(fig1, fig2):
-            return False    # figures are not compatible
+            return False, "Figures are not compatible"
 
         player = self.board_before.player
 
         bit_pos2 = self.get_bitposition(x2, y2)
 
         if bit_pos2 & MoveBoard().generate(fig1, x1, y1, player, "JS") == 0:
-            return False    # wrong figure movement
+            return False, "Wrong figure movement"
 
         if (fig1 in "bB"):  # check single-figure movement
             return self.check_single(fig1, fig2, x1, y1, x2, y2)
 
-        return True
+        return True, ""
 
 
     def check_single(self, fig1, fig2, x1, y1, x2, y2):
@@ -145,8 +145,6 @@ class ValidCheckJumpSturdy:
         :param y2: destination
         :return: False, if it is another figure or a wrong move was made
         '''
-        if fig1 not in "bB":
-            return False
 
         x_diff = abs(x1-x2)
         y_diff = abs(y1-y2)
@@ -156,17 +154,17 @@ class ValidCheckJumpSturdy:
         if x_diff != y_diff:
             # normal move
             if fig1.islower() and (fig2 == 'b' or fig2 == ''):   # black player
-                return True
+                return True, ""
             elif fig1.isupper() and (fig2 == 'B' or fig2 == ''): # white player
-                return True
+                return True, ""
         else:
             # attack move
             if fig1.islower() and fig2 in "BKQ":    # black player
-                return True
+                return True, ""
             elif fig1.isupper() and fig2 in "bkq":  # white player
-                return True
+                return True, ""
 
-        return False
+        return False, "Wrong movement of single-level figure"
 
 
     def compare_figures(self, fig1, fig2):
@@ -205,20 +203,25 @@ class ValidCheckRacingKings: # will be ValidCheckRacingKings later
 
         :param board_before: FEN-Board before the move
         :param board_after: FEN-Board after the move
-        :return: True if the move is valid
+        :return: True if the move is valid + reason
         """
         result = self.calc_positions(board_before, board_after)
-        if (self.check_valid_move(result[0], result[1], result[2])):
+        if (result[1] < 0):
+            return False, result[3]
+
+        valid_movement, text = self.check_valid_move(result[0], result[1], result[2])
+
+        if (valid_movement):
             if result[0] in "qbr": # check for figures in between
                 board = Board(board_after)
                 all_figures = board.board['wh'] | board.board['bl']
                 if(CheckBetween().check(result[1], result[2], all_figures)):
-                    return True
+                    return True, ""
                 else:
-                    return False
+                    return False, "There are figures in between"
             else:
-                return True
-        return False
+                return True, ""
+        return False, text
 
 
     def calc_positions(self, board_before, board_after):
@@ -234,7 +237,7 @@ class ValidCheckRacingKings: # will be ValidCheckRacingKings later
 
         figure = self.get_figure(before, after)
         if figure == "":
-            return "", -1, -1
+            return "", -1, -1, "No figure or not yours"
 
         if after.player == "w":
             bit_before = before.board[figure] & before.board['wh']
@@ -249,9 +252,9 @@ class ValidCheckRacingKings: # will be ValidCheckRacingKings later
 
         # check if only one figure moves
         if (self.count_bits(bit_pos_before) > 1) or (self.count_bits(bit_pos_after) > 1):
-            return "", -1, -1
+            return "", -1, -1, "You moved too many figures" # should not happen, because we get an UCI-String
 
-        return figure, bit_pos_before, bit_pos_after
+        return figure, bit_pos_before, bit_pos_after, ""
 
 
     def get_figure(self, before, after):
@@ -320,14 +323,14 @@ class ValidCheckRacingKings: # will be ValidCheckRacingKings later
         :return: true if the figure moves like it should (example: knight-like-move)
         '''
         if (before_bit_position == after_bit_position):
-            return False
+            return False, "Start position and destination are the same"
         start_pos = self.get_position(before_bit_position)
 
         move_bitboard = np.uint64( MoveBoard().generate(figure, start_pos[0], start_pos[1]) )
 
         if (move_bitboard & after_bit_position != 0):
-            return True
-        return False
+            return True, ""
+        return False, "Invalid figure movement"
 
 
 
