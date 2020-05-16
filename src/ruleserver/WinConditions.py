@@ -5,11 +5,12 @@ player "w" oder "b"
 output true
         false
 Racing Kings
-input board 
+input board
 output true false
 '''
 import numpy as np
-from bitboard import Board
+
+from .bitboard import Board
 
 
 

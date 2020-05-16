@@ -1,5 +1,6 @@
 import numpy as np
-from bitboard import Board
+
+from .bitboard import Board
 
 class CheckBetween:
 
@@ -115,6 +116,3 @@ if __name__ == "__main__":
     b = np.int64(128)
     c = np.int64(16)
     print (val.check(a,b,c)) #should be false
-
-
-

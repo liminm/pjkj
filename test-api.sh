@@ -89,7 +89,7 @@ GAMEINFO=`echo '
 		"playerB":' \"${PLAYER2ID}\" '
 	},
 	"settings": {
-		"initialFEN": "a/b/c",
+		"initialFEN": "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1",
 		"timeBudget": 120000,
 		"timeout": "60000"
 	}
@@ -125,7 +125,7 @@ EV1INFO=`echo '
 {
 	"type": "move",
 	"details": {
-		"move": "a1b2"
+		"move": "h2h3"
 	}
 }
 ' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
@@ -154,7 +154,7 @@ EV2INFO=`echo '
 {
 	"type": "move",
 	"details": {
-		"move": "b2c3"
+		"move": "b2b6"
 	}
 }
 ' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`

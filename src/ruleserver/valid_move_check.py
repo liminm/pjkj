@@ -1,8 +1,9 @@
 import numpy as np
 import re
-from bitboard import Board
-from check_between import CheckBetween
-from generate_move_bitboard import MoveBoard
+
+from ruleserver.bitboard import Board
+from ruleserver.check_between import CheckBetween
+from ruleserver.generate_move_bitboard import MoveBoard
 
 
 class ValidCheck:

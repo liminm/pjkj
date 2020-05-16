@@ -5,11 +5,12 @@ Created on Sun May  3 14:47:31 2020
 
 @author: vairee
 """
-import bitboard
 import numpy as np
-import valid_move_check as vm
-from WinConditions import reihencheckrk
-from racing_kings_check_check import checkmate
+
+from .bitboard import Board
+from .valid_move_check import ValidCheck
+from .WinConditions import reihencheckrk
+from .racing_kings_check_check import checkmate
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
@@ -28,7 +29,7 @@ def fenStateCheck(state):
 
     #check for valid FEN
     try:
-        board = bitboard.Board(FEN)
+        board = Board(FEN)
     except error: # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
 
@@ -51,7 +52,7 @@ def fenStateCheck(state):
     if len(board.findCharacter("p")) !=0 or len(board.findCharacter("P")) != 0:
         return False, None, "StateError:There are no pawns allowed in this game!"
 
-        
+
     if checkmate(board):
         return False, None, "StateError:King can not be in check!"
 
@@ -87,7 +88,7 @@ def moveCheck(moveEvent,state):
     hashmap = state["boardHashMap"]
     event = moveEvent
 
-    vmc = vm.ValidCheck()
+    vmc = ValidCheck()
 
     #for testing
     if type(state) == str:
@@ -133,7 +134,7 @@ def moveCheck(moveEvent,state):
         winner, status = "draw"
 
     # everything is good
-            
+
     if checkwinRK(board_after) and status is None:
         winner = "playerA" if board_before.player=="w" else "playerB" # TODO: ask if playerA is white or black
         status = "won"
@@ -145,7 +146,7 @@ def moveCheck(moveEvent,state):
         else:
             winner = "playerA"
             status = "won"
-    
+
     if not (status is None):
         #set the game state and other returns
         gameState = {
@@ -155,4 +156,3 @@ def moveCheck(moveEvent,state):
         state['winner']  = winner
 
     return True,gameState,"Alles Super!"
-

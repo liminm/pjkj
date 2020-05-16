@@ -1,5 +1,6 @@
 import numpy as np
-from bitboard import Board
+
+from .bitboard import Board
 
 class MoveBoard:
     """
