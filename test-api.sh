@@ -89,7 +89,7 @@ GAMEINFO=`echo '
 		"playerB":' \"${PLAYER2ID}\" '
 	},
 	"settings": {
-		"initialFEN": "8/8/8/8/8/8/qrbnNBRQ/krbnNBRK w - - 0 1",
+		"initialFEN": "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1",
 		"timeBudget": 120000,
 		"timeout": "60000"
 	}
@@ -134,6 +134,7 @@ echo ${EV1INFO}
 
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
+exit 0
 
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 echo 'CHECKING FILTER'
