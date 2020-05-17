@@ -124,8 +124,9 @@ def moveCheck(moveEvent,state):
 
     # for check valid  movement
     try:
-        if not vmc.check(repr(board_before),repr(board_after), game_mode="RK"):
-            return False, None, "MoveError:Not a valid move!"
+        valid_move, false_reason = vmc.check(repr(board_before), repr(board_after), game_mode="RK")
+        if not valid_move:
+            return False, None, "MoveError:" + false_reason + "!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
 
