@@ -1,3 +1,7 @@
+'''
+@Authors: Heyi Li with help of Sebastian Piotr Polak
+@Version: 2020-05-17
+'''
 import numpy as np
 
 class CheckBetween:
@@ -20,12 +24,11 @@ class CheckBetween:
         else:
             direction, steps = self.check_direction(after_pos, before_pos)
 
-        if (direction == -1):
-            print("move direction can not be detected")
-            return False;
+        if (direction == -1): # sholdn't happen
+            return False, "CheckBetween:Move direction can not be detected";
 
         if (direction == 0): # no figure betweeen
-            return True;
+            return True, "";
 
         return self.calc_if_figure_betweeen(direction, steps, before_pos, after_pos, board_after)
 
@@ -54,8 +57,10 @@ class CheckBetween:
                     steps
         '''
         counter = 0
-        while (bigger_bitboard > smaller_bitboard):
-            bigger_bitboard = np.uint64(bigger_bitboard) >> np.uint64(1)
+        bigger_bitboard_tmp = bigger_bitboard
+
+        while (bigger_bitboard_tmp > smaller_bitboard):
+            bigger_bitboard_tmp = np.uint64(bigger_bitboard_tmp) >> np.uint64(1)
             counter += 1
 
         if (counter in [8, 9, 1]): # one step #8, 9, 1
@@ -94,17 +99,17 @@ class CheckBetween:
             while(steps > 1):
                 before_pos = np.uint64(before_pos) << np.uint64(direction)
                 if (temp & np.uint64(before_pos) >= 1):
-                    return False
+                    return False, "There is a figure in between"
                 steps -= 1
         else:
             temp = np.uint64((after_pos | board) & ~before_pos)
             while(steps > 1):
                 after_pos = np.uint64(after_pos) << np.uint64(direction)
                 if (temp & np.uint64(after_pos) >= 1):
-                    return False
+                    return False, "There is a figure in between"
                 steps -= 1
 
-        return True
+        return True, ""
 
 
 if __name__ == "__main__":
