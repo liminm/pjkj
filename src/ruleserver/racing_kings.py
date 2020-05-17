@@ -66,7 +66,7 @@ def fenStateCheck(state):
 
     # check if both kings are at the end of the board
     mask = np.uint64(int("1"*8+"0"*8*7, 2))
-
+    
     # check if one of the kings won the game
     if ((board.board["k"] & board.board["wh"] & mask != 0) and (board.board["k"] & board.board["bl"] & mask != 0)):
         return True, {"type":"draw", "winner":"draw"}, ""
@@ -116,7 +116,6 @@ def moveCheck(moveEvent,state):
     #try the move
     uci = moveEvent["details"]['move']
     try:
-        board_after = bitboard.Board(FEN)
         board_after.movePlayer(uci)
     except:
         return False, None, "SyntaxError:UCI String is invalid!"
@@ -124,7 +123,8 @@ def moveCheck(moveEvent,state):
 
     # for check valid  movement
     try:
-        valid_move, false_reason = vmc.check(repr(board_before), repr(board_after), game_mode="RK")
+        valid_move, false_reason = vmc.check(repr(board_before), repr(board_after))
+        print()
         if not valid_move:
             return False, None, "MoveError:" + false_reason + "!"
     except:
