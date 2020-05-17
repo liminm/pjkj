@@ -124,11 +124,19 @@ class MoveCheckTest(unittest.TestCase):
             board = Board(t[0])
             board_moved = Board(t[0])
             moves = (t[1], t[2])
-            board_moved.moveUCI(moves[0], moves[1])
             exp = eval(t[3])
-            character = board.getField(moves[0])
+            character = None
+            if exp:
+                board_moved.moveUCI(moves[0], moves[1])
+                character = board.getField(moves[0])
+                
             is_valid, reason = v.check(repr(board), repr(board_moved))
-            self.assertEqual(is_valid, exp, "\nReason: " + reason + "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+"\ncharacter:"+character+"\nvalid:"+t[2])
+            message = "\nReason: " + reason + "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+str(moves)+"\ncharacter:"+str(character)+"\nvalid:"+t[3]
+            
+            if len(t) > 4:
+                message += "\ntestMessage:" + t[4]
+            
+            self.assertEqual(is_valid, exp, message)
     
     def testMoveCheckJumpStirdy(self):
         v = ValidCheck()
@@ -136,11 +144,12 @@ class MoveCheckTest(unittest.TestCase):
             board = Board(t[0])
             board_moved = Board(t[0])
             uci = t[1] + t[2]
+            exp = eval(t[3])
             try:
-                movePlayerJS(board_moved, uci)
+                if exp:
+                    movePlayerJS(board_moved, uci)
             except:
                 pass
-            exp = eval(t[3])
             character = board.getField(t[1])
             is_valid, reason = v.check(repr(board), uci, "JS")
             self.assertEqual(is_valid, exp, "\nReason: " + reason + "\nBoard representation before move:\n" + str(board) + "\nboard representation after move:\n"+ str(board_moved) + "\nmove:"+t[1]+t[2]+"\ncharacter:"+character+"\nvalid:"+t[3])
@@ -216,7 +225,7 @@ class mainFunctionTest(unittest.TestCase):
                 board = Board(t[0])
                 state = {"fen":t[0]}
                 expected = (eval(t[3]), eval(t[4]))
-                    
+                
                 r = racing_kings.fenStateCheck(state)
                 actual = (r[0], r[1])
                  
@@ -231,10 +240,11 @@ class mainFunctionTest(unittest.TestCase):
                 moveEvent = {"type":"move",
                             "player":"playerA" if board.player == "wh" else "playerB",
                             "details": {"move":uci}}
-                    
-                expected = (eval(t[3]), eval(t[4]))
-                board_moved.movePlayer(uci)
+                
                 exp = eval(t[3])
+                expected = (exp, eval(t[4]))
+                if exp:
+                    board_moved.movePlayer(uci)
                 character = board.getField(t[1])
                     
                 r = racing_kings.moveCheck(moveEvent, state)
