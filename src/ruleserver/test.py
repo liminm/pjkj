@@ -121,7 +121,6 @@ class MoveCheckTest(unittest.TestCase):
         """
         v = ValidCheck()
         for t in test_data["racingKings"]["moveCheck"]+test_data["racingKings"]["sampleGameMoveCheck"]+test_data["racingKings"]["sampleGame"]:
-            print(t)
             board = Board(t[0])
             board_moved = Board(t[0])
             moves = (t[1], t[2])

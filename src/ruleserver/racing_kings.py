@@ -124,7 +124,6 @@ def moveCheck(moveEvent,state):
     # for check valid  movement
     try:
         valid_move, false_reason = vmc.check(repr(board_before), repr(board_after))
-        print()
         if not valid_move:
             return False, None, "MoveError:" + false_reason + "!"
     except:
@@ -144,15 +143,15 @@ def moveCheck(moveEvent,state):
         winner, status = "draw"
 
     # everything is good
-            
-    if reihencheckrk(board_after) and status is None:
-        winner = "playerA" if board_before.player=="w" else "playerB" # TODO: ask if playerA is white or black
+    # wenn schwarzer könig auf letzte reihe kommt, dann hat der spieler sofort gewonnen
+    if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None: 
+        winner = "playerB" # TODO: ask if playerA is white or black
         status = "won"
 
     # checks if the white has already won before
     if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "won"]:
-        if status == "won":
-            winner, status = "draw"
+        if reihencheckrk(board_after):
+            winner = status = "draw"
         else:
             winner = "playerA"
             status = "won"
