@@ -101,10 +101,11 @@ def moveCheck(moveEvent,state):
     if not v:
         return False, None,r
 
-
+    
     #try the move
     uci = event["details"]['move']
     try:
+        board_after = bitboard.Board(FEN)
         board_after.movePlayer(uci)
     except:
         return False, None, "SyntaxError:UCI String is invalid!"
@@ -135,7 +136,7 @@ def moveCheck(moveEvent,state):
 
     # everything is good
             
-    if checkwinRK(board_after) and status is None:
+    if reihencheckrk(board_after) and status is None:
         winner = "playerA" if board_before.player=="w" else "playerB" # TODO: ask if playerA is white or black
         status = "won"
 

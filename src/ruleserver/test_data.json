@@ -195,7 +195,7 @@
 				["2q3R1/2k5/1rb2QK1/8/8/6R1/8/4rB2 w - - 16 15", "g6", "g7", "True", "None"],
 				["2q3R1/2k3K1/1rb2Q2/8/8/6R1/8/4rB2 b - - 17 15", "c6", "h1", "True", "None"],
 				["2q3R1/2k3K1/1r3Q2/8/8/6R1/8/4rB1b w - - 18 16", "g7", "h8", "True", "None"],
-				["2q3RK/2k5/1r3Q2/8/8/6R1/8/4rB1b b - - 19 16", "c7", "b8", "True", "{'type':'draw','winner:'draw''}"]],
+				["2q3RK/2k5/1r3Q2/8/8/6R1/8/4rB1b b - - 19 16", "c7", "b8", "True", "{'type':'draw','winner':'draw'}"]],
 
 "mainFunction":[]
 },
