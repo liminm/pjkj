@@ -188,11 +188,13 @@ class checkTest(unittest.TestCase):
 
 class JumpSturdyMainFunction(unittest.TestCase):
     def testJumpStirdyStateCheck(self):
-        # TODO: create sample games
         for t in test_data["jumpStirdy"]["mainFunction"] + test_data["jumpStirdy"]["sampleGame"]:
-            board = Board(t[0])
-            state = {"fen":t[0]}
             expected = (eval(t[3]), eval(t[4]))
+            try:
+                board = Board(t[0])
+            except SyntaxError:
+                board = None
+            state = {"fen":t[0]}
                     
             r = jump_sturdy.fenStateCheck(state)
             actual = (r[0], r[1])
@@ -201,25 +203,42 @@ class JumpSturdyMainFunction(unittest.TestCase):
         
     def testJumpStirdyMoveCheck(self):
         for t in test_data["jumpStirdy"]["mainFunction"] + test_data["jumpStirdy"]["sampleGame"]:
-            board = Board(t[0])
-            state = {"fen":t[0], "boardHashMap":{}}
-            moveEvent = {"type":"move",
+            try:
+                board = Board(t[0])
+                board_moved = Board(t[0])
+                moveEvent = {"type":"move",
                         "player":"playerA" if board.player == "wh" else "playerB",
                        "details": {"move":t[1]+t[2]}}
-             
-            expected = (eval(t[3]), eval(t[4]))
+            except SyntaxError:
+                moveEvent = {"type":"move",
+                        "player":"playerA",
+                       "details": {"move":t[1]+t[2]}}
+                board = None
                 
+            state = {"fen":t[0], "boardHashMap":{}}
+            
+            uci = t[1] + t[2]
+                
+            exp = eval(t[3])
+            expected = (exp, eval(t[4]))
+            if exp:
+                jump_sturdy.movePlayerJS(board_moved, uci)
+            character = board.getField(t[1])
+            
             r = jump_sturdy.moveCheck(moveEvent, state)
             actual = (r[0], r[1])
                     
-            self.assertEqual(actual, expected, "\nBoard representation:\n" + str(board) + "\nmessage:"+r[2])
+            self.assertEqual(actual, expected, "\nBoard representation before move:\n" + str(board) + "\nBoard representationa after move:\n" + str(board_moved) + "\nmessage:"+r[2] + "\nmove:"+ uci)
       
 
 class RacingKingsMainFunction(unittest.TestCase):    
     def testRacingKingsStateCheck(self):
-        # TODO: create sample games
         for t in test_data["racingKings"]["mainFunction"]+ test_data["racingKings"]["sampleGame"]:
-            board = Board(t[0])
+            try:
+                board = Board(t[0])
+            except SyntaxError:
+                board = None
+            
             state = {"fen":t[0]}
             expected = (eval(t[3]), eval(t[4]))
                 
@@ -230,13 +249,20 @@ class RacingKingsMainFunction(unittest.TestCase):
         
     def testRacingKingsMoveCheck(self):
         for t in test_data["racingKings"]["mainFunction"]+test_data["racingKings"]["sampleGame"]:
-            board = Board(t[0])
-            board_moved = Board(t[0])
+            expected = (eval(t[3]), eval(t[4]))
+            try:
+                board = Board(t[0])
+                board_moved = Board(t[0])
+                moveEvent = {"type":"move",
+                        "player":"playerA" if board.player == "wh" else "playerB",
+                       "details": {"move":t[1]+t[2]}}
+            except SyntaxError:
+                moveEvent = {"type":"move",
+                        "player":"playerA",
+                       "details": {"move":t[1]+t[2]}}
+                board = None
             state = {"fen":t[0], "boardHashMap":{}}
             uci = t[1] + t[2]
-            moveEvent = {"type":"move",
-                        "player":"playerA" if board.player == "wh" else "playerB",
-                        "details": {"move":uci}}
                 
             exp = eval(t[3])
             expected = (exp, eval(t[4]))

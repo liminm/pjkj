@@ -161,7 +161,8 @@ def moveCheck(moveEvent,state):
         gameState = {
                 'type': status,
                 'winner': winner}
-        moveEvent['details']['postFen'],state['fen'] = repr(board_after)
+        moveEvent['details']['postFen'] = repr(board_after)
+        state['fen'] = repr(board_after)
         state['winner']  = winner
 
     return True,gameState,"Alles Super!"

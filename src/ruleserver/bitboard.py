@@ -82,7 +82,7 @@ class Board:
         m = self.pattern.match(string)
         
         if m is None:
-            raise SyntaxError("The FEN string is not valid!")
+            raise SyntaxError("The FEN string is not valid! string:" + string)
             
         return [m.group(i) for i in range(1, int(self.pattern.groups+1) )]
         

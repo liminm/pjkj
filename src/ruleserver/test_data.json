@@ -100,7 +100,8 @@
 				["8/8/8/7K/q5R1/1k3N2/2b2B2/2rn1nR1 w - - 4 17", "False"],
 				["8/8/7K/8/q5R1/1k3N2/2b2B2/2rn1nR1 b - - 5 18", "False"],
 				["8/8/7K/8/q1k3R1/5N2/2b2B2/2rn1nR1 w - - 6 19", "False"],
-				["8/7K/8/8/q1k3R1/5N2/2b2B2/2rn1nR1 b - - 7 20", "False"]],
+				["8/7K/8/8/q1k3R1/5N2/2b2B2/2rn1nR1 b - - 7 20", "False"],
+				["2q3R1/2k3K1/1r3Q2/8/8/6R1/8/4rB1b w - - 18 16", "False"]],
 
 
 
@@ -261,7 +262,7 @@
 	],
 	
 "mainFunction": [ ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True", "None"],
-["1bbbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
+["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbrbbb1/1bbbbbb1/8/8/8/8/1BBRBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbnbbb1/1bbbbbb1/8/8/8/8/1BBBNBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbqbbb1/1bbbbbb1/8/8/8/8/1BBBQBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
