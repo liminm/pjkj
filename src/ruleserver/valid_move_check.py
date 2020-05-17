@@ -242,7 +242,7 @@ class ValidCheckRacingKings:
         if figure == "":
             return "", -1, -1, "No figure or not yours"
 
-        if after.player == "w":
+        if before.player == "w":
             bit_before = before.board[figure] & before.board['wh']
             bit_after  = after.board[figure]  & after.board['wh']
         else:
@@ -270,10 +270,10 @@ class ValidCheckRacingKings:
         player_mask_2 = 0
         fig_moved = 0
         curr_fig = ""
-        if after.player == 'w':
+        if before.player == 'w':
             player_mask_1 = before.board['wh']
             player_mask_2 = after.board['wh']
-        elif after.player == "b":
+        elif before.player == "b":
             player_mask_1 = before.board['bl']
             player_mask_2 = after.board['bl']
         for fig in "kbrnq":
