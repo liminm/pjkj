@@ -11,7 +11,7 @@ persistent_storage = DatabaseDictionary()
 # Local, volatile storage for quick access
 # Initialize with persistent storage values
 storage = {
-	key: persistent_storage.get(key, {}) for key in DATABASE_KEYS
+	key: (persistent_storage.get(key, {}) or {}) for key in DATABASE_KEYS
 }
 
 # Sync local dict into persistent database
