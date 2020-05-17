@@ -21,36 +21,40 @@ def fenStateCheck(state):
 
     Returns a bool if it was valid and a String telling why it wasnt
     """
-    valid = True
-    FEN = state['fen']
-    con = None
-    ret = None
+    #for testing
+    if type(state) == str:
+        FEN = state
+    elif type(state) == dict:
+        FEN = state['fen']
+
 
     #check for valid FEN
     try:
         board = bitboard.Board(FEN)
-    except error: # syntax error on fen string
+    except : # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
 
-    # check if the count of characters is valid
-    if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
-        return False, None, "StateError:There are not exactly 1 king on each side!"
+    try:
+        # check if the count of characters is valid
+        if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
+            return False, None, "StateError:There are not exactly 1 king on each side!"
 
-    if not len(board.findCharacter("q")) in range(3) or not len(board.findCharacter("Q")) in range(3):
-        return False, None, "StateError:Each side has to have 0-2 queens!"
+        if not len(board.findCharacter("q")) in range(3) or not len(board.findCharacter("Q")) in range(3):
+            return False, None, "StateError:Each side has to have 0-2 queens!"
 
-    if not len(board.findCharacter("n")) in range(3) or not len(board.findCharacter("N")) in range(3):
-        return False, None, "StateError:Each side has to have 0-2 knights!"
+        if not len(board.findCharacter("n")) in range(3) or not len(board.findCharacter("N")) in range(3):
+            return False, None, "StateError:Each side has to have 0-2 knights!"
 
-    if not len(board.findCharacter("b")) in range(3) or not len(board.findCharacter("B")) in range(3):
-        return False, None, "StateError:Each side has to have 0-2 bishops!"
+        if not len(board.findCharacter("b")) in range(3) or not len(board.findCharacter("B")) in range(3):
+            return False, None, "StateError:Each side has to have 0-2 bishops!"
 
-    if not len(board.findCharacter("r")) in range(3) or not len(board.findCharacter("R")) in range(3):
-        return False, None, "StateError:Each side has to have 0-2 rooks!"
+        if not len(board.findCharacter("r")) in range(3) or not len(board.findCharacter("R")) in range(3):
+            return False, None, "StateError:Each side has to have 0-2 rooks!"
 
-    if len(board.findCharacter("p")) !=0 or len(board.findCharacter("P")) != 0:
-        return False, None, "StateError:There are no pawns allowed in this game!"
-
+        if len(board.findCharacter("p")) !=0 or len(board.findCharacter("P")) != 0:
+            return False, None, "StateError:There are no pawns allowed in this game!"
+    except:
+        return False, None, "StateError: unknown Figure"
         
     if checkmate(board):
         return False, None, "StateError:King can not be in check!"
@@ -72,6 +76,7 @@ def fenStateCheck(state):
 
     if (board.board["k"] & board.board["bl"] & mask != 0):
         return True, {"type": "win", "winner":"PlayerB"}, ""
+    
 
     return True, None, "Alles Super!"
 
@@ -81,7 +86,6 @@ def moveCheck(moveEvent,state):
     r = None
     status = None
     winner = None
-    valid = True
     gameState = None
     player = moveEvent["player"]
     hashmap = state["boardHashMap"]
@@ -94,6 +98,13 @@ def moveCheck(moveEvent,state):
         FEN = state
     elif type(state) == dict:
         FEN = state['fen']
+        
+      #create Boards
+    try:
+        board_before = bitboard.Board(FEN)
+        board_after = bitboard.Board(FEN)
+    except:
+        return False, None, "SyntaxError:FEN String is invalid!  "
 
     #------------------------ validity testing--------------
     #checkfor valid FEN
@@ -103,7 +114,7 @@ def moveCheck(moveEvent,state):
 
 
     #try the move
-    uci = event["details"]['move']
+    uci = moveEvent["details"]['move']
     try:
         board_after.movePlayer(uci)
     except:
@@ -112,15 +123,12 @@ def moveCheck(moveEvent,state):
 
     # for check valid  movement
     try:
-        valid_move, reason = vmc.check(repr(self.lastBoard),repr(self.board))
-        if not valid_move:
-            return False, None, "MoveError:" + reason + "!"
+        if not vmc.check(repr(board_before),repr(board_after), game_mode="RK"):
+            return False, None, "MoveError:Not a valid move!"
     except:
         return False, None, "InternalError:Internal Function is incorrect! Please report this error to the rule server team."
 
     #check for checkmate
-    king = self.curBoard[self.curPlayer]&self.board['k']
-    moves = wc.calc_movesboard(wc.set_occupied_pos,)
     if checkmate(board_after):
         return False, None, "MoveError:The king is checked!"
 
@@ -135,7 +143,7 @@ def moveCheck(moveEvent,state):
 
     # everything is good
             
-    if checkwinRK(board_after) and status is None:
+    if reihencheckrk(board_after) and status is None:
         winner = "playerA" if board_before.player=="w" else "playerB" # TODO: ask if playerA is white or black
         status = "won"
 
@@ -156,4 +164,3 @@ def moveCheck(moveEvent,state):
         state['winner']  = winner
 
     return True,gameState,"Alles Super!"
-
