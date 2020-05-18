@@ -1,3 +1,8 @@
+'''
+@Author: Sebastian Piotr Polak
+@Version: 2020-05-17
+'''
+
 import numpy as np
 
 from .bitboard import Board
@@ -16,8 +21,8 @@ class MoveBoard:
         Standard GameMode is RacingKings
 
         :param figure: char of the figure
-        :param x: 0 to 7
-        :param y: 0 to 7
+        :param x: 0 to 7 (may be mirrored for your implementation)
+        :param y: 0 to 7 (may be mirrored for your implementation)
         :param game_mode: "RK" for RacingKings, "JS" for JumpSturdy
         :return: bitboard as uint64-digit
         '''

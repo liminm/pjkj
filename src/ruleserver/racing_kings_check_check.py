@@ -13,6 +13,16 @@ def checkmate(board):
     return cm.checkmate(board.board["q"], board.board["k"], board.board["b"], board.board["n"], board.board["r"],
                         board.board["wh"], board.board["bl"], player)
 
+def bmatrix(bitboard):
+    save = bitboard
+    bitboard = '{:>064b}'.format(bitboard)
+    for c in range(7,0,-1):
+        print(bitboard[(7-c)*8:-(c*8)])
+    print(bitboard[7 * 8:])
+    print(len(bitboard))
+    print("\n")
+    if (len(bitboard) == 83):
+        print(save)
 
 class Checkmate():
 
@@ -49,23 +59,33 @@ class Checkmate():
         # print(fig_moves)
         for i in range(0, len(fig_moves)):
             for fig in fig_moves[i]:
-                # print("i: ", i)
+                #print("i: ", i)
 
                 # print("Fig: ", fig)
                 pos_exp = int(math.log2(fig))
-                # print("Position Exponent: ", pos_exp)
+                #print("Position Exponent: ", pos_exp)
 
                 if (i == 1):
                     king_mask = (fig >> 1) + (fig << 1) + (fig >> 8) + (fig << 8) + (fig << 7) + (fig << 9) + (
                                 fig >> 9) + (fig >> 7)
-                    if (pos_exp in list(range(0, 57, 8))):
-                        king_mask -= (fig >> 1) + (fig << 7) + (fig >> 9)
-                    if (pos_exp in list(range(7, 64, 8))):
-                        king_mask -= (fig << 1) + (fig << 9) + (fig >> 7)
-                    if (pos_exp in list(range(0, 8, 1))):
-                        king_mask -= (fig >> 8)
-                    if (pos_exp in list(range(56, 64, 1))):
-                        king_mask -= (fig << 8)
+                    if (pos_exp in list(range(1, 7, 1))):
+                        king_mask -= (fig >> 9) + (fig >> 8) + (fig >> 7)
+                    if (pos_exp in list(range(57, 63, 1))):
+                        king_mask -= (fig << 9) + (fig << 8) + (fig << 7)
+                    if (pos_exp in list(range(8, 49, 8))):
+                        king_mask -= (fig >> 9) + (fig >> 1) + (fig << 7)
+                    if (pos_exp in list(range(15, 56, 8))):
+                        king_mask -= (fig >> 7) + (fig << 1) + (fig << 9)
+                    if (pos_exp == 0):
+                        king_mask -= (fig >> 9) + (fig >> 8) + (fig >> 7) + (fig >> 1) + (fig << 7)
+                    if (pos_exp == 7):
+                        king_mask -= (fig >> 9) + (fig >> 8) + (fig >> 7) + (fig << 1) + (fig << 9)
+                    if (pos_exp == 56):
+                        king_mask -= (fig << 9) + (fig << 8) + (fig << 7) + (fig >> 9) + (fig >> 1)
+                    if (pos_exp == 63):
+                        king_mask -= (fig << 9) + (fig << 8) + (fig << 7) + (fig << 1) + (fig >> 7)
+
+                    #bmatrix(king_mask)
 
                     # print("King Mask: ",king_mask)
                     # print(bin(king_mask))
@@ -76,27 +96,41 @@ class Checkmate():
                     knight_move = (fig >> 17) + (fig >> 15) + (fig >> 10) + (fig >> 6) + (fig << 6) + (fig << 10) + (
                                 fig << 15) + (fig << 17)
 
-                    if (pos_exp in list(range(0, 57, 8))):
-                        knight_move -= (fig << 15) + (fig << 6) + (fig >> 10) + (fig >> 17)
-                    if (pos_exp in list(range(7, 64, 8))):
-                        knight_move -= (fig << 17) + (fig << 10) + (fig >> 6) + (fig >> 15)
-                    if (pos_exp in list(range(0, 8, 1))):
+                    if(pos_exp in list(range(1,7,1))):
                         knight_move -= (fig >> 6) + (fig >> 10) + (fig >> 15) + (fig >> 17)
-                    if (pos_exp in list(range(7, 64, 8))):
+                    if(pos_exp in list(range(57,63,1))):
                         knight_move -= (fig << 17) + (fig << 15) + (fig << 10) + (fig << 6)
-                    if (pos_exp in list(range(9, 57, 8))):
-                        knight_move -= (fig << 6) + (fig >> 10)
-                    if (pos_exp in list(range(9, 15, 1))):
-                        knight_move -= (fig >> 17) + (fig >> 15)
-                    if (pos_exp in list(range(14, 62, 8))):
-                        knight_move -= (fig << 10) + (fig >> 6)
-                    if (pos_exp in list(range(49, 55, 1))):
-                        knight_move -= (fig << 17) + (fig << 15)
-                    if (pos_exp in list(range(56, 64, 1))):
-                        knight_move -= (fig << 17) + (fig << 15) + (fig << 10) + (fig << 6)
+                    if (pos_exp in list(range(8, 49, 8))):
+                        knight_move -= (fig << 15) + (fig << 6) + (fig >> 10) + (fig >> 17)
+                    if (pos_exp in list(range(15, 56, 8))):
+                        knight_move -= (fig >> 15) + (fig >> 6) + (fig << 10) + (fig << 17)
+                    if (pos_exp == 0):
+                        knight_move -= (fig >> 17) + (fig >> 15) + (fig >> 10) + (fig >> 6) + (fig << 6) + (fig << 15)
+                    if (pos_exp == 7):
+                        knight_move -= (fig >> 17) + (fig >> 15) + (fig >> 10) + (fig >> 6) + (fig << 10) + (fig << 17)
+                    if (pos_exp == 56):
+                        knight_move -= (fig << 17) + (fig << 15) + (fig << 10) + (fig << 6) + (fig >> 10) + (fig >> 17)
+                    if (pos_exp == 63):
+                        knight_move -= (fig << 17) + (fig << 15) + (fig << 10) + (fig << 6) + (fig >> 6) + (fig >> 15)
 
-                    # print("Knight Move: ", knight_move)
-                    # print(bin(knight_move))
+                    if (pos_exp in list(range(10, 14, 1))):
+                        knight_move -= (fig >> 17) + (fig >> 15)
+                    if (pos_exp in list(range(49, 53, 1))):
+                        knight_move -= (fig << 17) + (fig << 15)
+                    if (pos_exp in list(range(17, 42, 8))):
+                        knight_move -= (fig >> 10) + (fig << 6)
+                    if (pos_exp in list(range(22, 47, 8))):
+                        knight_move -= (fig << 10) + (fig >> 6)
+                    if (pos_exp in list(range(50, 53, 1))):
+                        knight_move -= (fig << 17) + (fig << 15)
+                    if (pos_exp == 9):
+                        knight_move -= (fig >> 17) + (fig >> 15) + (fig >> 10) + (fig << 6)
+                    if (pos_exp == 14):
+                        knight_move -= (fig >> 17) + (fig >> 15) + (fig >> 6) + (fig << 10)
+                    if (pos_exp == 49):
+                        knight_move -= (fig >> 10) + (fig << 6) + (fig >> 15) + (fig >> 17)
+                    if (pos_exp == 54):
+                        knight_move -= (fig >> 6) + (fig << 10) + (fig >> 15) + (fig >> 17)
 
                     moves_board = moves_board | knight_move
 
@@ -147,122 +181,87 @@ class Checkmate():
                         else:
                             break
 
-                    diag_minus_range = set(diag_minus_range)
-                    diag_plus_range = set(diag_plus_range)
+                    diag_minus_range = list(set(diag_minus_range))
+                    diag_minus_range.sort()
+                    diag_plus_range = list(set(diag_plus_range))
+                    diag_plus_range.sort()
 
                     diag_minus_move = sum([2 ** num for num in diag_minus_range])
                     diag_plus_move = sum([2 ** num for num in diag_plus_range])
                     diag_minus_mask = diag_minus_move & occupied_positions
                     diag_plus_mask = diag_plus_move & occupied_positions
-
-                    diag_minus_mask = sum([2 ** exp for exp in range(8) if ((255 << (8 * exp) & diag_minus_mask))])
+                    diag_minus_mask = sum([2 ** exp for exp in range(8) if (((255 << (8 * exp)) & diag_minus_mask))])
+                    #delete ending 0s as out of range of slider
+                    diag_minus_mask = diag_minus_mask >> int(diag_minus_range[0] / 8)
                     diag_plus_mask = sum([2 ** exp for exp in range(8) if ((255 << (8 * exp) & diag_plus_mask))])
-                    diag_minus_fig_slider = sum(
-                        [(2 ** column) for column in range(len(diag_minus_range)) if (255 << (8 * column) & fig)])
-                    diag_plus_fig_slider = sum(
-                        [(2 ** column) for column in range(len(diag_plus_range)) if (255 << (8 * column) & fig)])
+                    #delete ending 0s as out of range of slider
+                    diag_plus_mask = diag_plus_mask >> int(diag_plus_range[0] / 8)
+
+                    diag_minus_fig_slider = sum([(2 ** column) for column in range(8) if (255 << (8 * column) & fig)])
+                    diag_plus_fig_slider = sum([(2 ** column) for column in range(8) if (255 << (8 * column) & fig)])
+                    #delete ending 0s as out of range of slider
+                    diag_minus_fig_slider = diag_minus_fig_slider >> int(diag_minus_range[0] / 8)
+                    diag_plus_fig_slider = diag_plus_fig_slider >> int(diag_plus_range[0] / 8)
 
                     form_string = '{:0' + str(len(diag_minus_range)) + 'b}'
 
+                    # left side moves
+                    # check if fig slider is not out of bounds (8bit)
                     if (diag_minus_mask >= 2 * diag_minus_fig_slider):
-                        diag_minus_left_line_moves = (diag_minus_mask - 2 * diag_minus_fig_slider)
-                        # print("Left: ",diag_minus_left_line_moves)
-                    elif (diag_minus_mask < 2 * diag_minus_fig_slider):
-                        diag_minus_left_line_moves = (sum([2 ** num for num in range(len(diag_minus_range))]) - (
-                                    2 * diag_minus_fig_slider - diag_minus_mask - 1))
-                    if (int(form_string.format(diag_minus_mask)[::-1], 2) >= - 2 * int(
-                            form_string.format(diag_minus_fig_slider)[::-1], 2)):
-
-                        if (2 * int(form_string.format(diag_minus_fig_slider)[::-1], 2) > sum(
-                                [2 ** num for num in range(len(diag_minus_range))])):
-                            diag_minus_right_line_moves = diag_minus_mask
-                        else:
-                            #TODO FIX ERROR
-                            #diag_minus_right_line_moves = int(form_string.format(
-                            #    int(form_string.format(diag_minus_mask)[::-1], 2) - 2 * int(
-                            #        form_string.format(diag_minus_fig_slider)[::-1], 2))[::-1], 2)
-
-                            # TODO DELETE; ONLY TEMP
-                            diag_minus_right_line_moves = 0
-
-                    # TODO test if case is working
+                        diag_minus_left_line_moves = diag_minus_mask - 2 * diag_minus_fig_slider
+                    # reverse the bits and subtract (difference -1)
                     else:
-                        diag_minus_right_line_moves = int(form_string.format(([2 ** num for num in
-                                                                               range(len(diag_minus_range))] - (2 * int(
-                            form_string.format(diag_minus_fig_slider)[::-1], 2) - int(
-                            form_string.format(diag_minus_mask)[::-1], 2))))[::-1], 2)
+                        diag_minus_left_line_moves = sum([2 ** num for num in range(len(diag_minus_range))]) - (2 * diag_minus_fig_slider - diag_minus_mask) + 1
+
+                    #right side moves
+                    if (int(form_string.format(diag_minus_mask)[::-1], 2) >= 2 * int(form_string.format(diag_minus_fig_slider)[::-1], 2)):
+                        diag_minus_right_line_moves = int(form_string.format(int(form_string.format(np.uint(diag_minus_mask))[::-1], 2) - 2 * int(form_string.format(np.uint(diag_minus_fig_slider))[::-1], 2))[::-1], 2)
+                    else:
+                        diag_minus_right_line_moves = int(form_string.format(sum([2 ** num for num in range(len(diag_minus_range))]) - ((2 * int(form_string.format(np.uint8(diag_minus_fig_slider))[::-1], 2)) - int(form_string.format(np.uint8(diag_minus_mask))[::-1], 2)) + 1)[::-1], 2)
 
                     diag_minus_line_moves = diag_minus_left_line_moves ^ diag_minus_right_line_moves
 
                     form_string = '{:0' + str(len(diag_plus_range)) + 'b}'
 
+
+                    # left side moves
+                    # check if fig slider is not out of bounds (8bit)
                     if (diag_plus_mask >= 2 * diag_plus_fig_slider):
-                        diag_plus_left_line_moves = (diag_plus_mask - 2 * diag_plus_fig_slider)
-                        # print("Left: ",diag_plus_left_line_moves)
-                    elif (diag_plus_mask < 2 * diag_plus_fig_slider):
-                        diag_plus_left_line_moves = (sum([2 ** num for num in range(len(diag_plus_range))]) - (
-                                    2 * diag_plus_fig_slider - diag_plus_mask - 1))
-
-                    if (int(form_string.format(diag_plus_mask)[::-1], 2) >= - 2 * int(
-                            form_string.format(diag_plus_fig_slider)[::-1], 2)):
-
-                        if (2 * int(form_string.format(diag_plus_fig_slider)[::-1], 2) > sum(
-                                [2 ** num for num in range(len(diag_plus_range))])):
-                            diag_plus_right_line_moves = diag_plus_mask
-                        else:
-                            # TODO FIX ERROR
-                            #diag_plus_right_line_moves = int(form_string.format(
-                            #    int(form_string.format(diag_plus_mask)[::-1], 2) - 2 * int(
-                            #        form_string.format(diag_plus_fig_slider)[::-1], 2))[::-1], 2)
-
-                            # TODO remove; only added temporarily
-                            diag_plus_right_line_moves = 0
-                    # TODO test if case is working
+                        diag_plus_left_line_moves = diag_plus_mask - 2 * diag_plus_fig_slider
+                    # reverse the bits and subtract (difference -1)
                     else:
-                        diag_plus_right_line_moves = int(form_string.format(([2 ** num for num in
-                                                                              range(len(diag_plus_range))] - (2 * int(
-                            form_string.format(diag_plus_fig_slider)[::-1], 2) - int(
-                            form_string.format(diag_plus_mask)[::-1], 2))))[::-1], 2)
+                        diag_plus_left_line_moves = sum([2 ** num for num in range(len(diag_plus_range))]) - (2 * diag_plus_fig_slider - diag_plus_mask) + 1
+
+                    #right side moves
+                    if (int(form_string.format(diag_plus_mask)[::-1], 2) >= 2 * int(form_string.format(diag_plus_fig_slider)[::-1], 2)):
+                        diag_plus_right_line_moves = int(form_string.format(int(form_string.format(np.uint(diag_plus_mask))[::-1], 2) - 2 * int(form_string.format(np.uint(diag_plus_fig_slider))[::-1], 2))[::-1], 2)
+                    else:
+                        diag_plus_right_line_moves = int(form_string.format(sum([2 ** num for num in range(len(diag_plus_range))]) - ((2 * int(form_string.format(np.uint8(diag_plus_fig_slider))[::-1], 2)) - int(form_string.format(np.uint8(diag_plus_mask))[::-1], 2)) + 1)[::-1], 2)
 
                     diag_plus_line_moves = diag_plus_left_line_moves ^ diag_plus_right_line_moves
+
                     form_string_minus = '{:>0' + str(len(diag_minus_range)) + 'b}'
                     form_string_plus = '{:>0' + str(len(diag_plus_range)) + 'b}'
 
-                    bishop_moves = sum(
-                        [2 ** (pos_exp - (int(pos_exp / 8) * 9) + 9 * num) for num in range(len(diag_minus_range)) if ((
-                                                                                                                                   (
-                                                                                                                                       int(
-                                                                                                                                           form_string_minus.format(
-                                                                                                                                               (
-                                                                                                                                                           diag_minus_line_moves >> num))[
-                                                                                                                                           ::-1],
-                                                                                                                                           2)) >> (
-                                                                                                                                               len(
-                                                                                                                                                   diag_minus_range) - 1)) != 0)]) | sum(
-                        [2 ** (pos_exp - (int(pos_exp / 8) * 7) + 7 * num) for num in range(len(diag_plus_range)) if (((
-                                                                                                                           int(
-                                                                                                                               form_string_plus.format(
-                                                                                                                                   (
-                                                                                                                                               diag_plus_line_moves >> num))[
-                                                                                                                               ::-1],
-                                                                                                                               2)) >> (
-                                                                                                                                   len(
-                                                                                                                                       diag_plus_range) - 1)) != 0)])
-                    # print("Bishop Moves: ",bishop_moves)
-                    # print(bin(bishop_moves))
+                    diagonal_moves = sum([2 ** (diag_minus_range[0] + (exp*9)) for exp in range(len(diag_minus_range) ) if (form_string_minus.format(diag_minus_line_moves)[::-1][exp] == '1') ])  | sum([2 ** (diag_plus_range[0] + (exp*7)) for exp in range(len(diag_plus_range) ) if (form_string_plus.format(diag_plus_line_moves)[::-1][exp] == '1') ])
 
-                    moves_board = moves_board | bishop_moves
+                    #print("Diagonal Minus Range: ", diag_minus_range)
+                    #print("Diagonal Plus Range: ", diag_plus_range)
+                    #print("Diagonal Minus Move: ", diag_minus_move)
+                    #print("Diagonal Plus Move: ", diag_plus_move)
+                    #print("Diagonal Minus Mask: ", diag_minus_mask)
+                    #print("Diagonal Plus Mask: ", diag_plus_mask)
+                    #print("Diagonal Minus Fig Slider: ", diag_minus_fig_slider)
+                    #print("Diagonal Plus Fig Slider: ", diag_plus_fig_slider)
+                    #print("Diagonal Minus Line Moves: ", diag_minus_line_moves)
+                    #print("Diagonal Plus Line Moves: ", diag_plus_line_moves)
+                    #print("Diagonal Moves: ", diagonal_moves)
+                    #bmatrix(diagonal_moves)
 
-                    # print("Diagonal Minus Line Moves: ", diag_minus_line_moves)
-                    # print("Diagonal Plus Line Moves: ", diag_plus_line_moves)
-                    # print("Diagonal Minus Fig Slider: ", diag_minus_fig_slider)
-                    # print("Diagonal Plus Fig Slider: ", diag_plus_fig_slider)
-                    # print("Diagonal Minus Range: ", diag_minus_range)
-                    # print("Diagonal Plus Range: ", diag_plus_range)
-                    # print("Diagonal Minus Move: ", diag_minus_move)
-                    # print("Diagonal Plus Move: ", diag_plus_move)
-                    # print("Diagonal Minus Mask: ", diag_minus_mask)
-                    # print("Diagonal Plus Mask: ", diag_plus_mask)
+                    moves_board = moves_board | diagonal_moves
+
+
+
 
                 if (i == 4 or i == 0):
                     hor_fig_slider = sum(
@@ -270,24 +269,28 @@ class Checkmate():
                     vert_fig_slider = sum([(2 ** column) for column in range(8) if (255 << (8 * column) & fig)])
                     hor_range = [num + (8 * (int(pos_exp / 8))) for num in list(range(8))]
                     vert_range = list(range(pos_exp % 8, pos_exp % 8 + 57, 8))
-                    hor_move = sum([2 ** (num - hor_range[0]) for num in hor_range])
+                    hor_move = sum([2 ** (num) for num in hor_range ])
                     vert_move = sum([2 ** num for num in vert_range])
                     # all occupied positions in move mask
-                    hor_mask = hor_move & occupied_positions
+                    hor_mask = (hor_move & occupied_positions) >> 8* int(pos_exp / 8 )
                     vert_mask = vert_move & occupied_positions
                     vert_mask = sum([2 ** exp for exp in range(8) if ((255 << (8 * exp) & vert_mask))])
 
                     hor_line_moves = (np.uint8(hor_mask - 2 * hor_fig_slider).item()) ^ int('{:08b}'.format(np.uint8(
-                        int('{:08b}'.format(hor_mask)[::-1], 2) - 2 * int('{:08b}'.format(hor_fig_slider)[::-1], 2)))[
-                                                                                     ::-1], 2)
+                        int('{:08b}'.format(hor_mask)[::-1], 2) - 2 * int('{:08b}'.format(hor_fig_slider)[::-1], 2)))[::-1], 2)
+
+                    #bmatrix((hor_line_moves << (8 * (int(pos_exp / 8)))))
+
+
                     vert_line_moves = (np.uint8(vert_mask - 2 * vert_fig_slider).item()) ^ int('{:08b}'.format(np.uint8(
                         int('{:08b}'.format(vert_mask)[::-1], 2) - 2 * int('{:08b}'.format(vert_fig_slider)[::-1], 2)))[
                                                                                         ::-1], 2)
 
-                    rook_moves = ((hor_line_moves << 8 * (int(pos_exp / 8))) | sum([2 ** ((pos_exp % 8) + 8 * num) for num in range(8) if(((int('{:>08b}'.format((vert_line_moves >> num))[::-1], 2)) >> (7)) != 0)]))
+                    rook_moves = ((hor_line_moves << (8 * (int(pos_exp / 8)))) | sum([2 ** ((pos_exp % 8) + 8 * num) for num in range(8) if(((int('{:>08b}'.format((vert_line_moves >> num))[::-1], 2)) >> (7)) != 0)]))
 
-                    # print("Rook Moves: ",rook_moves)
-                    # print(bin(rook_moves))
+                    #bmatrix(hor_line_moves << (8 * (int(pos_exp / 8))))
+                    #bmatrix(rook_moves)
+
                     moves_board = moves_board | rook_moves
 
                     # print("Horizontal mask of occupied figs: ", hor_mask)
@@ -301,7 +304,7 @@ class Checkmate():
                     # print("Horizontal line moves: ", hor_line_moves)
                     # print("Vertical line moves: ", vert_line_moves)
 
-        # print ("Moves board: ",moves_board)
+        #print ("Moves board: ",moves_board)
         return moves_board
 
     # compare king position with all possible opponent moves; if both binaries have no common 1s then king is safe
@@ -350,6 +353,8 @@ class Checkmate():
 
         # result == True if King is in chess; False if King is not attacked
         result = board.king_is_attacked(own_king, enemy_king, own_move_board, enemy_move_board)
+
+
 
         return result
 
