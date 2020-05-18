@@ -5,11 +5,12 @@ Created on Sun May  3 14:47:31 2020
 
 @author: vairee
 """
-import bitboard
 import numpy as np
-import valid_move_check as vm
-from WinConditions import reihencheckrk
-from racing_kings_check_check import checkmate
+
+from .bitboard import Board
+from .valid_move_check import ValidCheck
+from .WinConditions import reihencheckrk
+from .racing_kings_check_check import checkmate
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
@@ -30,7 +31,7 @@ def fenStateCheck(state):
 
     #check for valid FEN
     try:
-        board = bitboard.Board(FEN)
+        board = Board(FEN)
     except : # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
 
@@ -55,7 +56,7 @@ def fenStateCheck(state):
             return False, None, "StateError:There are no pawns allowed in this game!"
     except:
         return False, None, "StateError: unknown Figure"
-        
+
     if checkmate(board):
         return False, None, "StateError:King can not be in check!"
 
@@ -66,7 +67,7 @@ def fenStateCheck(state):
 
     # check if both kings are at the end of the board
     mask = np.uint64(int("1"*8+"0"*8*7, 2))
-    
+
     # check if one of the kings won the game
     if ((board.board["k"] & board.board["wh"] & mask != 0) and (board.board["k"] & board.board["bl"] & mask != 0)):
         return True, {"type":"draw", "winner":"draw"}, ""
@@ -76,7 +77,7 @@ def fenStateCheck(state):
 
     if (board.board["k"] & board.board["bl"] & mask != 0):
         return True, {"type": "win", "winner":"PlayerB"}, ""
-    
+
 
     return True, None, "Alles Super!"
 
@@ -91,14 +92,14 @@ def moveCheck(moveEvent,state):
     hashmap = state["boardHashMap"]
     event = moveEvent
 
-    vmc = vm.ValidCheck()
+    vmc = ValidCheck()
 
     #for testing
     if type(state) == str:
         FEN = state
     elif type(state) == dict:
         FEN = state['fen']
-        
+
       #create Boards
     try:
         board_before = bitboard.Board(FEN)
@@ -112,7 +113,7 @@ def moveCheck(moveEvent,state):
     if not v:
         return False, None,r
 
-    
+
     #try the move
     uci = moveEvent["details"]['move']
     try:
@@ -144,7 +145,7 @@ def moveCheck(moveEvent,state):
 
     # everything is good
     # wenn schwarzer könig auf letzte reihe kommt, dann hat der spieler sofort gewonnen
-    if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None: 
+    if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None:
         winner = "playerB" # TODO: ask if playerA is white or black
         status = "win"
 
@@ -155,7 +156,7 @@ def moveCheck(moveEvent,state):
         else:
             winner = "playerA"
             status = "win"
-    
+
     if not (status is None):
         #set the game state and other returns
         gameState = {

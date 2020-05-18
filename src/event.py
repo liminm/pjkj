@@ -6,6 +6,7 @@ from datetime import datetime
 from __main__ import app
 from data import storage
 import timer
+import rules
 import util
 
 
@@ -62,9 +63,8 @@ def post_event(id):
 	# The most common event clients submit is the move, which is processed by
 	# the ruleserver.
 	elif event['type'] == 'move':
-		# TODO: Check move with ruleserver
-		#valid, gameEnd, reason = ruleServer.moveCheck(event, game['state'])
-		print('NYI')
+		# Check move with ruleserver
+		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
