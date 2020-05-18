@@ -40,11 +40,11 @@ def post_game():
 	game['events'] = []
 
 	# Check initial state with Ruleserver
-	valid, gameEnd, reason = rules.stateCheck(game['type'], game['state'])
-	if not valid:
-		return 'Error: Game state invalid\nReason:' + reason, 400
-	if gameEnd:
-		return 'Error: Game already ended\ngameEnd:' + gameEnd, 409
+	#valid, gameEnd, reason = rules.stateCheck(game['type'], game['state'])
+	#if not valid:
+	#	return 'Error: Game state invalid\nReason:' + reason, 400
+	#if gameEnd:
+	#	return 'Error: Game already ended\ngameEnd:' + gameEnd, 409
 
 	# Generate a new id for this game
 	id = util.id()
