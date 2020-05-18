@@ -45,7 +45,7 @@ in the python3 shell from a different user.
 
 ## 2. Web server
 
-For static files and SSL handling,
+For static files and SSL handling, a proper web server is recommended.
 
 You can use any production web server, but we recommend `nginx`:
 ```
