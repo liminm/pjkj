@@ -82,7 +82,7 @@ class Board:
         m = self.pattern.match(string)
         
         if m is None:
-            raise SyntaxError("The FEN string is not valid!")
+            raise SyntaxError("The FEN string is not valid! string:" + string)
             
         return [m.group(i) for i in range(1, int(self.pattern.groups+1) )]
         
@@ -192,7 +192,7 @@ class Board:
         if end is None:
             m = re.compile("([a-h][1-8])[- ]?([a-h][1-8])").match(start.lower())
             if m is None:
-                raise SyntaxError("Syntax Error in UCI String!")
+                raise SyntaxError("Syntax Error in UCI String! string:" + start)
             
             start = m.group(1)
             end = m.group(2)
@@ -200,7 +200,7 @@ class Board:
         character = self.getField(start)
         self.getField(end)
         if character is None:
-            raise SyntaxError("Syntax Error in UCI String!")
+            raise ValueError("No Character on the field! field:" + start + ","+end + "\nboard:\n"+str(self))
         
             
         self.setField(end, character)
@@ -246,7 +246,7 @@ class Board:
         m = re.compile("[a-h][1-8]").match(position)
         
         if m is None:
-            raise SyntaxError("The Syntax of the position is wrong!")
+            raise SyntaxError("The Syntax of the position is wrong! string:" + start)
         
         x = 7-int(ord(position[0])-ord("a"))
         y = int(position[1])-1

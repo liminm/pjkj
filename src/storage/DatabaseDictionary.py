@@ -1,4 +1,5 @@
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 from collections.abc import MutableMapping
 import threading, time
 
@@ -8,8 +9,14 @@ class DatabaseDictionary(MutableMapping):
     It is based and reliant on a mongoDB
     '''
     
-    def __init__(self, url='localhost', port=27017):
-        self.mongo_client = MongoClient(url, port)
+    def __init__(self, url='localhost', port=27017, database_timeout_ms=3000):
+        self.mongo_client = MongoClient(url, port, serverSelectionTimeoutMS=database_timeout_ms )
+
+        try:
+            self.mongo_client.admin.command('ismaster')
+        except ConnectionFailure:
+            raise ConnectionFailure('MongoDB docker is not reachable')
+
         self.mongo_database = self.mongo_client['pjki']
         self.mongo_collection = self.mongo_database['game-history']
 
