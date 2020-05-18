@@ -146,15 +146,15 @@ def moveCheck(moveEvent,state):
     # wenn schwarzer könig auf letzte reihe kommt, dann hat der spieler sofort gewonnen
     if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None: 
         winner = "playerB" # TODO: ask if playerA is white or black
-        status = "won"
+        status = "win"
 
     # checks if the white has already won before
-    if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "won"]:
+    if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "win"]:
         if reihencheckrk(board_after):
             winner = status = "draw"
         else:
             winner = "playerA"
-            status = "won"
+            status = "win"
     
     if not (status is None):
         #set the game state and other returns
