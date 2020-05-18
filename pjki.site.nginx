@@ -18,7 +18,6 @@ server {
 		rewrite /api(.*) /$1 break;
 		include uwsgi_params;
 		uwsgi_pass unix:/tmp/pjkiserver.sock;
-		#proxy_pass http://localhost:5000/;
 	}
 
 	ssl_certificate /etc/letsencrypt/live/pjki.ml/fullchain.pem; # managed by Certbot
