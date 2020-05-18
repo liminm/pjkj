@@ -3,14 +3,14 @@ import json
 import numpy as np
 
 # test imports
-from bitboard import Board
-from valid_move_check import ValidCheck
-from WinConditions import reihencheckrk
-from WinConditions import reihencheckjs
-from jump_sturdy import movePlayerJS
-import jump_sturdy
-import racing_kings
-import racing_kings_check_check
+from .bitboard import Board
+from .valid_move_check import ValidCheck
+from .WinConditions import reihencheckrk
+from .WinConditions import reihencheckjs
+from .jump_sturdy import movePlayerJS
+from . import jump_sturdy
+from . import racing_kings
+from . import racing_kings_check_check
 
 
 global test_data
@@ -287,10 +287,19 @@ class RacingKingsMainFunction(unittest.TestCase):
             actual = (r[0], r[1])
                     
             self.assertEqual(actual, expected, "\nBoard representation before move:\n" + str(board) + "\nBoard representationa after move:\n" + str(board_moved) + "\nmessage:"+r[2] + "\nmove:"+ uci+ "\nfen:"+repr(board)+"\nfen after:"+repr(board_moved))
-
-
+    
+    def testRepeatingState(self):
+        pass
+        """for i in range(len(test_data["racingKings"]["sampleGame"]-1):
+            t = test_data["racingKings"]["sampleGame"][i]
+            t_next = test_data["racingKings"]["sampleGame"][i+1]
+            
+            m1 = (t[1],t[2])
+            m2 = (t_next[1], t_next[2])"""
+            
+            
 if __name__ == '__main__':
-    with open('test_data.json') as f:
+    with open('ruleserver/test_data.json') as f:
         test_data = json.load(f)
         
     unittest.main()
