@@ -2,8 +2,8 @@ from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
-from data import storage
-import util
+from .data import storage
+from . import util
 
 
 api = Blueprint('player', __name__)

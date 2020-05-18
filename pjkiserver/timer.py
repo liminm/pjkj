@@ -1,7 +1,7 @@
 import threading, time, datetime
 
-from data import storage
-import util
+from .data import storage
+from . import util
 
 # Get the current unix time epoch in milliseconds
 def time_ms():

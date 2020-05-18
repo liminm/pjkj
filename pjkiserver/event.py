@@ -3,10 +3,8 @@ import json
 import time
 from datetime import datetime
 
-from data import storage
-import timer
-import rules
-import util
+from .data import storage
+from . import timer, rules, util
 
 
 api = Blueprint('event', __name__)
