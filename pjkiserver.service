@@ -1,0 +1,12 @@
+[Unit]
+Description=Server for the 2020 AOT AI Tournament
+After=network.target nginx.service docker.service
+
+[Service]
+Type=simple
+User=www-data
+ExecStart=uwsgi /home/pjki/server/uwsgi.ini
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
