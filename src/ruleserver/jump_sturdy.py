@@ -135,7 +135,7 @@ def moveCheck(moveEvent,state):
     else:
         hashmap[board_after] +=1
         if hashmap[board_after] >= 3:
-            winner, status = "draw"
+            winner = status = "draw"
 
     #set the game state and other returns
     if not status is None:

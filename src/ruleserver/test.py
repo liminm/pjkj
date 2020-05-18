@@ -286,7 +286,7 @@ class RacingKingsMainFunction(unittest.TestCase):
             r = racing_kings.moveCheck(moveEvent, state)
             actual = (r[0], r[1])
                     
-            self.assertEqual(actual, expected, "\nBoard representation before move:\n" + str(board) + "\nBoard representationa after move:\n" + str(board_moved) + "\nmessage:"+r[2] + "\nmove:"+ uci+ "\nfen:"+repr(board))
+            self.assertEqual(actual, expected, "\nBoard representation before move:\n" + str(board) + "\nBoard representationa after move:\n" + str(board_moved) + "\nmessage:"+r[2] + "\nmove:"+ uci+ "\nfen:"+repr(board)+"\nfen after:"+repr(board_moved))
 
 
 if __name__ == '__main__':

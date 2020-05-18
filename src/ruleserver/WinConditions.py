@@ -13,26 +13,25 @@ import numpy as np
 from .bitboard import Board
 
 
-
+MASKJS1 = np.uint64(9079256848778919936)
+MASKJS2 = np.uint64(126)
 def reihencheckjs(board , player=None):
-    mask1 = np.uint64(9079256848778919936)
-    mask2 = np.uint64(126)
     if player==None:
         player = board.player
     if player == 'w':
-        if (board.board["wh"] & mask1) > 0:
+        if board.board["wh"] & MASKJS1 != 0:
             return True
     else:
-        if (board.board["bl"] & mask2) > 0:
+        if board.board["bl"] & MASKJS2 != 0:
             return True
 
     return False
 
+MASKRK = np.uint64(int("1"*8 + "0"*8*7,2))
 
 def reihencheckrk(board):
-    mask=1111111100000000000000000000000000000000000000000000000000000000
-    if (board.board["k"] & mask) > 0:
-            return True
+    if board.board["k"] & MASKRK != 0:
+        return True
     return False
 
 
