@@ -1,5 +1,5 @@
-import ruleserver.racing_kings as rk
-import ruleserver.jump_sturdy as js
+from .ruleserver import racing_kings as rk
+from .ruleserver import jump_sturdy as js
 
 def stateCheck(type, state):
 

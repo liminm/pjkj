@@ -3,8 +3,8 @@ import json
 from copy import deepcopy
 
 from __main__ import app
-from data import storage
-import util
+from .data import storage
+from . import util
 
 
 # This endpoint is only for the frontend to verify tokens before saving them

@@ -1,6 +1,6 @@
 import signal
 
-from storage.DatabaseDictionary import DatabaseDictionary, setInterval
+from .storage.DatabaseDictionary import DatabaseDictionary, setInterval
 
 # The 3 base collections
 DATABASE_KEYS = ['teams', 'players', 'games']

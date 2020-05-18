@@ -3,9 +3,8 @@ import json
 from copy import deepcopy
 
 from __main__ import app
-from data import storage
-import rules
-import util
+from .data import storage
+from . import rules, util
 
 
 @app.route('/games', methods=['POST'])

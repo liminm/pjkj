@@ -4,10 +4,8 @@ import time
 from datetime import datetime
 
 from __main__ import app
-from data import storage
-import timer
-import rules
-import util
+from .data import storage
+from . import timer, rules, util
 
 
 @app.route('/game/<id>/events', methods=['POST'])
