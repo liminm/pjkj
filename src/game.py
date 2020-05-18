@@ -1,14 +1,16 @@
-from flask import request
+from flask import Blueprint, request
 import json
 from copy import deepcopy
 
-from __main__ import app
 from data import storage
 import rules
 import util
 
 
-@app.route('/games', methods=['POST'])
+api = Blueprint('game', __name__)
+
+
+@api.route('/games', methods=['POST'])
 def post_game():
 
 	# Get the payload and parse it
@@ -60,7 +62,7 @@ def post_game():
 	}, indent=4), 201
 
 
-@app.route('/games', methods=['GET'])
+@api.route('/games', methods=['GET'])
 def get_games():
 
 	# In order to not accidentally remove data from the database, we copy
@@ -93,7 +95,7 @@ def get_games():
 	return json.dumps(games, indent=4)
 
 
-@app.route('/game/<id>', methods = ['GET'])
+@api.route('/game/<id>', methods = ['GET'])
 def get_game(id):
 
 	if not id in storage['games']:

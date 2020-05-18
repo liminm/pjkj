@@ -16,6 +16,11 @@ import player
 import game
 import event
 
+app.register_blueprint(team.api)
+app.register_blueprint(player.api)
+app.register_blueprint(game.api)
+app.register_blueprint(event.api)
+
 # Start the flask server
 if __name__ == "__main__":
 	app.run()
