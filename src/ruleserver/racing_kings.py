@@ -100,25 +100,25 @@ def moveCheck(moveEvent,state):
     elif type(state) == dict:
         FEN = state['fen']
 
-      #create Boards
+    #create Boards
     try:
-        board_before = bitboard.Board(FEN)
-        board_after = bitboard.Board(FEN)
-    except:
-        return False, None, "SyntaxError:FEN String is invalid!  "
+        board_before = Board(FEN)
+        board_after = Board(FEN)
+    except SyntaxError:
+        return False, None, "SyntaxError:FEN String is invalid!"
 
     #------------------------ validity testing--------------
     #checkfor valid FEN
-    v,c,r = fenStateCheck(state)
-    if not v:
-        return False, None,r
+    fsc = fenStateCheck(state)
+    if not fsc[0]:
+        return fsc
 
 
     #try the move
     uci = moveEvent["details"]['move']
     try:
         board_after.movePlayer(uci)
-    except:
+    except SyntaxError:
         return False, None, "SyntaxError:UCI String is invalid!"
 
 
