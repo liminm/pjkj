@@ -89,7 +89,7 @@ GAMEINFO=`echo '
 		"playerB":' \"${PLAYER2ID}\" '
 	},
 	"settings": {
-		"initialFEN": "a/b/c",
+		"initialFEN": "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1",
 		"timeBudget": 120000,
 		"timeout": "60000"
 	}
@@ -125,7 +125,7 @@ EV1INFO=`echo '
 {
 	"type": "move",
 	"details": {
-		"move": "a1b2"
+		"move": "h2h3"
 	}
 }
 ' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
@@ -134,6 +134,7 @@ echo ${EV1INFO}
 
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
+exit 0
 
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 echo 'CHECKING FILTER'
@@ -154,7 +155,7 @@ EV2INFO=`echo '
 {
 	"type": "move",
 	"details": {
-		"move": "b2c3"
+		"move": "b2b6"
 	}
 }
 ' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`
