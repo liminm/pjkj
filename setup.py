@@ -12,7 +12,11 @@ setuptools.setup(
 	long_description=long_description,
 	long_description_content_type="text/markdown",
 	url="https://gitlab.tubit.tu-berlin.de/PJ-KI/server",
-	packages=setuptools.find_packages(),
+	packages=[
+		"pjki-server",
+		"pjki-server.ruleserver",
+		"pjki-server.storage",
+	],
 	install_requires=[
 		"flask",
 	],
