@@ -48,6 +48,8 @@ The controller is divided into 7 files:
 - `team.py`, `player.py`, `game.py`: Endpoints and handling for those resources
 - `event.py`: The event system ([SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)-Based) and related endpoints.
 - `timer.py`: Timekeeping and timeout handling
+- `rules.py`: Abstration layer for ruleserver modules for different games
+- `data.py`: Storage components and database synchronization
 - `util.py`: Various helper functions
 
 # Storage

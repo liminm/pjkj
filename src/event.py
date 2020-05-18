@@ -3,7 +3,8 @@ import json
 import time
 from datetime import datetime
 
-from __main__ import app, storage
+from __main__ import app
+from data import storage
 import timer
 import util
 
@@ -121,6 +122,11 @@ def get_events(id):
 	# thread as long as a) the client is connected or b) the game is running,
 	# while continuously feeding back data with the `yield` keyword.
 	def stream_events():
+	    
+	    # Some SSE clients seem to not start receiving until the first
+	    # line/byte is sent. This does just that for them and hopefully won't
+	    # break anything else.
+		yield '\n\n'
 
 		# We get the current length before we print old stuff, just to be sure
 		# that we don't miss anything coming in while we send this out
