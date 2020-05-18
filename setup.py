@@ -19,8 +19,8 @@ setuptools.setup(
 	],
 	install_requires=[
 		"flask",
-                "numpy",
-                "pymongo",
+		"numpy",
+		"pymongo",
 	],
 	classifiers=[
 		"Programming Language :: Python :: 3",
