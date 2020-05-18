@@ -1,14 +1,16 @@
-from flask import request
+from flask import Blueprint, request
 import json
 from copy import deepcopy
 
-from __main__ import app
 from .data import storage
 from . import util
 
 
+api = Blueprint('team', __name__)
+
+
 # This endpoint is only for the frontend to verify tokens before saving them
-@app.route('/teamlogin', methods = ['GET'])
+@api.route('/teamlogin', methods = ['GET'])
 def get_teamlogin():
 
 	# Verify Authorization
@@ -24,7 +26,7 @@ def get_teamlogin():
 	}, indent=4), 200
 
 
-@app.route('/teams', methods=['POST'])
+@api.route('/teams', methods=['POST'])
 def post_team():
 
 	# Get the payload and parse it
@@ -49,7 +51,7 @@ def post_team():
 	}, indent=4), 201
 
 
-@app.route('/teams', methods=['GET'])
+@api.route('/teams', methods=['GET'])
 def get_teams():
 
 	# In order to not accidentally remove the tokens from the database, we copy
@@ -70,7 +72,7 @@ def get_teams():
 	return json.dumps(teams, indent=4)
 
 
-@app.route('/team/<id>', methods = ['GET'])
+@api.route('/team/<id>', methods = ['GET'])
 def get_team(id):
 
 	if not id in storage['teams']:

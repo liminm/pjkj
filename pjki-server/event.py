@@ -1,14 +1,16 @@
-from flask import request, Response
+from flask import Blueprint, request, Response
 import json
 import time
 from datetime import datetime
 
-from __main__ import app
 from .data import storage
 from . import timer, rules, util
 
 
-@app.route('/game/<id>/events', methods=['POST'])
+api = Blueprint('event', __name__)
+
+
+@api.route('/game/<id>/events', methods=['POST'])
 def post_event(id):
 
 	game = storage['games'][id]
@@ -108,7 +110,7 @@ def post_event(id):
 
 
 
-@app.route('/game/<id>/events', methods=['GET'])
+@api.route('/game/<id>/events', methods=['GET'])
 def get_events(id):
 
 	game = storage['games'][id]
