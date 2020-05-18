@@ -5,7 +5,7 @@ After=network.target nginx.service docker.service
 [Service]
 Type=simple
 User=www-data
-ExecStart=uwsgi /home/pjki/server/uwsgi.ini
+ExecStart=/usr/bin/uwsgi /home/pjki/server/uwsgi.ini
 Restart=always
 
 [Install]
