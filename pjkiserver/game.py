@@ -17,12 +17,30 @@ def post_game():
 	if error:
 		return Response(*error)
 
+	# We're gonna need these a bunch
+	playerA = game['players']['playerA']
+	playerB = game['players']['playerB']
+
+	# Make sure the mentioned players actually exist
+	if not playerA in storage['players']:
+		return "Error: Player {} does not exist".format(playerA), 409
+	if not playerB in storage['players']:
+		return "Error: Player {} does not exist".format(playerB), 409
+
 	# Make sure that a player can't play against itself
 	# This is not allowed because we need to be able to uniquely map
 	# PlayerID -> Player to identify who is making a move, which isn't possible
 	# if both players have the same ID.
-	if game['players']['playerA'] == game['players']['playerB']:
-		return "Error: player can't play against itself", 409
+	if playerA == playerB:
+		return "Error: Player can't play against itself", 409
+
+	# Make sure only teams actually playing this game type can participate
+	teamA = storage['players'][playerA]['team']
+	teamB = storage['players'][playerB]['team']
+	if storage['teams'][teamA]['type'] != game['type']:
+		return "Error: Team {} can't play {}".format(teamA, game['type']), 409
+	if storage['teams'][teamB]['type'] != game['type']:
+		return "Error: Team {} can't play {}".format(teamB, game['type']), 409
 
 	# Initialize the game state according to the database layout
 	# (See https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/631)
