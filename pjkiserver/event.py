@@ -3,7 +3,7 @@ import json
 import time
 from datetime import datetime
 
-from .data import storage
+from .storage.storage import storage
 from . import timer, rules, util
 
 

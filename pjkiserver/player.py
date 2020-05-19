@@ -2,7 +2,7 @@ from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
-from .data import storage
+from .storage.storage import storage
 from . import util
 
 
