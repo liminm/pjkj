@@ -35,13 +35,14 @@ sudo docker start mongoDB
 
 ## 1. Package installation
 
-To install the gameserver globally package on your device, run
+To install the gameserver package system-wide on your system, run
 ```
 sudo -H pip3 install --system .
 ```
-inside of the top level repo folder. This will install the package to your
-system. You can test this by leaving the folder and running `import pjkiserver`
-in the python3 shell from a different user.
+inside of the top level repo folder. This will install the package for all
+users, so your webserver user (e.g. `www-data`) can use it as well. You can
+test this by leaving the folder and running `import pjkiserver` in the python3
+shell from a different user.
 
 ## 2. Web server
 
