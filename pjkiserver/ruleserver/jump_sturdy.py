@@ -138,12 +138,15 @@ def moveCheck(moveEvent,state):
             winner = status = "draw"
 
     #set the game state and other returns
-    if not status is None:
-         gameState = {
-                 'type': status,
-                 'winner': winner}
-         moveEvent['details']['postFen'],state['FEN'] = repr(board_after)
-         state['winner']  = winner
+    if status:
+        gameState = {
+            'type': status,
+            'winner': winner
+        }
+
+    moveEvent['details']['postFen'] = repr(board_after)
+    state['FEN'] = repr(board_after)
+    state['winner']  = winner
 
     return valid,gameState,"Alles Super!"
 

@@ -29,7 +29,7 @@ def fenStateCheck(state):
         FEN = state['fen']
 
     boardHashMap = state["boardHashMap"]
-    
+
 
     #check for valid FEN
     try:
@@ -168,13 +168,15 @@ def moveCheck(moveEvent,state):
             winner = "playerA"
             status = "win"
 
-    if not (status is None):
-        #set the game state and other returns
+    # set the game state and other returns
+    if status:
         gameState = {
-                'type': status,
-                'winner': winner}
-        moveEvent['details']['postFen'] = repr(board_after)
-        state['fen'] = repr(board_after)
-        state['winner']  = winner
+            'type': status,
+            'winner': winner
+        }
+
+    moveEvent['details']['postFen'] = repr(board_after)
+    state['fen'] = repr(board_after)
+    state['winner'] = winner
 
     return True,gameState,"Alles Super!"
