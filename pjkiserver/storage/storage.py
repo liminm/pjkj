@@ -1,6 +1,7 @@
 import signal
 
-from storage.DatabaseDictionary import DatabaseDictionary, setInterval
+from .database import DatabaseDictionary
+from .scheduler import SetInterval
 
 # The 3 base collections
 DATABASE_KEYS = ['teams', 'players', 'games']
@@ -23,7 +24,7 @@ def write_database():
 write_database()
 
 # Start a timer to save state every 10 seconds
-scheduled_database_writethrough = setInterval(10, write_database)
+scheduled_database_writethrough = SetInterval(10, write_database)
 
 # When stopping the server, save the state to the database and stop the timer
 def stop_writethrough(*args):

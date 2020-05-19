@@ -1,0 +1,34 @@
+server {
+	server_name pjki.ml;
+
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+
+	root /var/www/html/pjki;
+
+	index index.html index.htm;
+
+	location / {
+		# First attempt to serve request as file, then fall back to displaying a 404.
+		try_files $uri $uri/ =404;
+	}
+
+	location /api {
+		# Pass to API server
+		rewrite /api(.*) /$1 break;
+		include uwsgi_params;
+		uwsgi_pass unix:/tmp/pjkiserver.sock;
+	}
+
+	ssl_certificate /etc/letsencrypt/live/pjki.ml/fullchain.pem; # managed by Certbot
+	ssl_certificate_key /etc/letsencrypt/live/pjki.ml/privkey.pem; # managed by Certbot
+}
+
+server {
+	server_name pjki.ml;
+
+	listen 80 default_server;
+	listen [::]:80 default_server;
+
+	return 301 https://$host$request_uri;
+}

@@ -1,16 +1,16 @@
-from flask import request, Response
+from flask import Blueprint, request, Response
 import json
 import time
 from datetime import datetime
 
-from __main__ import app
-from data import storage
-import timer
-import rules
-import util
+from .storage.storage import storage
+from . import schemas, timer, rules, util
 
 
-@app.route('/game/<id>/events', methods=['POST'])
+api = Blueprint('event', __name__)
+
+
+@api.route('/game/<id>/events', methods=['POST'])
 def post_event(id):
 
 	game = storage['games'][id]
@@ -32,9 +32,10 @@ def post_event(id):
 	if game['state']['state'] == 'completed':
 		return 'Error: game already ended', 409
 
-	# Get the payload and parse it
-	event = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	event, error = schemas.parseAndCheck(request.data, schemas.event)
+	if error:
+		return Response(*error)
 
 	# Get player who did move (playerA/playerB)
 	player = util.playerFromID(game['players'], playerID)
@@ -63,8 +64,14 @@ def post_event(id):
 	# The most common event clients submit is the move, which is processed by
 	# the ruleserver.
 	elif event['type'] == 'move':
+
+		# since not every event type needs details, this couldn't be checked
+		# by the schema checker before.
+		if not 'move' in event.get('details', {}):
+			return 'Error: Move event needs missing details.move', 400
+
 		# Check move with ruleserver
-		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
+		#valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
@@ -109,7 +116,7 @@ def post_event(id):
 
 
 
-@app.route('/game/<id>/events', methods=['GET'])
+@api.route('/game/<id>/events', methods=['GET'])
 def get_events(id):
 
 	game = storage['games'][id]
@@ -122,7 +129,7 @@ def get_events(id):
 	# thread as long as a) the client is connected or b) the game is running,
 	# while continuously feeding back data with the `yield` keyword.
 	def stream_events():
-	    
+
 	    # Some SSE clients seem to not start receiving until the first
 	    # line/byte is sent. This does just that for them and hopefully won't
 	    # break anything else.
