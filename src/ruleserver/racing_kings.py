@@ -38,8 +38,8 @@ def fenStateCheck(state):
         return False, None, "SyntaxError:The FEN String is invalid!"
 
 
-    if not hash(board) in boardHashMap:
-        boardHashMap[hash(board)] = 1
+    if not board.stringHash() in boardHashMap:
+        boardHashMap[board.stringHash()] = 1
 
     try:
         # check if the count of characters is valid
@@ -141,12 +141,12 @@ def moveCheck(moveEvent,state):
         return False, None, "MoveError:The king is checked!"
 
     # update hashmap
-    if not hash(board_after) in hashmap:
-        hashmap[hash(board_after)] = 1
+    if not board_after.stringHash() in hashmap:
+        hashmap[board_after.stringHash()] = 1
     else:
-        hashmap[hash(board_after)] +=1
+        hashmap[board_after.stringHash()] +=1
 
-    if hashmap[hash(board_after)] >= 3:
+    if hashmap[board_after.stringHash()] >= 3:
         winner = "draw"
         status = "repState"
 
