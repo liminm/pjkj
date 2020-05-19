@@ -42,12 +42,15 @@ def post_game():
 	if storage['teams'][teamB]['type'] != game['type']:
 		return "Error: Team {} can't play {}".format(teamB, game['type']), 409
 
+	# If no initial FEN string is given, we get the defaults from the rules
+	initialFEN = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
+
 	# Initialize the game state according to the database layout
 	# (See https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/631)
 	game['state'] = {
 		'state': 'planned',
 		'winner': None,
-		'fen': game['settings']['initialFEN'],
+		'fen': initialFEN,
 		'timeBudgets': {
 			'playerA': game['settings']['timeBudget'],
 			'playerB': game['settings']['timeBudget']
