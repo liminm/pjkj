@@ -160,15 +160,15 @@ class ValidCheckJumpSturdy:
 
         if x_diff != y_diff:
             # normal move
-            if fig2 == '':
-                return False
-            elif fig1.islower() and (fig2 == 'b' or fig2 == ''):   # black player
+            if fig1.islower() and (fig2 == 'b' or fig2 == ''):   # black player
                 return True
             elif fig1.isupper() and (fig2 == 'B' or fig2 == ''): # white player
                 return True
         else:
             # attack move
-            if fig1.islower() and fig2 in "BKQ":    # black player
+            if fig2 == '':
+                return False
+            elif fig1.islower() and fig2 in "BKQ":    # black player
                 return True
             elif fig1.isupper() and fig2 in "bkq":  # white player
                 return True
