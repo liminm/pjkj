@@ -64,9 +64,14 @@ def post_event(id):
 	# The most common event clients submit is the move, which is processed by
 	# the ruleserver.
 	elif event['type'] == 'move':
+
+		# since not every event type needs details, this couldn't be checked
+		# by the schema checker before.
+		if not 'move' in event.get('details', {}):
+			return 'Error: Move event needs missing details.move', 400
+
 		# Check move with ruleserver
 		#valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
-		print('NYI')
 
 	else:
 		return 'Error: unknown event type', 400
