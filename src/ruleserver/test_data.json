@@ -289,7 +289,6 @@
 	],
 	
 "mainFunction": [ ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True", "None"],
-["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbrbbb1/1bbbbbb1/8/8/8/8/1BBRBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbnbbb1/1bbbbbb1/8/8/8/8/1BBBNBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
 ["1bbqbbb1/1bbbbbb1/8/8/8/8/1BBBQBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "False", "None"],
