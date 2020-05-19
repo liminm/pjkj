@@ -28,12 +28,18 @@ def fenStateCheck(state):
     elif type(state) == dict:
         FEN = state['fen']
 
+    boardHashMap = state["boardHashMap"]
+    
 
     #check for valid FEN
     try:
         board = Board(FEN)
     except : # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
+
+
+    if not hash(board) in boardHashMap:
+        boardHashMap[hash(board)] = 1
 
     try:
         # check if the count of characters is valid
@@ -135,13 +141,14 @@ def moveCheck(moveEvent,state):
         return False, None, "MoveError:The king is checked!"
 
     # update hashmap
-    if not board_after in hashmap:
-        hashmap[board_after] = 1
+    if not hash(board_after) in hashmap:
+        hashmap[hash(board_after)] = 1
     else:
-        hashmap[board_after] +=1
+        hashmap[hash(board_after)] +=1
 
-    if hashmap[board_after] >= 3:
-        winner, status = "draw"
+    if hashmap[hash(board_after)] >= 3:
+        winner = "draw"
+        status = "repState"
 
     # everything is good
     # wenn schwarzer könig auf letzte reihe kommt, dann hat der spieler sofort gewonnen

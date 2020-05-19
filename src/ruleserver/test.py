@@ -253,7 +253,7 @@ class RacingKingsMainFunction(unittest.TestCase):
             
             board.movePlayer(uci)
                 
-            state = {"fen":repr(board)}
+            state = {"fen":repr(board), "boardHashMap":{}}
                 
             r = racing_kings.fenStateCheck(state)
             actual = (r[0], r[1])
@@ -289,14 +289,57 @@ class RacingKingsMainFunction(unittest.TestCase):
             self.assertEqual(actual, expected, "\nBoard representation before move:\n" + str(board) + "\nBoard representationa after move:\n" + str(board_moved) + "\nmessage:"+r[2] + "\nmove:"+ uci+ "\nfen:"+repr(board)+"\nfen after:"+repr(board_moved))
     
     def testRepeatingState(self):
-        pass
-        """for i in range(len(test_data["racingKings"]["sampleGame"]-1):
+        for i in range(len(test_data["racingKings"]["sampleGame"])-3):
             t = test_data["racingKings"]["sampleGame"][i]
             t_next = test_data["racingKings"]["sampleGame"][i+1]
             
-            m1 = (t[1],t[2])
-            m2 = (t_next[1], t_next[2])"""
+            m1 = [t[1], t[2]]
+            m2 = [t_next[1], t_next[2]]
             
+            try:
+                board = Board(t[0])
+            except SyntaxError:
+                self.assertTrue(False, "Fen String is invalid! fen:" + t[0])
+            
+            moveEvent = {"type":"move",
+                        "player":"playerA",
+                       "details": {}}
+            
+            state = {"fen":t[0] ,"boardHashMap":{}}
+            v, _, _ = racing_kings.fenStateCheck(state)
+            
+            self.assertTrue(v, "\nboard:\n" + str(board) + "\nBoard is invalid!")
+            
+            board_before = Board(t[0])
+            expected = {"type":"repState", "winner":"draw"}
+            for i in range(8): # move 2 figures around and search for repeating state
+                state["fen"] = repr(board)
+                moveEvent = {"type":"move",
+                        "player":"playerA" if board.player == "w" else "playerB",
+                       "details": {"move":m1[0]+m1[1]}}
+                r = racing_kings.moveCheck(moveEvent, state)
+                if not r[0] and i == 1:
+                    break
+                
+                self.assertTrue(r[0], "\nboard:\n" + str(board) + "\nmove:" + str(m1))
+                if not r[1] is None:
+                    self.assertEqual(r[1], expected, "\nboard:\n" + str(board) + "\nmove:" + str(m1)+ "\nBoardHashMap:" + str(state["boardHashMap"]))
+                    break
+                
+                board.movePlayer(m1[0], m1[1])
+                m1[1], m1[0] = m1[0], m1[1] # swap
+                
+                state["fen"] = repr(board)
+                moveEvent = {"type":"move",
+                        "player":"playerA" if board.player == "w" else "playerB",
+                       "details": {"move":m2[0]+m2[1]}}
+                v,_,_ = racing_kings.moveCheck(moveEvent, state)
+                if not v and i == 1:
+                    break
+                
+                self.assertTrue(v, "\nboard:\n" + str(board) + "\nmove:" + str(m2))
+                board.movePlayer(m2[0], m2[1])
+                m2[1], m2[0] = m2[0], m2[1] # swap
             
 if __name__ == '__main__':
     with open('ruleserver/test_data.json') as f:
