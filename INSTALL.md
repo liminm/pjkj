@@ -98,9 +98,9 @@ repo, feel free to adjust them to your needs before installing:
 ```
 sudo apt install uwsgi
 sudo cp pjkiserver.service /etc/systemd/system
-sudo systemctl enable uwsgi
-sudo systemctl start uwsgi
-sudo systemctl restart uwsgi
+sudo systemctl enable pjkiserver
+sudo systemctl start pjkiserver
+sudo systemctl restart pjkiserver
 ```
 This will automatically start and integrate the installed flask application
 module internally by importing it.
