@@ -363,9 +363,12 @@ class Board:
         
         return s
     
-    def __hash__(self):
+    def stringHash(self):
         r = repr(self)
-        return hash(r.split(" ")[0])
+        return r.split(" ")[0]
+    
+    def __hash__(self):
+        return hash(self.stringHash())
     
     """
     this function is called if you compare 2 boards with the '==' operator

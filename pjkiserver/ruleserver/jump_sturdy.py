@@ -89,7 +89,7 @@ def moveCheck(moveEvent,state):
     #check for valid FEN
     v,c,r = fenStateCheck(state)
     if not v:
-        return False, None, c+":"+r
+        return False, None,r
 
     #Set FEN for easier testing
     if type(state) == str:
@@ -99,8 +99,8 @@ def moveCheck(moveEvent,state):
 
     #create Boards
     try:
-        board_before = bitboard.Board(FEN)
-        board_after = bitboard.Board(FEN)
+        board_before = Board(FEN)
+        board_after = Board(FEN)
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
 
@@ -138,12 +138,15 @@ def moveCheck(moveEvent,state):
             winner = status = "draw"
 
     #set the game state and other returns
-    if not status is None:
-         gameState = {
-                 'type': status,
-                 'winner': winner}
-         moveEvent['details']['postFen'],state['FEN'] = repr(board_after)
-         state['winner']  = winner
+    if status:
+        gameState = {
+            'type': status,
+            'winner': winner
+        }
+
+    moveEvent['details']['postFen'] = repr(board_after)
+    state['FEN'] = repr(board_after)
+    state['winner']  = winner
 
     return valid,gameState,"Alles Super!"
 

@@ -28,6 +28,8 @@ def fenStateCheck(state):
     elif type(state) == dict:
         FEN = state['fen']
 
+    boardHashMap = state["boardHashMap"]
+
 
     #check for valid FEN
     try:
@@ -35,12 +37,16 @@ def fenStateCheck(state):
     except : # syntax error on fen string
         return False, None, "SyntaxError:The FEN String is invalid!"
 
+
+    if not board.stringHash() in boardHashMap:
+        boardHashMap[board.stringHash()] = 1
+
     try:
         # check if the count of characters is valid
         if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
             return False, None, "StateError:There are not exactly 1 king on each side!"
 
-        if not len(board.findCharacter("q")) in range(3) or not len(board.findCharacter("Q")) in range(3):
+        if not len(board.findCharacter("q")) in range(2) or not len(board.findCharacter("Q")) in range(2):
             return False, None, "StateError:Each side has to have 0-2 queens!"
 
         if not len(board.findCharacter("n")) in range(3) or not len(board.findCharacter("N")) in range(3):
@@ -100,25 +106,25 @@ def moveCheck(moveEvent,state):
     elif type(state) == dict:
         FEN = state['fen']
 
-      #create Boards
+    #create Boards
     try:
-        board_before = bitboard.Board(FEN)
-        board_after = bitboard.Board(FEN)
-    except:
-        return False, None, "SyntaxError:FEN String is invalid!  "
+        board_before = Board(FEN)
+        board_after = Board(FEN)
+    except SyntaxError:
+        return False, None, "SyntaxError:FEN String is invalid!"
 
     #------------------------ validity testing--------------
     #checkfor valid FEN
-    v,c,r = fenStateCheck(state)
-    if not v:
-        return False, None,r
+    fsc = fenStateCheck(state)
+    if not fsc[0]:
+        return fsc
 
 
     #try the move
     uci = moveEvent["details"]['move']
     try:
         board_after.movePlayer(uci)
-    except:
+    except SyntaxError:
         return False, None, "SyntaxError:UCI String is invalid!"
 
 
@@ -135,19 +141,24 @@ def moveCheck(moveEvent,state):
         return False, None, "MoveError:The king is checked!"
 
     # update hashmap
-    if not board_after in hashmap:
-        hashmap[board_after] = 1
+    if not board_after.stringHash() in hashmap:
+        hashmap[board_after.stringHash()] = 1
     else:
-        hashmap[board_after] +=1
+        hashmap[board_after.stringHash()] +=1
 
-    if hashmap[board_after] >= 3:
-        winner, status = "draw"
+    if hashmap[board_after.stringHash()] >= 3:
+        winner = "draw"
+        status = "repState"
 
     # everything is good
     # wenn schwarzer könig auf letzte reihe kommt, dann hat der spieler sofort gewonnen
     if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None:
         winner = "playerB" # TODO: ask if playerA is white or black
         status = "win"
+
+    # checks for 50 Move rule
+    if (board_after.halfRounds >= 50):
+        return True, {"type":"50Move", "winner":"draw"}, ""
 
     # checks if the white has already won before
     if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "win"]:
@@ -157,13 +168,15 @@ def moveCheck(moveEvent,state):
             winner = "playerA"
             status = "win"
 
-    if not (status is None):
-        #set the game state and other returns
+    # set the game state and other returns
+    if status:
         gameState = {
-                'type': status,
-                'winner': winner}
-        moveEvent['details']['postFen'] = repr(board_after)
-        state['fen'] = repr(board_after)
-        state['winner']  = winner
+            'type': status,
+            'winner': winner
+        }
+
+    moveEvent['details']['postFen'] = repr(board_after)
+    state['fen'] = repr(board_after)
+    state['winner'] = winner
 
     return True,gameState,"Alles Super!"

@@ -166,7 +166,9 @@ class ValidCheckJumpSturdy:
                 return True
         else:
             # attack move
-            if fig1.islower() and fig2 in "BKQ":    # black player
+            if fig2 == '':
+                return False
+            elif fig1.islower() and fig2 in "BKQ":    # black player
                 return True
             elif fig1.isupper() and fig2 in "bkq":  # white player
                 return True

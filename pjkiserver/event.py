@@ -71,7 +71,7 @@ def post_event(id):
 			return 'Error: Move event needs missing details.move', 400
 
 		# Check move with ruleserver
-		#valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
+		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
 
 	else:
 		return 'Error: unknown event type', 400
