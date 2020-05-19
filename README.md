@@ -6,12 +6,12 @@ This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 To run, simply call `python3 -m pjkiserver` inside the repo. You'll need some
 some dependencies. You'll also need a `mongoDB` `docker` container, as
 described below. For more details regarding permanent installation, see
-`INSTALL.md`.
+`docs/INSTALL.md`.
 
 The server currently provides the games "Racing Kings" and "Jump Sturdy".
 
 Both AIs and humans on web clients connect to the same REST API, specified in
-[$636](https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/636).
+`docs/API.md`.
 
 The backend is based on [Flask](https://flask.palletsprojects.com/en/1.1.x/).
 
