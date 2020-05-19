@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 from .storage.storage import storage
-from . import timer, rules, util
+from . import schemas, timer, rules, util
 
 
 api = Blueprint('event', __name__)
@@ -32,9 +32,10 @@ def post_event(id):
 	if game['state']['state'] == 'completed':
 		return 'Error: game already ended', 409
 
-	# Get the payload and parse it
-	event = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	event, error = schemas.parseAndCheck(request.data, schemas.event)
+	if error:
+		return Response(*error)
 
 	# Get player who did move (playerA/playerB)
 	player = util.playerFromID(game['players'], playerID)
@@ -63,9 +64,14 @@ def post_event(id):
 	# The most common event clients submit is the move, which is processed by
 	# the ruleserver.
 	elif event['type'] == 'move':
+
+		# since not every event type needs details, this couldn't be checked
+		# by the schema checker before.
+		if not 'move' in event.get('details', {}):
+			return 'Error: Move event needs missing details.move', 400
+
 		# Check move with ruleserver
 		#valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
-		print('NYI')
 
 	else:
 		return 'Error: unknown event type', 400

@@ -1,9 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
 from .storage.storage import storage
-from . import rules, util
+from . import schemas, rules, util
 
 
 api = Blueprint('game', __name__)
@@ -12,23 +12,45 @@ api = Blueprint('game', __name__)
 @api.route('/games', methods=['POST'])
 def post_game():
 
-	# Get the payload and parse it
-	game = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	game, error = schemas.parseAndCheck(request.data, schemas.game)
+	if error:
+		return Response(*error)
+
+	# We're gonna need these a bunch
+	playerA = game['players']['playerA']
+	playerB = game['players']['playerB']
+
+	# Make sure the mentioned players actually exist
+	if not playerA in storage['players']:
+		return "Error: Player {} does not exist".format(playerA), 409
+	if not playerB in storage['players']:
+		return "Error: Player {} does not exist".format(playerB), 409
 
 	# Make sure that a player can't play against itself
 	# This is not allowed because we need to be able to uniquely map
 	# PlayerID -> Player to identify who is making a move, which isn't possible
 	# if both players have the same ID.
-	if game['players']['playerA'] == game['players']['playerB']:
-		return "Error: player can't play against itself", 409
+	if playerA == playerB:
+		return "Error: Player can't play against itself", 409
+
+	# Make sure only teams actually playing this game type can participate
+	teamA = storage['players'][playerA]['team']
+	teamB = storage['players'][playerB]['team']
+	if storage['teams'][teamA]['type'] != game['type']:
+		return "Error: Team {} can't play {}".format(teamA, game['type']), 409
+	if storage['teams'][teamB]['type'] != game['type']:
+		return "Error: Team {} can't play {}".format(teamB, game['type']), 409
+
+	# If no initial FEN string is given, we get the defaults from the rules
+	initialFEN = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
 
 	# Initialize the game state according to the database layout
 	# (See https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/631)
 	game['state'] = {
 		'state': 'planned',
 		'winner': None,
-		'fen': game['settings']['initialFEN'],
+		'fen': initialFEN,
 		'timeBudgets': {
 			'playerA': game['settings']['timeBudget'],
 			'playerB': game['settings']['timeBudget']

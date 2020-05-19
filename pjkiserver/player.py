@@ -3,7 +3,7 @@ import json
 from copy import deepcopy
 
 from .storage.storage import storage
-from . import util
+from . import schemas, util
 
 
 api = Blueprint('player', __name__)
@@ -38,9 +38,10 @@ def post_player():
 		return Response(*response)
 
 
-	# Get the payload and parse it
-	player = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	player, error = schemas.parseAndCheck(request.data, schemas.player)
+	if error:
+		return Response(*error)
 
 	# we can assign this player to a team based on the authenticated team
 	player['team'] = teamID
