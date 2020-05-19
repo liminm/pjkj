@@ -1,9 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
 from .storage.storage import storage
-from . import rules, util
+from . import schemas, rules, util
 
 
 api = Blueprint('game', __name__)
@@ -12,9 +12,10 @@ api = Blueprint('game', __name__)
 @api.route('/games', methods=['POST'])
 def post_game():
 
-	# Get the payload and parse it
-	game = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	game, error = schemas.parseAndCheck(request.data, schemas.game)
+	if error:
+		return Response(*error)
 
 	# Make sure that a player can't play against itself
 	# This is not allowed because we need to be able to uniquely map

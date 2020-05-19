@@ -1,9 +1,9 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
 from .storage.storage import storage
-from . import util
+from . import schemas, util
 
 
 api = Blueprint('team', __name__)
@@ -29,9 +29,10 @@ def get_teamlogin():
 @api.route('/teams', methods=['POST'])
 def post_team():
 
-	# Get the payload and parse it
-	team = json.loads(request.data.decode('UTF-8'))
-	# TODO: Verify format and data
+	# Parse and validate payload
+	team, error = schemas.parseAndCheck(request.data, schemas.team)
+	if error:
+		return Response(*error)
 
 	# Generate new id and token for this new team
 	id = util.id()

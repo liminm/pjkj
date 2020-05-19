@@ -91,10 +91,12 @@ GAMEINFO=`echo '
 	"settings": {
 		"initialFEN": "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1",
 		"timeBudget": 120000,
-		"timeout": "60000"
+		"timeout": 60000
 	}
 }
 ' | http POST ${HOST}/games`
+
+echo ${GAMEINFO}
 
 GAMEID=`echo ${GAMEINFO} | jq -r .id`
 
@@ -133,8 +135,6 @@ EV1INFO=`echo '
 echo ${EV1INFO}
 
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
-
-exit 0
 
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 echo 'CHECKING FILTER'
