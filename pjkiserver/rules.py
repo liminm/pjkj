@@ -9,8 +9,7 @@ def stateCheck(type, state):
 	elif type == 'jumpSturdy':
 		return js.fenStateCheck(state)
 
-	print("Fatal Error: unknown game")
-	exit()
+	return False, None, ('Error: unknown game "' + type + '"')
 
 
 def moveCheck(type, moveEvent, state):
@@ -21,5 +20,4 @@ def moveCheck(type, moveEvent, state):
 	elif type == 'jumpSturdy':
 		return js.moveCheck(moveEvent, state)
 
-	print("Fatal Error: unknown game")
-	exit()
+	return False, None, ('Error: unknown game "' + type + '"')
