@@ -201,7 +201,20 @@
 
 "mainFunctionPattern":"0: FEN string der die Spielsituation definiert; 1-2: UCI Move; 3:boolean wert ob der move valid ist oder nicht; 4: gameEnd struct --> wenn das Spiel gewonnen ist, dann wird das befüllt je nach endzustand (type:[win|draw], 'winner':[playerA|playerB|draw]). Wenn nicht, dann ist das feld 'None'",
 "mainFunction":[["8/1k3K2/8/8/8/8/1rbnNBR1/qrbnNBRQ b - - 11 6", "b7", "b8", "True", "{'type':'win', 'winner':'playerB'}"],
-				["8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "h3", "True", "None"]]
+				["8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "h3", "True", "None"],
+				["8/8/8/8/8/8/1rbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/8/8/7Q/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/8/N7/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/7r/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/1b6/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/8/8/8/8/krbnNBRK/pppppppp w - - 0 1", "h2", "g3", "False", "None"],
+				["8/8/8/3B4/8/8/krbnN1RK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
+				["2q3R1/2k3K1/1rb2Q2/8/8/6R1/8/4rB2 b - - 50 30", "c6", "h1", "True", "{'type':'50Move', 'winner':'draw'}"],
+				["2q3R1/2k3K1/1rb2Q2/8/8/6R1/8/4rB2 b - - 70 40", "c6", "h1", "True", "{'type':'50Move', 'winner':'draw'}"],
+				["8/8/8/8/8/8/KrbnNBRK/qrbnNBRQ w - - 0 1", "d1", "d3", "False", "None"],
+				["8/8/8/8/8/8/KrbnNBRK/qrbnNBRQ w - - 0 1", "a1", "a2", "False", "None"],
+				["8/8/8/8/4b3/8/qr1nNBRQ/krbnNBRK w - - 0 8", "g2", "g7", "False", "None"],
+				["8/8/8/8/8/5n2/krb1NBRK/qrbnNBRQ w - - 0 1", "h2", "h3", "False", "None"]]
 },
 
 "jumpStirdy":{

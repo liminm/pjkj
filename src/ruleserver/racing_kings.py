@@ -40,7 +40,7 @@ def fenStateCheck(state):
         if len(board.findCharacter("k")) !=1 or len(board.findCharacter("K")) != 1:
             return False, None, "StateError:There are not exactly 1 king on each side!"
 
-        if not len(board.findCharacter("q")) in range(3) or not len(board.findCharacter("Q")) in range(3):
+        if not len(board.findCharacter("q")) in range(2) or not len(board.findCharacter("Q")) in range(2):
             return False, None, "StateError:Each side has to have 0-2 queens!"
 
         if not len(board.findCharacter("n")) in range(3) or not len(board.findCharacter("N")) in range(3):
@@ -148,6 +148,10 @@ def moveCheck(moveEvent,state):
     if reihencheckrk(board_after) and not reihencheckrk(board_before) and board_before.player == "b" and status is None:
         winner = "playerB" # TODO: ask if playerA is white or black
         status = "win"
+
+    # checks for 50 Move rule
+    if (board_after.halfRounds >= 50):
+        return True, {"type":"50Move", "winner":"draw"}, ""
 
     # checks if the white has already won before
     if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "win"]:
