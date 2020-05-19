@@ -35,9 +35,6 @@ def fenStateCheck(state):
     except: # syntax error on fen string
         return False,None ,"SyntaxError :FEN parsing error, seems to be invalid"
 
-    if not board.stringHash() in boardHashMap:
-        boardHashMap[board.stringHash()] = 1
-
     #check for invalid figures
     if "r" in FEN :
          return False,None,"SyntaxError :FEN parsing error, no rooks allowed in jump sturdy"
@@ -92,7 +89,7 @@ def moveCheck(moveEvent,state):
     #check for valid FEN
     v,c,r = fenStateCheck(state)
     if not v:
-        return False, None, c+":"+r
+        return False, None,r
 
     #Set FEN for easier testing
     if type(state) == str:
@@ -102,8 +99,8 @@ def moveCheck(moveEvent,state):
 
     #create Boards
     try:
-        board_before = bitboard.Board(FEN)
-        board_after = bitboard.Board(FEN)
+        board_before = Board(FEN)
+        board_after = Board(FEN)
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
 
@@ -132,15 +129,13 @@ def moveCheck(moveEvent,state):
             return True,{'type' : "win", 'winner' : "playerB"},""
 
 
-    # update hashmap
-    if not board_after.stringHash() in hashmap:
-        hashmap[board_after.stringHash()] = 1
+    #update hashmap
+    if not board_after in hashmap:
+        hashmap[board_after] = 1
     else:
-        hashmap[board_after.stringHash()] +=1
-
-    if hashmap[board_after.stringHash()] >= 3:
-        winner = "draw"
-        status = "repState"
+        hashmap[board_after] +=1
+        if hashmap[board_after] >= 3:
+            winner = status = "draw"
 
     #set the game state and other returns
     if not status is None:
