@@ -3,12 +3,12 @@ from flask import Flask
 app = Flask(__name__)
 
 # Permanent storage / database handling
-from . import data
+from .storage.storage import storage
 
 # TESTING:
-data.storage['teams'] = {}
-data.storage['players'] = {}
-data.storage['games'] = {}
+storage['teams'] = {}
+storage['players'] = {}
+storage['games'] = {}
 
 # These modules contain the endpoints and their handlers
 from . import team
