@@ -181,10 +181,10 @@ def check(data, schema, path = ''):
 		base = 'Error: Integer {} at path "{}"'.format(data, path)
 		_max = schema.get('_max')
 		if _max and data > _max:
-			return '{} must be at most {} chars long'.format(base, _max)
+			return '{} must be equal to or lower than {}'.format(base, _max)
 		_min = schema.get('_min')
 		if _min and data < _min:
-			return '{} must be at least {} chars long'.format(base, _min)
+			return '{} must be equal to or higher than {}'.format(base, _min)
 
 	return None
 
