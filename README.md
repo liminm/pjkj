@@ -11,12 +11,12 @@ sudo docker run --name mongoDB -p 27017:27017 -d mongo
 python3 -m pjkiserver   # Run module
 ```
 For more details regarding permanent installation and deployment, see
-[docs/INSTALL.md](/PJ-KI/server/blob/master/docs/INSTALL.md).
+[docs/INSTALL.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/INSTALL.md).
 
 The server currently provides the games "Racing Kings" and "Jump Sturdy".
 
 Both AIs and humans on web clients connect to the same REST API, specified in
-[docs/API.md](/PJ-KI/server/blob/master/docs/API.md).
+[docs/API.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/API.md).
 
 # Software architechture
 
@@ -46,7 +46,7 @@ The entire system consists of 4 Parts:
 For more detailed information about the individual modules, see their
 respective repos/folders:
 
-- [Frontend](/PJ-KI/web-client)
-- [Controller](/PJ-KI/server/blob/master/pjkiserver/README.md)
-- [Ruleserver](/PJ-KI/server/blob/master/pjkiserver/ruleserver/README.md)
-- [Storage](/PJ-KI/server/blob/master/pjkiserver/storage/README.md)
+- [Frontend](//gitlab.tubit.tu-berlin.de/PJ-KI/web-client)
+- [Controller](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/README.md)
+- [Ruleserver](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/ruleserver/README.md)
+- [Storage](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/storage/README.md)
