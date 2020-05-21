@@ -3,7 +3,7 @@ AI project game server
 
 This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 
-To run, simply run these inside of the repo:
+To run locally for testing, simply run these inside of the repo:
 ```bash
 pip install -e .        # Install dependencies
 sudo docker pull mongo  # Install mongoDB
