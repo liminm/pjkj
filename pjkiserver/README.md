@@ -1,7 +1,7 @@
 Controller
 ==========
 
-The controller is divided into 7 files:
+The controller is divided into 9 files:
 
 - `__main__.py`: Flask initialization and loading of modules
 - `team.py`, `player.py`, `game.py`: Endpoints and handling for those resources
