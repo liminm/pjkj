@@ -3,17 +3,20 @@ AI project game server
 
 This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 
-To run, simply call `python3 -m pjkiserver` inside the repo. You'll need some
-some dependencies. You'll also need a `mongoDB` `docker` container, as
-described below. For more details regarding permanent installation, see
-`docs/INSTALL.md`.
+To run locally for testing, simply run these inside of the repo:
+```bash
+pip install -e .        # Install dependencies
+sudo docker pull mongo  # Install mongoDB
+sudo docker run --name mongoDB -p 27017:27017 -d mongo
+python3 -m pjkiserver   # Run module
+```
+For more details regarding permanent installation and deployment, see
+[docs/INSTALL.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/INSTALL.md).
 
 The server currently provides the games "Racing Kings" and "Jump Sturdy".
 
 Both AIs and humans on web clients connect to the same REST API, specified in
-`docs/API.md`.
-
-The backend is based on [Flask](https://flask.palletsprojects.com/en/1.1.x/).
+[docs/API.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/API.md).
 
 # Software architechture
 
@@ -40,59 +43,10 @@ The entire system consists of 4 Parts:
 +-----------------------------------------------------------+
 ```
 
-For the frontend, see the
-[web-client](https://gitlab.tubit.tu-berlin.de/PJ-KI/web-client) repo.
+For more detailed information about the individual modules, see their
+respective repos/folders:
 
-# Controller
-
-The controller is divided into 7 files:
-
-- `main.py`: Flask initialization and loading of modules
-- `team.py`, `player.py`, `game.py`: Endpoints and handling for those resources
-- `event.py`: The event system ([SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)-Based) and related endpoints.
-- `timer.py`: Timekeeping and timeout handling
-- `rules.py`: Abstration layer for ruleserver modules for different games
-- `data.py`: Storage components and database synchronization
-- `util.py`: Various helper functions
-
-# Storage
-
-## How to setup Docker the first time
-`sudo docker pull mongo  // just download the image
-sudo docker run --name mongoDB -p 27017:27017 -d mongo // run the image`
-
-After that MongoDB will run and not shutdown if its not explicitly told so, even after a restart it will automatically start again
-
-To get an overview over all running container type
-`sudo docker ps `
-
-
-## How to use the dictionary
-
-### How to connect to the storage module
-`from storage.DatabaseDictionary import DatabaseDictionary
-storage = DatabaseDictionary()`
-
-### How to save something
-`key = 'insert your key here'
-game = {
-    'player1': 'Lorenz',
-    'player2': 'Matthias',
-    'history': [
-        {'FEN': '8/123/8a...', 'time_player': 1, ...},
-        {'FEN': '8/123/8a...', 'time_player': 1, ...},
-        ...
-    ]
-}
-storage[key] = game`
-
-### How to read something
-`game = storage['key']`
-
-### How to iterate over all entries
-`for key in storage:
-    game = storage[key]`
-
-## Important Information
-- The module only accepts String keys, if not a type error will be raised!
-- The values must be convertable to json if its not there will occur errors which are not handled yet!
+- [Frontend](//gitlab.tubit.tu-berlin.de/PJ-KI/web-client)
+- [Controller](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/README.md)
+- [Ruleserver](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/ruleserver/README.md)
+- [Storage](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/storage/README.md)

@@ -1,10 +1,13 @@
-Installation Intructions
-========================
+Deployment Intructions
+======================
 
 While you can run the `werkzeug`-based webserver integrated into flask during
 development using `python3 -m pjkiserver`, it is not suited for production.
 
-A full installation includes these steps:
+If you just want to install the test server on your system, but not run a full
+production enviroment, executing steps 1 and 2 is entirely sufficient.
+
+A full deployment includes these steps:
 
 1. Dependencies
 2. Package installation
@@ -96,7 +99,7 @@ user is.
 A suitable configuration file and `systemd` service file are included in this
 repo, feel free to adjust them to your needs before installing:
 ```
-sudo apt install uwsgi
+sudo apt install uwsgi-core uwsgi-plugin-python3
 sudo cp pjkiserver.service /etc/systemd/system
 sudo systemctl enable pjkiserver
 sudo systemctl start pjkiserver
