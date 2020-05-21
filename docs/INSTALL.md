@@ -99,7 +99,7 @@ user is.
 A suitable configuration file and `systemd` service file are included in this
 repo, feel free to adjust them to your needs before installing:
 ```
-sudo apt install uwsgi uwsgi-plugin-python3
+sudo apt install uwsgi-core uwsgi-plugin-python3
 sudo cp pjkiserver.service /etc/systemd/system
 sudo systemctl enable pjkiserver
 sudo systemctl start pjkiserver
