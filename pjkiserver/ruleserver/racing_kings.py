@@ -126,6 +126,8 @@ def moveCheck(moveEvent,state):
         board_after.movePlayer(uci)
     except SyntaxError:
         return False, None, "SyntaxError:UCI String is invalid!"
+    except ValueError:
+        return False, None, "ValueError: no figure on start field"
 
 
     # for check valid  movement
