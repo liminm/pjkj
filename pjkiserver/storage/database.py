@@ -8,25 +8,28 @@ class DatabaseDictionary(MutableMapping):
     It is based and reliant on a mongoDB
     '''
 
-    def __init__(self, url='localhost', port=27017, database_timeout_ms=3000):
-        self.mongo_client = MongoClient(url, port, serverSelectionTimeoutMS=database_timeout_ms )
+    def __init__(self, url='localhost', port=27017, database_timeout_ms=2000):
+        self.mongo_client = MongoClient(url, port,
+            serverSelectionTimeoutMS=database_timeout_ms)
 
-        try:
-            self.mongo_client.admin.command('ismaster')
-        except ConnectionFailure:
-            raise ConnectionFailure('MongoDB docker is not reachable')
+        print("Trying to connect to database...")
 
+        # Connect DB. Will raise ConnectionError if no DB found
+        self.mongo_client.admin.command('ismaster')
+
+        # Store handles for our collection
         self.mongo_database = self.mongo_client['pjki']
         self.mongo_collection = self.mongo_database['game-history']
+
+        print("Database connected.")
 
     def __getitem__(self, key):
         if type(key) is not str:
             raise TypeError('Key is not string')
 
         hit = self.mongo_collection.find_one({'key': key})
-        if hit is None:
-            return None
-        return hit['value']
+
+        return hit['value'] if hit else None
 
     def __setitem__(self, key, value):
         self.mongo_collection.delete_many({'key': key})
