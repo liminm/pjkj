@@ -5,11 +5,6 @@ app = Flask(__name__)
 # Permanent storage / database handling
 from .storage.storage import storage
 
-# TESTING:
-storage['teams'] = {}
-storage['players'] = {}
-storage['games'] = {}
-
 # These modules contain the endpoints and their handlers
 from . import team
 from . import player
