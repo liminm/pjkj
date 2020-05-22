@@ -11,6 +11,8 @@ class DatabaseDictionary(MutableMapping):
     def __init__(self, url='localhost', port=27017, database_timeout_ms=3000):
         self.mongo_client = MongoClient(url, port, serverSelectionTimeoutMS=database_timeout_ms )
 
+        print("Try connecting to server")
+
         try:
             self.mongo_client.admin.command('ismaster')
         except ConnectionFailure:
