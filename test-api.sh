@@ -1,10 +1,16 @@
 #!/bin/bash
 
+function heading() {
+
+	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+	echo ${1}
+	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+}
+
 HOST=localhost:5000
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING GROUP'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CREATING GROUP'
 
 TEAMINFO=`echo '
 {
@@ -24,9 +30,7 @@ http -v ${HOST}/teams
 http -v ${HOST}/team/${TEAMID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING PLAYER 1'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CREATING PLAYER 1'
 
 
 PLAYER1INFO=`echo '
@@ -45,9 +49,7 @@ http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER1ID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING PLAYER 2'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CREATING PLAYER 2'
 
 
 PLAYER2INFO=`echo '
@@ -66,18 +68,14 @@ http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER2ID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING PAGINATION'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CHECKING PAGINATION'
 
 
 http -v "${HOST}/players?start=0&count=1"
 http -v "${HOST}/players?start=1&count=2"
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING GAME'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CREATING GAME'
 
 
 GAMEINFO=`echo '
@@ -108,9 +106,7 @@ http -v ${HOST}/game/${GAMEID}
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CHECKING FILTER'
 
 
 http -v ${HOST}/games?state=planned
@@ -118,9 +114,7 @@ http -v ${HOST}/games?state=running
 http -v ${HOST}/games?state=completed
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 1'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'SENDING EVENT 1'
 
 
 EV1INFO=`echo '
@@ -136,9 +130,8 @@ echo ${EV1INFO}
 
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+heading 'CHECKING FILTER'
 
 
 http -v ${HOST}/games?state=planned
@@ -146,9 +139,7 @@ http -v ${HOST}/games?state=running
 http -v ${HOST}/games?state=completed
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 2'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'SENDING EVENT 2'
 
 
 EV2INFO=`echo '
@@ -165,9 +156,7 @@ echo ${EV2INFO}
 #http -vS ${HOST}/game/${GAMEID}/events
 #exit 0
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 3'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'SENDING EVENT 3'
 
 
 EV3INFO=`echo '
@@ -181,9 +170,7 @@ echo ${EV3INFO}
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'CHECKING FILTER'
 
 
 http -v ${HOST}/games?state=planned
