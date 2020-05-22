@@ -5,7 +5,7 @@ This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 
 To run locally for testing, simply run these inside of the repo:
 ```bash
-pip install -e .        # Install dependencies
+pip3 install -e .        # Install dependencies
 sudo docker pull mongo  # Install mongoDB
 sudo docker run --name mongoDB -p 27017:27017 -d mongo
 python3 -m pjkiserver   # Run module
