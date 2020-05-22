@@ -2,6 +2,13 @@ from flask import Flask
 
 app = Flask(__name__)
 
+@app.after_request
+def add_headers(response):
+	response.headers['Access-Control-Allow-Origin'] = '*'
+	response.headers['Access-Control-Allow-Methods'] = '*'
+	response.headers['Access-Control-Allow-Headers'] = '*'
+	return response
+
 # Permanent storage / database handling
 from .storage.storage import storage
 
