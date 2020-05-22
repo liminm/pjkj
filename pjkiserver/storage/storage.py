@@ -17,7 +17,7 @@ try:
 	# Local, volatile storage for quick access
 	# Initialize with persistent storage values
 	storage = {
-		key: (persistent_storage.get(key, {}) or {}) for key in DATABASE_KEYS
+		key: (persistent_storage.get(key) or {}) for key in DATABASE_KEYS
 	}
 
 	# Sync local dict into persistent database
@@ -44,9 +44,12 @@ try:
 	signal.signal(signal.SIGINT, stop_writethrough)
 
 except ConnectionFailure:
+	# Provide an empty, non-synced, volatile storage dict
 	storage = {
 		key: {} for key in DATABASE_KEYS
 	}
+
+	# Inform users that data will not be saved
 	print("DATABASE COULD NOT BE REACHED")
-	print("Requests will not be saved persistently")
+	print("`storage` will not be saved persistently")
 	print("THIS MODE IS FOR DEVELOPMENT PURPOSES ONLY")
