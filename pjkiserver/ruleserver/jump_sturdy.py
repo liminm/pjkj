@@ -130,12 +130,14 @@ def moveCheck(moveEvent,state):
 
 
     #update hashmap
+    boardHash = board_after.stringHash()
     if not board_after in hashmap:
-        hashmap[board_after] = 1
+        hashmap[boardHash] = 1
     else:
-        hashmap[board_after] +=1
-        if hashmap[board_after] >= 3:
-            winner = status = "draw"
+        hashmap[boardHash] +=1
+        if hashmap[boardHash] >= 3:
+            winner = "draw"
+            status = "repState"
 
     #set the game state and other returns
     if status:
