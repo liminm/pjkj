@@ -2,173 +2,165 @@
 
 HOST=localhost:5000
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING GROUP'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+MODE="leaveopen"
 
-TEAMINFO=`echo '
+#GAMETYPE="racingKings"
+#MOVE1="h2h3"
+#MOVE2="b2b6"
+
+GAMETYPE="jumpSturdy"
+MOVE1="b2b3"
+MOVE2="g7g6"
+
+function heading() {
+
+	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+	echo ${1}
+	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+}
+
+heading 'CREATING TEAM'
+
+TEAMINFO=`printf '
 {
 	"name":"Team Rocket",
 	"isisName":"Gruppe 7",
-	"type":"racingKings"
+	"type":"%s"
 }
-' | http POST ${HOST}/teams`
+' ${GAMETYPE} | http POST ${HOST}/teams`
+
+echo ${TEAMINFO}
 
 TEAMID=`echo ${TEAMINFO} | jq -r .id`
 TEAMTOKEN=`echo ${TEAMINFO} | jq -r .token`
 
-echo ${TEAMID}
-echo ${TEAMTOKEN}
+echo 'Token:' ${TEAMTOKEN}
 
-http -v ${HOST}/teams
+#http -v ${HOST}/teams
 http -v ${HOST}/team/${TEAMID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING PLAYER 1'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-
+heading 'CREATING PLAYER 1'
 
 PLAYER1INFO=`echo '
 {
-        "name":"Oskar"
+	"name":"Oskar"
 }
 ' | http POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
+
+echo ${PLAYER1INFO}
 
 PLAYER1ID=`echo ${PLAYER1INFO} | jq -r .id`
 PLAYER1TOKEN=`echo ${PLAYER1INFO} | jq -r .token`
 
-echo ${PLAYER1ID}
-echo ${PLAYER1TOKEN}
+echo 'Token:' ${PLAYER1TOKEN}
 
-http -v ${HOST}/players
+#http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER1ID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING PLAYER 2'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-
+heading 'CREATING PLAYER 2'
 
 PLAYER2INFO=`echo '
 {
-        "name":"Nicht Oskar"
+	"name":"Nicht Oskar"
 }
 ' | http POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
+
+echo ${PLAYER2INFO}
 
 PLAYER2ID=`echo ${PLAYER2INFO} | jq -r .id`
 PLAYER2TOKEN=`echo ${PLAYER2INFO} | jq -r .token`
 
-echo ${PLAYER2ID}
-echo ${PLAYER2TOKEN}
+echo 'Token:' ${PLAYER2TOKEN}
 
-http -v ${HOST}/players
+#http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER2ID}
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING PAGINATION'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+#heading 'CHECKING PAGINATION'
+#http -v "${HOST}/players?start=0&count=1"
+#http -v "${HOST}/players?start=1&count=2"
 
 
-http -v "${HOST}/players?start=0&count=1"
-http -v "${HOST}/players?start=1&count=2"
+heading 'CREATING GAME'
 
-
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CREATING GAME'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-
-
-GAMEINFO=`echo '
+GAMEINFO=`printf '
 {
 	"name": "Finale",
-	"type": "racingKings",
+	"type": "%s",
 	"players": {
-		"playerA":' \"${PLAYER1ID}\", '
-		"playerB":' \"${PLAYER2ID}\" '
+		"playerA": "%s",
+		"playerB": "%s"
 	},
 	"settings": {
-		"initialFEN": "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1",
 		"timeBudget": 120000,
 		"timeout": 60000
 	}
 }
-' | http POST ${HOST}/games`
+' ${GAMETYPE} ${PLAYER1ID} ${PLAYER2ID} | http POST ${HOST}/games`
 
 echo ${GAMEINFO}
 
 GAMEID=`echo ${GAMEINFO} | jq -r .id`
 
-echo ${GAMEID}
-
-http -v ${HOST}/games
+#http -v ${HOST}/games
 http -v ${HOST}/game/${GAMEID}
 
-http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
+#http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+#heading 'CHECKING FILTER'
+#http -v ${HOST}/games?state=planned
+#http -v ${HOST}/games?state=running
+#http -v ${HOST}/games?state=completed
 
 
-http -v ${HOST}/games?state=planned
-http -v ${HOST}/games?state=running
-http -v ${HOST}/games?state=completed
+heading 'SENDING EVENT 1'
 
-
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 1'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-
-
-EV1INFO=`echo '
+EV1INFO=`printf '
 {
 	"type": "move",
 	"details": {
-		"move": "h2h3"
+		"move": "%s"
 	}
 }
-' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
+' ${MOVE1} | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
 
 echo ${EV1INFO}
 
-http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
-
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+#http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
-http -v ${HOST}/games?state=planned
-http -v ${HOST}/games?state=running
-http -v ${HOST}/games?state=completed
+#heading 'CHECKING FILTER'
+#http -v ${HOST}/games?state=planned
+#http -v ${HOST}/games?state=running
+#http -v ${HOST}/games?state=completed
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 2'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+heading 'SENDING EVENT 2'
 
 
-EV2INFO=`echo '
+EV2INFO=`printf '
 {
 	"type": "move",
 	"details": {
-		"move": "b2b6"
+		"move": "%s"
 	}
 }
-' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`
+' ${MOVE2} | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`
 
 echo ${EV2INFO}
 
-#http -vS ${HOST}/game/${GAMEID}/events
-#exit 0
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'SENDING EVENT 3'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+if [[ ${MODE} == "leaveopen" ]]
+then
+	http -vS ${HOST}/game/${GAMEID}/events
+	exit 0
+fi
 
+heading 'SENDING EVENT 3'
 
 EV3INFO=`echo '
 {
@@ -181,11 +173,7 @@ echo ${EV3INFO}
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-echo 'CHECKING FILTER'
-printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-
-
-http -v ${HOST}/games?state=planned
-http -v ${HOST}/games?state=running
-http -v ${HOST}/games?state=completed
+#heading 'CHECKING FILTER'
+#http -v ${HOST}/games?state=planned
+#http -v ${HOST}/games?state=running
+#http -v ${HOST}/games?state=completed
