@@ -26,11 +26,15 @@ TOC:
 ## Teams
 
 ### Create Team
+
+To participate in any game, your players need to be part of a team. For the
+tournament, the ISIS group name should be given as well.
+
 ```javascript
 POST /api/teams
 {
   "name": "<string>",
-  "isisName": "<string>",
+  "isisName": "<_optional_ string>",
   "type": "jumpSturdy" || "racingKings"
 }
 
@@ -41,7 +45,11 @@ POST /api/teams
 }
 ```
 
-### Log in Team
+### Test Team Token
+
+An enpoint to test a team token. This is entirely optional and only needed for
+visual feedback in the webclient.
+
 ```javascript
 GET /api/teamlogin
 Authorization: Basic <teamToken>
@@ -88,9 +96,14 @@ GET /api/team/<teamID>
 
 
 ## Players
+
 (AI or Human)
 
 ### Create Player
+
+Players are the ressources that will actually participate in games. They are
+associated to teams based on the passed team authentication token.
+
 ```javascript
 POST /api/players
 Authorization: Basic <teamToken>
@@ -105,7 +118,11 @@ Authorization: Basic <teamToken>
 }
 ```
 
-### Log in Player
+### Test Player Token
+
+An enpoint to test a player token. This is entirely optional and only needed
+for visual feedback in the webclient.
+
 ```javascript
 GET /api/playerlogin
 Authorization: Basic <playerToken>
@@ -161,7 +178,7 @@ POST /api/games
     "playerB": "<string playerID>"
   },
   "settings": {
-    "initialFEN": "<string fen>",
+    "initialFEN": "<_optional_ string fen>",
     "timeBudget": <int ms>,
     "timeout": <int ms>
   }
@@ -257,13 +274,19 @@ Authorization: Basic <playerToken>
 ```
 
 ### Get past & new Events
-[SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) format
+
+This is the complicated part. In order to be notified of all events happening
+in the game, a comet-style [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+feed is opened via this GET request and _stays open_, feeding back data in the
+SSE format. This means that as soon as, say, another player makes a move, you
+will be notified of that move and can start yours.
+
 ```javascript
 GET /api/game/<GameId>/events
 
 200 OK
 data: {
-  "type": "move" || "gameEnd" || "timeout" || "timeBudget" || "serverMessage",
+  "type": "move" || "gameEnd" || "serverMessage",
   "player": "playerA" || "playerB" || null,
   "timestamp": "<string iso utc>",
   "details": {
@@ -273,10 +296,6 @@ data: {
   } || {
     "type": "win" || "surrender" || "draw" || "timeout" || "timeBudget" || "50move" || "repState",
     "winner": "playerA" || "playerB" || "draw"
-  } || {
-    "timeout": <int ms>
-  } || {
-    "timeBudget": <int ms>
   } || {
     "messageText": "<string>"
   }
