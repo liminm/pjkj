@@ -146,8 +146,8 @@ def moveCheck(moveEvent,state):
             'winner': winner
         }
 
-    moveEvent['details']['postFen'] = repr(board_after)
-    state['FEN'] = repr(board_after)
+    moveEvent['details']['postFEN'] = repr(board_after)
+    state['fen'] = repr(board_after)
     state['winner']  = winner
 
     return valid,gameState,"Alles Super!"
