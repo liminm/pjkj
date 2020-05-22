@@ -1,5 +1,3 @@
-import signal
-
 from .database import DatabaseDictionary
 from .scheduler import SetInterval
 
@@ -12,42 +10,40 @@ DATABASE_KEYS = ['teams', 'players', 'games']
 # if not connectable just start the development enviroement where storage is not synced with the mongoDB and therefore NOT SAVED
 try:
 	# Persistent storage
-	persistent_storage = DatabaseDictionary()
+	persistentDB = DatabaseDictionary()
 
 	# Local, volatile storage for quick access
 	# Initialize with persistent storage values
 	storage = {
-		key: (persistent_storage.get(key) or {}) for key in DATABASE_KEYS
+		key: (persistentDB.get(key) or {}) for key in DATABASE_KEYS
 	}
 
 	# Sync local dict into persistent database
-	def write_database():
+	def dumpDatabase():
 		for key in DATABASE_KEYS:
-			persistent_storage[key] = storage[key]
+			persistentDB[key] = storage[key]
 
 	# Save initial state
-	write_database()
+	dumpDatabase()
 
 	# Start a timer to save state every 10 seconds
-	scheduled_database_writethrough = SetInterval(10, write_database)
+	dumpInterval = SetInterval(10, dumpDatabase)
 
-	# When stopping the server, save the state to the database and stop the timer
-	def stop_writethrough(*args):
-		print("Stopping server...")
-		scheduled_database_writethrough.cancel()
-		write_database()
-		print("Finished dumping DB. Bye!")
-		exit(0)
-
-	# Make the server save state if a termination signal is received
-	signal.signal(signal.SIGTERM, stop_writethrough)
-	signal.signal(signal.SIGINT, stop_writethrough)
+	# When shutting down, save the state to the database and stop the timer
+	def stop():
+		print("Dumping DB...")
+		dumpInterval.cancel()
+		dumpDatabase()
+		print("Finished dumping DB")
 
 except ConnectionFailure:
 	# Provide an empty, non-synced, volatile storage dict
 	storage = {
 		key: {} for key in DATABASE_KEYS
 	}
+
+	def stop():
+		print("No DB to dump")
 
 	# Inform users that data will not be saved
 	print("DATABASE COULD NOT BE REACHED")
