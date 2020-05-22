@@ -342,7 +342,7 @@ class RacingKingsMainFunction(unittest.TestCase):
                 m2[1], m2[0] = m2[0], m2[1] # swap
 
 if __name__ == '__main__':
-    with open('ruleserver/test_data.json') as f:
+    with open('pjkiserver/ruleserver/test_data.json') as f:
         test_data = json.load(f)
 
     unittest.main()
