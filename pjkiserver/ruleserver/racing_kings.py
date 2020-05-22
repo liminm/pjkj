@@ -167,7 +167,7 @@ def moveCheck(moveEvent,state):
         king = justBlackKings.board["wh"] & justBlackKings.board["k"]
         justBlackKings.board["wh"] ^= king
         justBlackKings.board["k"] ^= king
-        
+
         if reihencheckrk(justBlackKings):
             winner = status = "draw"
         else:
@@ -181,7 +181,7 @@ def moveCheck(moveEvent,state):
             'winner': winner
         }
 
-    moveEvent['details']['postFen'] = repr(board_after)
+    moveEvent['details']['postFEN'] = repr(board_after)
     state['fen'] = repr(board_after)
     state['winner'] = winner
 
