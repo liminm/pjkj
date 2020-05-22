@@ -42,17 +42,25 @@ def auth(dict, request):
 	# If the header is not present, we inform the client that this endpoint
 	# requires authentication
 	if not authHeader:
-		return None, ['Error: unauthorized', 401, {'WWW-Authenticate': 'Basic'}]
+		return None, ('Error: Unauthorized (Authorization missing)', 401,
+			{'WWW-Authenticate': 'Basic'})
 
-	# Remove the 'Basic '-part to get the token
-	authToken = authHeader.split(' ')[1]
+	# Separate into 'Basic' and '<Token>'
+	try:
+		authType, authToken = authHeader.strip().split(' ')
+	except ValueError:
+		return None, ('Error: Malformed auth header: Must be 2 words', 400)
+
+	# Ensure the normal auth type is given
+	if authType != 'Basic':
+		return None, ('Error: Only "Basic" auth supported', 400)
 
 	# Search this token in the database to find the corresponding player
 	id = checkAuth(dict, authToken)
 
 	# If no entity has this token, it's invalid
 	if not id:
-		return None, ['Error: invalid authorization', 403]
+		return None, ('Error: Invalid authorization (no such token)', 403)
 
 	return id, None
 
