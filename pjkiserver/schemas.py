@@ -116,7 +116,7 @@ def check(data, schema, path = ''):
 		if schema.get('_optional'):
 			return None
 		# If the key is not optional, this is an error
-		return 'Error: Key path "{}" missing'.format(path)
+		return 'Key path `{}` missing'.format(path)
 
 	# Find out what type the data should have
 	_type = schema['_type']
@@ -124,8 +124,8 @@ def check(data, schema, path = ''):
 	# If the type of the data doesn't correlate with the type described in the
 	# schema, that's an error
 	if type(data) != _type:
-		return 'Error: Actual type "{}" at path "{}" does not match expected type "{}"'.format(
-			type(data).__name__, path, _type.__name__)
+		base = 'Actual type <{}> at path `{}`'.form(type(data).__name__, path)
+		return '{} is not expected type <{}>'.format(base, _type.__name__)
 
 	# If the current object is a dict, we need to recurse into it.
 	if _type == dict:
@@ -141,7 +141,7 @@ def check(data, schema, path = ''):
 
 	# Lists can be validated by their elements and some length constraints
 	elif _type == list:
-		base = 'Error: List at path "{}"'.format(path)
+		base = 'List at path `{}`'.format(path)
 		_len = schema.get('_len')
 		if _len and len(data) != _len:
 			return '{} must be exactly {} elements long'.format(base, _len)
@@ -162,7 +162,7 @@ def check(data, schema, path = ''):
 
 	# For strings we can validate by pattern and length constraints
 	elif _type == str:
-		base = 'Error: String "{}" at path "{}"'.format(data, path)
+		base = 'String "{}" at path `{}`'.format(data, path)
 		_len = schema.get('_len')
 		if _len and len(data) != _len:
 			return '{} must be exactly {} chars long'.format(base, _len)
@@ -174,11 +174,11 @@ def check(data, schema, path = ''):
 			return '{} must be at least {} chars long'.format(base, _minLen)
 		_re = schema.get('_re')
 		if _re and not re.search(schema['_re'], data):
-			return '{} does not match pattern "{}"'.format(base, _re)
+			return '{} does not match pattern /{}/'.format(base, _re)
 
 	# Integers can be validated by value limits
 	elif _type == int:
-		base = 'Error: Integer {} at path "{}"'.format(data, path)
+		base = 'Integer {} at path `{}`'.format(data, path)
 		_max = schema.get('_max')
 		if _max and data > _max:
 			return '{} must be equal to or lower than {}'.format(base, _max)
@@ -196,13 +196,13 @@ def parseAndCheck(payload, schema):
 		payload = payload.decode('UTF-8')
 		data = json.loads(payload)
 	except ValueError as e:
-		return None, ['Error: JSON decode error:\n' + e, 400]
+		return None, ['Error: JSON decode error:\n' + str(e), 400]
 
 	# Check contents
 	error = check(data, schema)
 	if error:
 		# Return error message and code `400 BAD REQUEST`
-		return None, [error, 400]
+		return None, ['Error: Data format validation error:\n' + error, 400]
 	else:
 		# return valid data
 		return data, None
