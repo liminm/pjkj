@@ -89,3 +89,18 @@ def stopWatcher(gameID):
 	del watchers[gameID]
 
 	return end - start
+
+# For graceful shutdown
+def stopAll():
+
+	# Needs to be declared as global because python
+	global watchers
+
+	print("Stopping timers...")
+
+	for gameID in watchers:
+		watchers[gameID]['timer'].cancel()
+
+	watchers = {}
+
+	print("Timers stopped")
