@@ -162,7 +162,12 @@ def moveCheck(moveEvent,state):
 
     # checks if the white has already won before
     if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "win"]:
-        if reihencheckrk(board_after):
+        justBlackKings = Board(repr(board_after))
+        king = justBlackKings.board["wh"] & justBlackKings.board["k"]
+        justBlackKings.board["wh"] ^= king
+        justBlackKings.board["k"] ^= king
+        
+        if reihencheckrk(justBlackKings):
             winner = status = "draw"
         else:
             winner = "playerA"
