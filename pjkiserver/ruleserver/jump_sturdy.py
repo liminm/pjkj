@@ -9,7 +9,7 @@ import numpy as np
 import re
 
 from .bitboard import Board
-from .valid_move_check import ValidCheckJumpSturdy
+from .valid_move_check import ValidCheck
 from .WinConditions import reihencheckjs
 
 INITIAL_FEN = "1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1"
@@ -84,7 +84,7 @@ def moveCheck(moveEvent,state):
     gameState = None
 
     # calling all the classes
-    moveCheck =  ValidCheckJumpSturdy()
+    moveCheck =  ValidCheck()
 
     #check for valid FEN
     v,c,r = fenStateCheck(state)
@@ -108,7 +108,7 @@ def moveCheck(moveEvent,state):
 
     #for check valid  movement
     try:
-        valid_move, reason = moveCheck.check(FEN,uci)
+        valid_move, reason = moveCheck.check(FEN,uci,"JS")
         if not valid_move:
             return False, None, "MoveError:" + reason + "!"
     except:
