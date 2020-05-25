@@ -67,12 +67,15 @@ GET /api/teams?count=<count>&start=<start>
 
 200 OK
 {
- "<teamID>": {
-    "name": "<string>",
-    "isisName": "<string>",
-    "type": "jumpSturdy" || "racingKings"
-  },
-  ...
+  "totalCount": <int total number of items in collection>,
+  "items": {
+    "<teamID>": {
+      "name": "<string>",
+      "isisName": "<string>",
+      "type": "jumpSturdy" || "racingKings"
+    },
+    ...
+  }
 }
 ```
 
@@ -140,11 +143,14 @@ GET /api/players?count=<count>&start=<start>
 
 200 OK
 {
-  "<playerID>": {
-    "name": "<string>",
-    "team": "<string teamID>"
-  },
-  ...
+  "totalCount": <int total number of items in collection>,
+  "items": {
+    "<playerID>": {
+      "name": "<string>",
+      "team": "<string teamID>"
+    },
+    ...
+  }
 }
 ```
 
@@ -202,21 +208,25 @@ GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]
 
 200 OK
 {
-  "<id>" {
-    "name": "<string>",
-    "type": "jumpSturdy" || "racingKings",
-    "players": {
-      "playerA": {
-        "name": "<string>"
+  "totalCount": <int total number of items in collection>,
+  "items": {
+    "<id>" {
+      "name": "<string>",
+      "type": "jumpSturdy" || "racingKings",
+      "players": {
+        "playerA": {
+          "name": "<string>"
+        },
+        "playerB": {
+          "name": "<string>"
+        }
       },
-      "playerB": {
-        "name": "<string>"
+      "state": {
+        "state": "planned" || "running" || "completed",
+        "winner": "playerA" || "playerB" || "draw" || null
       }
     },
-    "state": {
-      "state": "planned" || "running" || "completed",
-      "winner": "playerA" || "playerB" || "draw" || null
-    }
+    ...
   }
 }
 ```
