@@ -17,30 +17,30 @@ def post_game():
 	if error:
 		return Response(*error)
 
-	# We're gonna need these a bunch
-	playerA = game['players']['playerA']
-	playerB = game['players']['playerB']
+	# Stuff we have to do for both players goes here
+	for player in game['players']:
 
-	# Make sure the mentioned players actually exist
-	if not playerA in storage['players']:
-		return "Error: Player {} does not exist".format(playerA), 409
-	if not playerB in storage['players']:
-		return "Error: Player {} does not exist".format(playerB), 409
+		# We're gonna need this a bunch
+		playerID = game['players'][player]['id']
+
+		# Make sure the mentioned players actually exist
+		if not playerID in storage['players']:
+			return "Error: Player {} does not exist".format(playerID), 409
+
+		# Make sure only teams actually playing this game type can participate
+		team = storage['players'][playerID]['team']
+		if storage['teams'][team]['type'] != game['type']:
+			return "Error: Team {} can't play {}".format(team, game['type']), 409
+
+		# Initialize time budgets
+		game['players'][player]['timeBudget'] = game['players'][player]['initialTimeBudget']
 
 	# Make sure that a player can't play against itself
 	# This is not allowed because we need to be able to uniquely map
 	# PlayerID -> Player to identify who is making a move, which isn't possible
 	# if both players have the same ID.
-	if playerA == playerB:
+	if game['players']['playerA']['id'] == game['players']['playerB']['id']:
 		return "Error: Player can't play against itself", 409
-
-	# Make sure only teams actually playing this game type can participate
-	teamA = storage['players'][playerA]['team']
-	teamB = storage['players'][playerB]['team']
-	if storage['teams'][teamA]['type'] != game['type']:
-		return "Error: Team {} can't play {}".format(teamA, game['type']), 409
-	if storage['teams'][teamB]['type'] != game['type']:
-		return "Error: Team {} can't play {}".format(teamB, game['type']), 409
 
 	# If no initial FEN string is given, we get the defaults from the rules
 	initialFEN = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
@@ -51,14 +51,8 @@ def post_game():
 		'state': 'planned',
 		'winner': None,
 		'fen': initialFEN,
-		'timeBudgets': {
-			'playerA': game['settings']['timeBudget'],
-			'playerB': game['settings']['timeBudget']
-		},
 		'boardHashMap': {}
 	}
-	# Make sure the timeout is an int and not a string
-	game['settings']['timeout'] = int(game['settings']['timeout'])
 	# Initialize eventstream
 	game['events'] = []
 
@@ -86,9 +80,19 @@ def post_game():
 @api.route('/games', methods=['GET'])
 def get_games():
 
+	# Clients might only want a slice of the collection, which they can specify
+	# using these URL parameters. They can also filter by state.
+	start = request.args.get('start', default = 0, type = int)
+	count = request.args.get('count', default = None, type = int)
+	state = request.args.get('state', default = '*', type = str)
+
 	# In order to not accidentally remove data from the database, we copy
 	# the entire dict here.
 	games = deepcopy(storage['games'])
+
+	# Apply slicing and filtering
+	games = util.paginate(games, start, count)
+	games = util.filterState(games, state)
 
 	# Remove stuff not needed in listing and add player names
 	for id in games:
@@ -98,20 +102,11 @@ def get_games():
 		del game['state']['fen']
 		del game['state']['timeBudgets']
 		del game['state']['boardHashMap']
-		game['playerNames'] = {
-			'playerNameA': storage['players'][game['players']['playerA']]['name'],
-			'playerNameB': storage['players'][game['players']['playerB']]['name']
-		}
-		del game['players']
-
-	# Clients might only want a slice of the collection, which they can specify
-	# using these URL parameters. They can also filter by state.
-	start = request.args.get('start', default = 0, type = int)
-	count = request.args.get('count', default = None, type = int)
-	state = request.args.get('state', default = '*', type = str)
-
-	games = util.paginate(games, start, count)
-	games = util.filterState(games, state)
+		for player in game['players']:
+			playerID = game['players'][player]['id']
+			for key in game['players'][player]:
+				del game['players'][player][key]
+			game['players'][player]['name'] = storage['players'][playerID]['name']
 
 	return json.dumps(games, indent=4)
 
@@ -130,20 +125,9 @@ def get_game(id):
 	del game['events']
 	del game['state']['boardHashMap']
 
-	# Get the names of the players
-	playerNameA = storage['players'][game['players']['playerA']]['name']
-	playerNameB = storage['players'][game['players']['playerB']]['name']
-
-	# Provide the player IDs as well as the names, because frontend wanted it
-	game['players'] = {
-		'playerA': {
-			'id': game['players']['playerA'],
-			'name': playerNameA
-		},
-		'playerB': {
-			'id': game['players']['playerB'],
-			'name': playerNameB
-		}
-	}
+	# Add player names for frontend convenience
+	for player in game['players']:
+		playerID = game['players'][player]['id']
+		game['players'][player]['name'] = storage['players'][playerID]['name']
 
 	return json.dumps(game, indent=4)

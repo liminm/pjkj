@@ -1,6 +1,6 @@
 import json, re
 
-from . import util
+from .util import id_len
 
 max_name_len = 42
 
@@ -32,6 +32,25 @@ player = {
 	},
 }
 
+gamePlayer = {
+	"_type": dict,
+	"id": {
+		"_type": str,
+		"_re": r"^\w+$",
+		"_len": id_len,
+	},
+	"timeout": {
+		"_type": int,
+		"_min": 100,		# .1s
+		"_max": 3600000,	# 1h
+	},
+	"initialTimeBudget": {
+		"_type": int,
+		"_min": 1000,		# 1s
+		"_max": 7200000,	# 2h
+	},
+}
+
 game = {
 	"_type": dict,
 	"name": {
@@ -45,16 +64,8 @@ game = {
 	},
 	"players": {
 		"_type": dict,
-		"playerA": {
-			"_type": str,
-			"_re": r"^\w+$",
-			"_len": util.id_len,
-		},
-		"playerB": {
-			"_type": str,
-			"_re": r"^\w+$",
-			"_len": util.id_len,
-		},
+		"playerA": gamePlayer,
+		"playerB": gamePlayer,
 	},
 	"settings": {
 		"_type": dict,
@@ -65,16 +76,6 @@ game = {
 			"_minLen": 10,
 			"_maxLen": 100,
 		},
-		"timeBudget": {
-			"_type": int,
-			"_min": 1000,		# 1s
-			"_max": 7200000,	# 2h
-		},
-		"timeout": {
-			"_type": int,
-			"_min": 100,		# .1s
-			"_max": 3600000,	# 1h
-		}
 	}
 }
 
