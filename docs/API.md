@@ -174,13 +174,19 @@ POST /api/games
   "name": "<string>",
   "type": "jumpSturdy" || "racingKings",
   "players": {
-    "playerA": "<string playerID>",
-    "playerB": "<string playerID>"
+    "playerA": {
+      "id": "<string playerID>",
+      "timeout": <int ms>,
+      "initialTimeBudget": <int ms>
+    },
+    "playerB": {
+      "id": "<string playerID>",
+      "timeout": <int ms>,
+      "initialTimeBudget": <int ms>
+    }
   },
   "settings": {
-    "initialFEN": "<_optional_ string fen>",
-    "timeBudget": <int ms>,
-    "timeout": <int ms>
+    "initialFEN": "<_optional_ string fen>"
   }
 }
 
@@ -199,9 +205,13 @@ GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]
   "<id>" {
     "name": "<string>",
     "type": "jumpSturdy" || "racingKings",
-    "playerNames": {
-      "playerNameA": "<string>",
-      "playerNameB": "<string>"
+    "players": {
+      "playerA": {
+        "name": "<string>"
+      },
+      "playerB": {
+        "name": "<string>"
+      }
     },
     "state": {
       "state": "planned" || "running" || "completed",
@@ -222,17 +232,21 @@ GET /api/game/<gameID>
   "players": {
     "playerA": {
       "id": "<string playerID>",
-      "name": "<string>"
+      "name": "<string>",
+      "timeout": <int ms>,
+      "initialTimeBudget": <int ms>,
+      "timeBudget": <int ms>
     },
     "playerB": {
       "id": "<string playerID>",
-      "name": "<string>"
+      "name": "<string>",
+      "timeout": <int ms>,
+      "initialTimeBudget": <int ms>,
+      "timeBudget": <int ms>
     }
   },
   "settings": {
-    "initialFEN": "<string fen>",
-    "timeBudget": <int ms>,
-    "timeout": <int ms>
+    "initialFEN": "<string fen>"
   },
   "state": {
     "state": "planned" || "running" || "completed",
