@@ -55,22 +55,29 @@ def post_team():
 @api.route('/teams', methods=['GET'])
 def get_teams():
 
-	# In order to not accidentally remove the tokens from the database, we copy
-	# the entire dict here.
-	teams = deepcopy(storage['teams'])
-
-	# Remove tokens, since they're secrets :P
-	for id in teams:
-		del teams[id]['token']
-
 	# Clients might only want a slice of the collection, which they can specify
 	# using these URL parameters
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
 
+	# In order to not accidentally remove the tokens from the database, we copy
+	# the entire dict here.
+	teams = deepcopy(storage['teams'])
+
+	# Save total length
+	totalCount = len(teams)
+
+	# Apply pagination
 	teams = util.paginate(teams, start, count)
 
-	return json.dumps(teams, indent=4)
+	# Remove tokens, since they're secrets :P
+	for id in teams:
+		del teams[id]['token']
+
+	return json.dumps({
+		'totalCount': totalCount,
+		'items': teams
+	}, indent=4)
 
 
 @api.route('/team/<id>', methods = ['GET'])

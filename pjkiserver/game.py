@@ -86,9 +86,25 @@ def post_game():
 @api.route('/games', methods=['GET'])
 def get_games():
 
+	# Clients might only want a slice of the collection, which they can specify
+	# using these URL parameters. They can also filter by state.
+	start = request.args.get('start', default = 0, type = int)
+	count = request.args.get('count', default = None, type = int)
+	state = request.args.get('state', default = '*', type = str)
+
 	# In order to not accidentally remove data from the database, we copy
 	# the entire dict here.
 	games = deepcopy(storage['games'])
+
+	# Apply filter
+	games = util.filterState(games, state)
+
+	# Take length after filter but before pagination to get number of games
+	# with this filter
+	totalCount = len(games)
+
+	# Apply pagination
+	games = util.paginate(games, start, count)
 
 	# Remove stuff not needed in listing and add player names
 	for id in games:
@@ -104,16 +120,10 @@ def get_games():
 		}
 		del game['players']
 
-	# Clients might only want a slice of the collection, which they can specify
-	# using these URL parameters. They can also filter by state.
-	start = request.args.get('start', default = 0, type = int)
-	count = request.args.get('count', default = None, type = int)
-	state = request.args.get('state', default = '*', type = str)
-
-	games = util.paginate(games, start, count)
-	games = util.filterState(games, state)
-
-	return json.dumps(games, indent=4)
+	return json.dumps({
+		'totalCount': totalCount,
+		'items': games
+	}, indent=4)
 
 
 @api.route('/game/<id>', methods = ['GET'])

@@ -67,22 +67,29 @@ def post_player():
 @api.route('/players', methods=['GET'])
 def get_players():
 
-	# In order to not accidentally remove the tokens from the database, we copy
-	# the entire dict here.
-	players = deepcopy(storage['players'])
-
-	# Remove tokens, since they're secrets :P
-	for id in players:
-		del players[id]['token']
-
 	# Clients might only want a slice of the collection, which they can specify
 	# using these URL parameters
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
 
+	# In order to not accidentally remove the tokens from the database, we copy
+	# the entire dict here.
+	players = deepcopy(storage['players'])
+
+	# Save total length
+	totalCount = len(players)
+
+	# Apply pagination
 	players = util.paginate(players, start, count)
 
-	return json.dumps(players, indent=4)
+	# Remove tokens, since they're secrets :P
+	for id in players:
+		del players[id]['token']
+
+	return json.dumps({
+		'totalCount': totalCount,
+		'items': players
+	}, indent=4)
 
 
 @api.route('/player/<id>', methods = ['GET'])
