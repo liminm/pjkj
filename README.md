@@ -3,6 +3,10 @@ AI project game server
 
 This is the backend for the 2020 AI tournament at the TU Berlin AOT.
 
+The server currently provides the games "Racing Kings" and "Jump Sturdy".
+
+## Running locally for testing and bot development
+
 To run locally for testing without persistence, simply run these commands
 inside of the repository folder:
 
@@ -11,13 +15,16 @@ pip3 install -r requirements.txt    # Install dependencies
 python3 -m pjkiserver               # Run module
 ```
 
-For more details regarding permanent installation and deployment, see
-[docs/INSTALL.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/INSTALL.md).
-
-The server currently provides the games "Racing Kings" and "Jump Sturdy".
+If you want a persistent state across server restarts, install mongoDB as
+described in the INSTALL document linked below.
 
 Both AIs and humans on web clients connect to the same REST API, specified in
 [docs/API.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/API.md).
+
+## (Advanced users only!) Deploying permanently on dedicated machines
+
+For more details regarding permanent installation and deployment on servers,
+see [docs/INSTALL.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/INSTALL.md).
 
 # Software architechture
 
