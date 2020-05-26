@@ -4,13 +4,13 @@ HOST=localhost:5000
 
 MODE="leaveopen"
 
-#GAMETYPE="racingKings"
-#MOVE1="h2h3"
-#MOVE2="b2b6"
+GAMETYPE="racingKings"
+MOVE1="h2h3"
+MOVE2="b2b6"
 
-GAMETYPE="jumpSturdy"
-MOVE1="b2b3"
-MOVE2="g7g6"
+#GAMETYPE="jumpSturdy"
+#MOVE1="b2b3"
+#MOVE2="g7g6"
 
 function heading() {
 
@@ -91,13 +91,18 @@ GAMEINFO=`printf '
 	"name": "Finale",
 	"type": "%s",
 	"players": {
-		"playerA": "%s",
-		"playerB": "%s"
+		"playerA": {
+			"id": "%s",
+			"timeout": 60000,
+			"initialTimeBudget": 120000
+		},
+		"playerB": {
+			"id": "%s",
+			"timeout": 60000,
+			"initialTimeBudget": 120000
+		}
 	},
-	"settings": {
-		"timeBudget": 120000,
-		"timeout": 60000
-	}
+	"settings": {}
 }
 ' ${GAMETYPE} ${PLAYER1ID} ${PLAYER2ID} | http POST ${HOST}/games`
 
