@@ -25,22 +25,26 @@ let storage = {
             name: String,
             type: String,                   // jumpSturdy | racingKings
             players: {
-                playerA: String,            // Player ID
-                playerB: String             // Player ID
+                playerA: {
+                    id: String,             // Player ID
+                    timeout: Int            // MilliSeconds
+                    timeBudget: Int,        // MilliSeconds
+                    initialTimeBudget: Int  // MilliSeconds
+                },
+                playerB: {
+                    id: String,             // Player ID
+                    timeout: Int            // MilliSeconds
+                    timeBudget: Int,        // MilliSeconds
+                    initialTimeBudget: Int  // MilliSeconds
+                }
             },
             settings: {
                 initialFEN: String,         // FEN
-                timeBudget: Int,            // MilliSeconds
-                timeout: Int                // MilliSeconds
             },
             state: {
                 state: String,              // planned | running | completed
                 winner: String,             // playerA | playerB | draw | <None>
                 fen: String,                // FEN
-                timeBudgets: {
-                    playerA: Int,           // MilliSeconds
-                    playerB: Int            // MilliSeconds
-                },
                 boardHashMap: {
                     <boardHash>: Int,       // Amount of times this state occurred during game
                     ...

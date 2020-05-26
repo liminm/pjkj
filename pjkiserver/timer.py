@@ -55,17 +55,25 @@ def watcherHandler(gameID):
 	util.showDict(storage)
 
 # Starts a timer based on the current game situation
-def startWatcher(gameID, player, timeout, timeBudget):
+def startWatcher(gameID, player, playerDict):
 
-	# Set timer for whichever time runs out first, in ms
-	duration = min(timeout, timeBudget)
+	# Find out which time runs out first and when, in ms
+	# Explanation: min() can compare a list of tuples by their first element,
+	# Returning the entire tuple with the lowest first element. So we just
+	# create a list comprehension that gives us the value in front and the name
+	# (=key) as the second element of the keys we need and take min() in that.
+	duration, name = min(
+		[(v, k) for k, v in playerDict.items() if k.startswith('time')]
+	)
+
+	# Set timer
 	timer = setTimeout(duration, watcherHandler, [gameID])
 
 	# Add watcher info for later reference
 	watchers[gameID] = {
 		'timer': timer,
 		'start': time_ms(),
-		'type': 'timeout' if timeout < timeBudget else 'timeBudget',
+		'type': name,
 		'player': player
 	}
 

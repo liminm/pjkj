@@ -23,8 +23,10 @@ def post_event(id):
 	if not playerID:
 		return Response(*response)
 
+	# Get player who sent event (playerA/playerB)
+	player = util.playerFromID(game['players'], playerID)
 	# If the player is not a member of this game, the token is invalid as well
-	if not playerID in game['players'].values():
+	if not player:
 		return 'Error: token owner not in this game', 403
 
 
@@ -37,8 +39,7 @@ def post_event(id):
 	if error:
 		return Response(*error)
 
-	# Get player who did move (playerA/playerB)
-	player = util.playerFromID(game['players'], playerID)
+	# Add player who sent the event to it
 	event['player'] = player
 
 	# Add current timestamp to all events
@@ -91,7 +92,7 @@ def post_event(id):
 	if valid:
 		duration = timer.stopWatcher(id)
 		event['details']['time'] = duration
-		game['state']['timeBudgets'][player] -= duration
+		game['players'][player]['timeBudget'] -= duration
 		game['events'].append(event)
 
 		# If the game continues, we start the timer for the next move.
@@ -100,9 +101,7 @@ def post_event(id):
 		if not gameEnd:
 			game['state']['state'] = 'running'
 			opponent = util.opponent(player)
-			timer.startWatcher(id, opponent,
-				game['settings']['timeout'],
-				game['state']['timeBudgets'][opponent])
+			timer.startWatcher(id, opponent, game['players'][opponent])
 
 	# DEBUG
 	util.showDict(storage)

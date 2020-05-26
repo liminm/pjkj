@@ -73,10 +73,14 @@ def opponent(player):
 	return None
 
 # For a game, find out which playerID results in which side
-# AKA in the `players` dict, find the key corresponding to a value
-# Done by taking the index of the correct value and using it to get the key
+# AKA in the `players` dict, find the key corresponding to a value with that id
 def playerFromID(players, id):
-	return list(players.keys())[ list(players.values()).index(id) ]
+	# Done by taking the first result of a list comprehension that assembles a
+	# list of keys matching that value's id.
+	# Granted, it would probably be faster to do a quick if else for this, but
+	# would that be this fancy? No? I thought so. :P
+	playerList = [k for k, v in players.items() if v['id'] == id]
+	return playerList[0] if len(playerList) else None
 
 # Get a subslice of a dict. This would be way easier if it was an array and
 # also relies on the fact that dicts are ordered by insertion time. Yikes.
