@@ -113,7 +113,10 @@ def get_games():
 				'name': storage['players'][playerID]['name']
 			}
 
-	return json.dumps(games, indent=4)
+	return json.dumps({
+		'totalCount': totalCount,
+		'items': games
+	}, indent=4)
 
 
 @api.route('/game/<id>', methods = ['GET'])
