@@ -106,13 +106,12 @@ def get_games():
 		del game['settings']
 		del game['events']
 		del game['state']['fen']
-		del game['state']['timeBudgets']
 		del game['state']['boardHashMap']
 		for player in game['players']:
 			playerID = game['players'][player]['id']
-			for key in game['players'][player]:
-				del game['players'][player][key]
-			game['players'][player]['name'] = storage['players'][playerID]['name']
+			game['players'][player] = {
+				'name': storage['players'][playerID]['name']
+			}
 
 	return json.dumps(games, indent=4)
 
