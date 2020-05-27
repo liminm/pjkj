@@ -261,11 +261,7 @@ GET /api/game/<gameID>
   "state": {
     "state": "planned" || "running" || "completed",
     "winner": "playerA" || "playerB" || "draw" || null,
-    "fen": "<string>",
-    "timeBudgets": {
-      "playerA": <int ms>,
-      "playerB": <int ms>
-    }
+    "fen": "<string>"
   }
 }
 ```
