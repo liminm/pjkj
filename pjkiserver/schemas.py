@@ -125,7 +125,7 @@ def check(data, schema, path = ''):
 	# If the type of the data doesn't correlate with the type described in the
 	# schema, that's an error
 	if type(data) != _type:
-		base = 'Actual type <{}> at path `{}`'.form(type(data).__name__, path)
+		base = 'Actual type <{}> at path `{}`'.format(type(data).__name__, path)
 		return '{} is not expected type <{}>'.format(base, _type.__name__)
 
 	# If the current object is a dict, we need to recurse into it.
