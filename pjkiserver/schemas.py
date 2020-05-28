@@ -90,6 +90,7 @@ event = {
 		"_optional": True,
 		"move": {
 			"_type": str,
+			"_optional": True,
 			"_minLen": 4,
 			"_maxLen": 5,
 		}
