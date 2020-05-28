@@ -13,6 +13,9 @@ api = Blueprint('event', __name__)
 @api.route('/game/<id>/events', methods=['POST'])
 def post_event(id):
 
+	if not id in storage['games']:
+		return 'Error: Game not found', 404
+
 	game = storage['games'][id]
 
 	# Only players are allowed to send events to a game. Therefore, we
@@ -117,6 +120,9 @@ def post_event(id):
 
 @api.route('/game/<id>/events', methods=['GET'])
 def get_events(id):
+
+	if not id in storage['games']:
+		return 'Error: Game not found', 404
 
 	game = storage['games'][id]
 
