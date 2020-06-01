@@ -109,10 +109,27 @@ def filterState(listDict, state):
 	# Turn dict into list of (key, val) tuples
 	dictList = list(listDict.items())
 
-	# Use a lambda function to compare each values state with the filter state
+	# Use a lambda function to compare each value's state with the filter state
 	# And keep only matching (key, value) pairs
 	filteredList = list(
 		filter(lambda el: el[1]['state']['state'] == state, dictList))
+
+	# Turn it back into a dict
+	return dict(filteredList)
+
+def filterTeam(listDict, teamID):
+
+	# Filtering by * is no filtering at all!
+	if (teamID == '*'):
+		return listDict
+
+	# Turn dict into list of (key, val) tuples
+	dictList = list(listDict.items())
+
+	# Use a lambda function to compare each value's team with the filter team
+	# And keep only matching (key, value) pairs
+	filteredList = list(
+		filter(lambda el: el[1]['team'] == teamID, dictList))
 
 	# Turn it back into a dict
 	return dict(filteredList)
