@@ -148,7 +148,8 @@ Authorization: Basic <teamToken> // Optional, allows getting tokens of own playe
   "items": {
     "<playerID>": {
       "name": "<string>",
-      "team": "<string teamID>"
+      "team": "<string teamID>",
+      "token": "<string playerToken>" // Only given if authorized as team
     },
     ...
   }
