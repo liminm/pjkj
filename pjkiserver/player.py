@@ -73,6 +73,15 @@ def get_players():
 	count = request.args.get('count', default = None, type = int)
 	team = request.args.get('team', default = '*', type = str)
 
+
+	# Authenticated teams can retrieve their player's tokens
+	teamID, response = util.auth(storage['teams'], request)
+
+	# If authentication fails, send error message and -code
+	# 401 means no authorization was sent. In that case we don't care
+	if not teamID and response[1] != 401:
+		return Response(*response)
+
 	# In order to not accidentally remove the tokens from the database, we copy
 	# the entire dict here.
 	players = deepcopy(storage['players'])
@@ -88,6 +97,9 @@ def get_players():
 
 	# Remove tokens, since they're secrets :P
 	for id in players:
+		if teamID and players[id]['team'] == teamID:
+			# Keep token
+			continue
 		del players[id]['token']
 
 	return json.dumps({
