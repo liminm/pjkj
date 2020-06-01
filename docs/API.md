@@ -139,7 +139,8 @@ Authorization: Basic <playerToken>
 
 ### List Players
 ```javascript
-GET /api/players?count=<count>&start=<start>
+GET /api/players?count=<count>&start=<start>&team=<teamID>
+Authorization: Basic <teamToken> // Optional, allows getting tokens of own players
 
 200 OK
 {
