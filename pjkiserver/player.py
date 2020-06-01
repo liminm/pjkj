@@ -71,10 +71,14 @@ def get_players():
 	# using these URL parameters
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
+	team = request.args.get('team', default = '*', type = str)
 
 	# In order to not accidentally remove the tokens from the database, we copy
 	# the entire dict here.
 	players = deepcopy(storage['players'])
+
+	# Filter to only players of team if desired
+	players = util.filterTeam(players, team)
 
 	# Save total length
 	totalCount = len(players)
