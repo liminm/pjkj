@@ -3,7 +3,7 @@ import json
 import time
 from datetime import datetime
 
-from .storage.storage import storage
+from .storage.storage import storage, syncDB
 from . import schemas, timer, rules, util
 
 
@@ -106,8 +106,8 @@ def post_event(id):
 			opponent = util.opponent(player)
 			timer.startWatcher(id, opponent, game['players'][opponent])
 
-	# DEBUG
-	util.showDict(storage)
+	# Save changes to persistent DB
+	syncDB(['games'])
 
 	return json.dumps({
 		'valid': valid,

@@ -2,7 +2,7 @@ from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
-from .storage.storage import storage
+from .storage.storage import storage, syncDB
 from . import schemas, util
 
 
@@ -43,8 +43,8 @@ def post_team():
 	# Add the team to the database
 	storage['teams'][id] = team
 
-	# DEBUG
-	util.showDict(storage)
+	# Save changes to persistent DB
+	syncDB(['teams'])
 
 	return json.dumps({
 		'id': id,

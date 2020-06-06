@@ -18,12 +18,6 @@ def id():
 def token():
 	return randomString(token_len)
 
-# Debug function to show the current database contents
-def showDict(dict):
-	# Clear terminal screen
-	print('\033c')
-	print(json.dumps(dict, indent=4))
-
 # Check authorization token by searching through all candidates, returning the
 # id of the candidate that matches the token
 def checkAuth(dict, token):

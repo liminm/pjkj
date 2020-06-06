@@ -1,10 +1,48 @@
-from .database import DatabaseDictionary
-from .scheduler import SetInterval
-
+import json
 from pymongo.errors import ConnectionFailure
+
+from .database import DatabaseDictionary
 
 # The 3 base collections
 DATABASE_KEYS = ['teams', 'players', 'games']
+
+# Local, volatile storage for quick access
+storage = {
+	key: {} for key in DATABASE_KEYS
+}
+
+
+# To be set by importer if they wish to print entire DB on save
+verbosePrinting = False
+
+# Debug function to show the current database contents
+def printStorage():
+	if verbosePrinting:
+		# Clear terminal screen
+		print('\033c')
+		print(json.dumps(storage, indent=4))
+	else:
+		print("Storage now has {} teams, {} players and {} games.".format(
+			len(storage['teams']),
+			len(storage['players']),
+			len(storage['games'])
+		))
+
+
+# Handle for the persistent database object
+persistentDB = None
+
+# Sync local dict into persistent database
+def syncDB(keys=DATABASE_KEYS):
+
+	printStorage()
+
+	if not persistentDB:
+		return
+
+	for key in keys:
+		persistentDB[key] = storage[key]
+
 
 # try to connect to mongoDB and register the writethroughs and handle the signals
 # if not connectable just start the development enviroement where storage is not synced with the mongoDB and therefore NOT SAVED
@@ -12,39 +50,14 @@ try:
 	# Persistent storage
 	persistentDB = DatabaseDictionary()
 
-	# Local, volatile storage for quick access
 	# Initialize with persistent storage values
-	storage = {
-		key: (persistentDB.get(key) or {}) for key in DATABASE_KEYS
-	}
+	for key in DATABASE_KEYS:
+		storage[key] = persistentDB.get(key) or {}
 
-	# Sync local dict into persistent database
-	def dumpDatabase():
-		for key in DATABASE_KEYS:
-			persistentDB[key] = storage[key]
-
-	# Save initial state
-	dumpDatabase()
-
-	# Start a timer to save state every 10 seconds
-	dumpInterval = SetInterval(10, dumpDatabase)
-
-	# When shutting down, save the state to the database and stop the timer
-	def stop():
-		print("Dumping DB...")
-		dumpInterval.cancel()
-		dumpDatabase()
-		print("Finished dumping DB")
+	# Save initial state in case persistent DB was uninitialized
+	syncDB()
 
 except ConnectionFailure:
-	# Provide an empty, non-synced, volatile storage dict
-	storage = {
-		key: {} for key in DATABASE_KEYS
-	}
-
-	def stop():
-		print("No DB to dump")
-
 	# Inform users that data will not be saved
 	print("DATABASE COULD NOT BE REACHED")
 	print("`storage` will not be saved persistently")
