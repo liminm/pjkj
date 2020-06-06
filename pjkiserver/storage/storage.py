@@ -1,41 +1,47 @@
-from .database import DatabaseDictionary
-from .scheduler import SetInterval
-
+import json
 from pymongo.errors import ConnectionFailure
+
+from .database import DatabaseDictionary
 
 # The 3 base collections
 DATABASE_KEYS = ['teams', 'players', 'games']
-
-persistentDB = None
 
 # Local, volatile storage for quick access
 storage = {
 	key: {} for key in DATABASE_KEYS
 }
 
-dumpInterval = None
 
+# To be set by importer if they wish to print entire DB on save
+verbosePrinting = False
+
+# Debug function to show the current database contents
+def printStorage():
+	if verbosePrinting:
+		# Clear terminal screen
+		print('\033c')
+		print(json.dumps(storage, indent=4))
+	else:
+		print("Storage now has {} teams, {} players and {} games.".format(
+			len(storage['teams']),
+			len(storage['players']),
+			len(storage['games'])
+		))
+
+
+# Handle for the persistent database object
+persistentDB = None
 
 # Sync local dict into persistent database
-def dumpDatabase():
-	print("Writing storage to DB with {} teams, {} players and {} games.".format(len(storage['teams']), len(storage['players']), len(storage['games'])))
-	for key in DATABASE_KEYS:
+def syncDB(keys=DATABASE_KEYS):
+
+	printStorage()
+
+	if not persistentDB:
+		return
+
+	for key in keys:
 		persistentDB[key] = storage[key]
-
-
-# When shutting down, save the state to the database and stop the timer
-def stop():
-
-	if (dumpInterval):
-		print("Stopping DB dump timer")
-		dumpInterval.cancel()
-
-	if (persistentDB):
-		print("Dumping DB...")
-		dumpDatabase()
-		print("Finished dumping DB")
-	else:
-		print("No DB connected, nothing to dump.")
 
 
 # try to connect to mongoDB and register the writethroughs and handle the signals
@@ -48,13 +54,8 @@ try:
 	for key in DATABASE_KEYS:
 		storage[key] = persistentDB.get(key) or {}
 
-	print("Initialized storage from DB with {} teams, {} players and {} games.".format(len(storage['teams']), len(storage['players']), len(storage['games'])))
-
-	# Save initial state
-	dumpDatabase()
-
-	# Start a timer to save state every 10 seconds
-	dumpInterval = SetInterval(10, dumpDatabase)
+	# Save initial state in case persistent DB was uninitialized
+	syncDB()
 
 except ConnectionFailure:
 	# Inform users that data will not be saved

@@ -51,8 +51,8 @@ def watcherHandler(gameID):
 		}
 	})
 
-	# DEBUG
-	util.showDict(storage)
+	# Save changes to persistent DB
+	syncDB(['games'])
 
 # Starts a timer based on the current game situation
 def startWatcher(gameID, player, playerDict):

@@ -2,7 +2,7 @@ from flask import Blueprint, request, Response
 import json
 from copy import deepcopy
 
-from .storage.storage import storage
+from .storage.storage import storage, syncDB
 from . import schemas, rules, util
 
 
@@ -69,8 +69,8 @@ def post_game():
 	# Add it to the database
 	storage['games'][id] = game
 
-	# DEBUG
-	util.showDict(storage)
+	# Save changes to persistent DB
+	syncDB(['games'])
 
 	return json.dumps({
 		'id': id

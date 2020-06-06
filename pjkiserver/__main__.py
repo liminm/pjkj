@@ -3,13 +3,6 @@ from flask import Flask
 
 app = Flask(__name__)
 
-@app.after_request
-def add_headers(response):
-	response.headers['Access-Control-Allow-Origin'] = '*'
-	response.headers['Access-Control-Allow-Methods'] = '*'
-	response.headers['Access-Control-Allow-Headers'] = '*'
-	return response
-
 # Permanent storage / database handling
 from .storage import storage
 from . import timer
@@ -26,17 +19,30 @@ app.register_blueprint(game.api)
 app.register_blueprint(event.api)
 
 def shutdown(*args):
+	# Stop all subsystems
 	print("Stopping server...")
 	timer.stopAll()
-	storage.stop()
 	print("Bye!")
 	exit(0)
 
 # Graceful shutdowns
+# TODO: Make Cross-Platform
 signal.signal(signal.SIGINT,  shutdown)
 signal.signal(signal.SIGTERM, shutdown)
 signal.signal(signal.SIGQUIT, shutdown)
 
-# Start the flask server
+# Start the flask server if run from terminal
 if __name__ == "__main__":
+
+	# Tell storage to print out entire database on changes
+	storage.verbosePrinting = True
+
+	# Just allow everything to avoid the hassle when running locally.
+	@app.after_request
+	def add_headers(response):
+		response.headers['Access-Control-Allow-Origin'] = '*'
+		response.headers['Access-Control-Allow-Methods'] = '*'
+		response.headers['Access-Control-Allow-Headers'] = '*'
+		return response
+
 	app.run()
