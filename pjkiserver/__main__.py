@@ -25,6 +25,10 @@ app.register_blueprint(player.api)
 app.register_blueprint(game.api)
 app.register_blueprint(event.api)
 
+@app.route('/')
+def get_root():
+	return "Error: No Endpoint selected. See docs/API.md for reference.", 404
+
 def shutdown(*args):
 	print("Stopping server...")
 	timer.stopAll()
