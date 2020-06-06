@@ -37,9 +37,11 @@ def syncDB(keys=DATABASE_KEYS):
 
 	printStorage()
 
-	if not persistentDB:
+	if persistentDB == None:
+		print('No DB, not saving.')
 		return
 
+	print('Saving...')
 	for key in keys:
 		persistentDB[key] = storage[key]
 
