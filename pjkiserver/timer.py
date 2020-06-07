@@ -1,6 +1,6 @@
 import threading, time, datetime
 
-from .storage.storage import storage
+from .storage.storage import storage, syncDB
 from . import util
 
 # Get the current unix time epoch in milliseconds
