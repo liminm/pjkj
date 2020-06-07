@@ -1,4 +1,4 @@
-import signal
+import atexit
 from flask import Flask
 
 app = Flask(__name__)
@@ -27,13 +27,9 @@ def shutdown(*args):
 	print("Stopping server...")
 	timer.stopAll()
 	print("Bye!")
-	exit(0)
 
 # Graceful shutdowns
-# TODO: Make Cross-Platform
-signal.signal(signal.SIGINT,  shutdown)
-signal.signal(signal.SIGTERM, shutdown)
-signal.signal(signal.SIGQUIT, shutdown)
+atexit.register(shutdown)
 
 # Start the flask server if run from terminal
 if __name__ == "__main__":
