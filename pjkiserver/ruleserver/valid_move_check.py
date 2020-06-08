@@ -130,7 +130,7 @@ class ValidCheckJumpSturdy:
         bit_pos2 = self.get_bitposition(x2, y2)
 
         if bit_pos2 & MoveBoard().generate(fig1, x1, y1, player, "JS") == 0:
-            return False, "Wrong figure movement"
+            return False, "Wrong figure movement or not your figure"
 
         if (fig1 in "bB"):  # check single-figure movement
             if not (self.check_single(fig1, fig2, x1, y1, x2, y2)):

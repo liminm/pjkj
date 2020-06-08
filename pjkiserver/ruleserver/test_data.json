@@ -249,9 +249,19 @@
 
 "comment1":"format: 0: fen string; 1: first uci move; 2:second uci move; 3:expected boolean value as string",
 "moveCheck":[
-	["1kkkkkk1/1kkkkkk1/8/8/8/8/1KKKKKK1/1KKKKKK1 w - - 0 1", "e1", "e2", "False"],
-	["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True"]
-	],
+    ["1kkkkkk1/1kkkkkk1/8/8/8/8/1KKKKKK1/1KKKKKK1 w - - 0 1", "e1", "e2", "False"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "g1", "h1", "False"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b1", "a1", "False"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b8", "a8", "False"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "g8", "h8", "False"],
+    ["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 b - - 0 1", "c8", "c7", "True"],
+    ["1b1bbbb1/1bkbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "c7", "b7", "False"],
+    ["1b1bbbb1/1bkbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "b7", "b6", "False"],
+    ["1b1bbbb1/1bkbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 b - - 0 1", "c7", "a6", "True"],
+    ["1b1bbbb1/1bkbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 b - - 0 1", "c7", "d5", "True"],
+    ["1b1bbbb1/1bkbbbb1/8/3B4/8/8/1BB1BBB1/1BBBBBB1 b - - 0 1", "c7", "d5", "True"]
+    ],
 
 "sampleGame":[["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBBBB1/1BBBBBB1 w - - 0 1", "e1", "e2", "True", "None"],
 	["1bbbbbb1/1bbbbbb1/8/8/8/8/1BBBKBB1/1BBB1BB1 b - - 0 1", "e7", "d7", "True", "None"],
