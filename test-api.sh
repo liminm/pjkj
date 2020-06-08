@@ -2,7 +2,8 @@
 
 HOST=localhost:5000
 
-MODE="leaveopen"
+LEAVEOPEN="true"
+INTERACTIVE="false"
 
 GAMETYPE="racingKings"
 MOVE1="h2h3"
@@ -20,6 +21,16 @@ function heading() {
 
 }
 
+function petc {
+
+	if [[ ${INTERACTIVE} == "true" ]]
+	then
+		read -p 'Press enter to continue...'
+	fi
+
+}
+
+petc
 heading 'CREATING TEAM'
 
 TEAMINFO=`printf '
@@ -28,7 +39,7 @@ TEAMINFO=`printf '
 	"isisName":"Gruppe 7",
 	"type":"%s"
 }
-' ${GAMETYPE} | http POST ${HOST}/teams`
+' ${GAMETYPE} | http -vd POST ${HOST}/teams`
 
 echo ${TEAMINFO}
 
@@ -37,17 +48,20 @@ TEAMTOKEN=`echo ${TEAMINFO} | jq -r .token`
 
 echo 'Token:' ${TEAMTOKEN}
 
-#http -v ${HOST}/teams
+petc
+http -v ${HOST}/teams
+petc
 http -v ${HOST}/team/${TEAMID}
 
 
+petc
 heading 'CREATING PLAYER 1'
 
 PLAYER1INFO=`echo '
 {
 	"name":"Oskar"
 }
-' | http POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
+' | http -vd POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
 
 echo ${PLAYER1INFO}
 
@@ -56,17 +70,19 @@ PLAYER1TOKEN=`echo ${PLAYER1INFO} | jq -r .token`
 
 echo 'Token:' ${PLAYER1TOKEN}
 
+petc
 #http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER1ID}
 
 
+petc
 heading 'CREATING PLAYER 2'
 
 PLAYER2INFO=`echo '
 {
 	"name":"Nicht Oskar"
 }
-' | http POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
+' | http -vd POST ${HOST}/players "Authorization: Basic ${TEAMTOKEN}"`
 
 echo ${PLAYER2INFO}
 
@@ -75,6 +91,7 @@ PLAYER2TOKEN=`echo ${PLAYER2INFO} | jq -r .token`
 
 echo 'Token:' ${PLAYER2TOKEN}
 
+petc
 #http -v ${HOST}/players
 http -v ${HOST}/player/${PLAYER2ID}
 
@@ -84,6 +101,7 @@ http -v ${HOST}/player/${PLAYER2ID}
 #http -v "${HOST}/players?start=1&count=2"
 
 
+petc
 heading 'CREATING GAME'
 
 GAMEINFO=`printf '
@@ -104,12 +122,13 @@ GAMEINFO=`printf '
 	},
 	"settings": {}
 }
-' ${GAMETYPE} ${PLAYER1ID} ${PLAYER2ID} | http POST ${HOST}/games`
+' ${GAMETYPE} ${PLAYER1ID} ${PLAYER2ID} | http -vd POST ${HOST}/games`
 
 echo ${GAMEINFO}
 
 GAMEID=`echo ${GAMEINFO} | jq -r .id`
 
+petc
 #http -v ${HOST}/games
 http -v ${HOST}/game/${GAMEID}
 
@@ -122,6 +141,7 @@ http -v ${HOST}/game/${GAMEID}
 #http -v ${HOST}/games?state=completed
 
 
+petc
 heading 'SENDING EVENT 1'
 
 EV1INFO=`printf '
@@ -131,7 +151,7 @@ EV1INFO=`printf '
 		"move": "%s"
 	}
 }
-' ${MOVE1} | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
+' ${MOVE1} | http -vd POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
 
 echo ${EV1INFO}
 
@@ -144,8 +164,8 @@ echo ${EV1INFO}
 #http -v ${HOST}/games?state=completed
 
 
+petc
 heading 'SENDING EVENT 2'
-
 
 EV2INFO=`printf '
 {
@@ -154,27 +174,29 @@ EV2INFO=`printf '
 		"move": "%s"
 	}
 }
-' ${MOVE2} | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`
+' ${MOVE2} | http -vd POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER2TOKEN}"`
 
 echo ${EV2INFO}
 
 
-if [[ ${MODE} == "leaveopen" ]]
+if [[ ${LEAVEOPEN} == "true" ]]
 then
+	petc
 	http -vS ${HOST}/game/${GAMEID}/events
-	exit 0
 fi
 
+petc
 heading 'SENDING EVENT 3'
 
 EV3INFO=`echo '
 {
 	"type": "surrender"
 }
-' | http POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
+' | http -vd POST ${HOST}/game/${GAMEID}/events "Authorization: Basic ${PLAYER1TOKEN}"`
 
 echo ${EV3INFO}
 
+petc
 http -vS --timeout=1 ${HOST}/game/${GAMEID}/events
 
 
