@@ -3,7 +3,7 @@
 HOST=localhost:5000
 
 LEAVEOPEN="true"
-INTERACTIVE="true"
+INTERACTIVE="false"
 
 GAMETYPE="racingKings"
 MOVE1="h2h3"
