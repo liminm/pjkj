@@ -109,10 +109,12 @@ def post_event(id):
 	# Save changes to persistent DB
 	syncDB(['games'])
 
+	statusCode = 201 if valid else 200
+
 	return json.dumps({
 		'valid': valid,
 		'reason': reason
-	}, indent=4), 201
+	}, indent=4), statusCode
 
 
 
