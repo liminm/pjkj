@@ -7,7 +7,7 @@ INTERACTIVE="false"
 
 GAMETYPE="racingKings"
 MOVE1="h2h3"
-MOVE2="b3b6"
+MOVE2="b2b6"
 
 #GAMETYPE="jumpSturdy"
 #MOVE1="b2b3"
