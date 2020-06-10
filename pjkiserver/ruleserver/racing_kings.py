@@ -120,6 +120,13 @@ def moveCheck(moveEvent,state):
         return fsc
 
 
+    # Check if player's turn
+    if (board_before.player == "w" and player == "playerB"):
+        return False, None, "StateError: Not your turn, white's turn! Sit down!"
+    if (board_before.player == "b" and player == "playerA"):
+        return False, None, "StateError: Not your turn, black's turn! Sit down!"
+
+
     #try the move
     uci = moveEvent["details"]['move']
     try:

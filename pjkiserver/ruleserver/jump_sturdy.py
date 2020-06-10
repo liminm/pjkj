@@ -104,6 +104,12 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:FEN String is invalid!  "
 
+    # Check if player's turn
+    if (board_before.player == "w" and player == "playerB"):
+        return False, None, "StateError: Not your turn, white's turn! Sit down!"
+    if (board_before.player == "b" and player == "playerA"):
+        return False, None, "StateError: Not your turn, black's turn! Sit down!"
+
     uci = event["details"]['move']
 
     #for check valid  movement
