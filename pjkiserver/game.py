@@ -43,14 +43,14 @@ def post_game():
 		return "Error: Player can't play against itself", 409
 
 	# If no initial FEN string is given, we get the defaults from the rules
-	initialFEN = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
+	game['settings']['initialFEN'] = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
 
 	# Initialize the game state according to the database layout
 	# (See https://gitlab.tubit.tu-berlin.de/PJ-KI/server/snippets/631)
 	game['state'] = {
 		'state': 'planned',
 		'winner': None,
-		'fen': initialFEN,
+		'fen': game['settings']['initialFEN'],
 		'boardHashMap': {}
 	}
 	# Initialize eventstream
