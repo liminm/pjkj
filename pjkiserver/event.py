@@ -10,13 +10,12 @@ from . import schemas, timer, rules, util
 api = Blueprint('event', __name__)
 
 
-@api.route('/game/<id>/events', methods=['POST'])
-def post_event(id):
+@api.route('/game/<gameID>/events', methods=['POST'])
+def post_event(gameID):
 
-	if not id in storage['games']:
+	game = storage['games'].get(gameID)
+	if not game:
 		return 'Error: Game not found', 404
-
-	game = storage['games'][id]
 
 	# Only players are allowed to send events to a game. Therefore, we
 	# authenticate them.
@@ -52,11 +51,6 @@ def post_event(id):
 	# Initialize details dict if it doesn't exist yet
 	event.setdefault('details', {})
 
-	# We assume this is a valid event, checks follow later
-	valid = True
-	gameEnd = None
-	reason = ''
-
 	# The 'surrender' is the only non-move event clients can submit. It results
 	# in a 'gameEnd' event with type 'surrender', while the opponent wins.
 	if event['type'] == 'surrender':
@@ -76,57 +70,74 @@ def post_event(id):
 
 		# Check move with ruleserver
 		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
+		print('> valid:', valid)
+		print('> gameEnd:', gameEnd)
+		print('> reason:', reason)
+
+		if valid:
+			# If everything is ok (meaning either a valid move or a surrender),
+			# we log the time the move took and adjust the time Budget. Then we
+			# send out the event indicating what happened.
+			duration = timer.stopWatcher(gameID)
+			game['players'][player]['timeBudget'] -= duration
+			event['details']['time'] = duration
+			game['events'].append(event)
+
+		else:
+			# Return error if invalid
+			return json.dumps({
+				'valid': False,
+				'reason': reason
+			}, indent=4), 200
 
 	else:
 		return 'Error: unknown event type', 400
 
-	# If the move check indicated that this move ends the game or a player
-	# surrendered, we mark the game as completed and declare the winner.
-	# We also prepare the event that informs clients of the game end.
 	if gameEnd:
+		# If the move check indicated that this move ends the game or a player
+		# surrendered, we mark the game as completed and declare the winner.
+		# We also send an event that informs clients of the game end.
 		game['state']['state'] = 'completed'
 		game['state']['winner'] = gameEnd['winner']
-		event['type'] = 'gameEnd'
-		event['details'] = gameEnd
 
-	# If everything is valid (meaning either a valid move or a game end), we
-	# log the time the move took and adjust the time Budget. Then we send out
-	# the event indicating what happened.
-	if valid:
-		duration = timer.stopWatcher(id)
-		event['details']['time'] = duration
-		game['players'][player]['timeBudget'] -= duration
-		game['events'].append(event)
+		endEvent = {
+			'type': 'gameEnd',
+			'player': player,
+			'timestamp': now.isoformat(),
+			'details': gameEnd
+		}
 
+		game['events'].append(endEvent)
+
+		# Stop any timers that are running for this game
+		timer.stopWatcher(gameID)
+
+	else:
 		# If the game continues, we start the timer for the next move.
 		# The state is set to 'running' here because a game starts as soon as
 		# the first valid move is made.
-		if not gameEnd:
-			game['state']['state'] = 'running'
-			opponent = util.opponent(player)
-			timer.startWatcher(id, opponent, game['players'][opponent])
+		game['state']['state'] = 'running'
+		opponent = util.opponent(player)
+		timer.startWatcher(gameID, opponent, game['players'][opponent])
 
 	# Save changes to persistent DB
 	syncDB(['games'])
 
-	statusCode = 201 if valid else 200
-
 	return json.dumps({
-		'valid': valid,
+		'valid': True,
 		'reason': reason
-	}, indent=4), statusCode
+	}, indent=4), 201
 
 
 
 
 
-@api.route('/game/<id>/events', methods=['GET'])
-def get_events(id):
+@api.route('/game/<gameID>/events', methods=['GET'])
+def get_events(gameID):
 
-	if not id in storage['games']:
+	game = storage['games'].get(gameID)
+	if not game:
 		return 'Error: Game not found', 404
-
-	game = storage['games'][id]
 
 	# A GET on the events results in a continuous eventstream in the SSE format
 	# (See https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
