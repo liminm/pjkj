@@ -288,7 +288,8 @@ Authorization: Basic <playerToken>
   }
 }
 
-201 CREATED
+201 CREATED // If valid
+200 OK      // If invalid
 {
   "valid": <boolean>,
   "reason": "<string>"
