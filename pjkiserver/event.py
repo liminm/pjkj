@@ -166,7 +166,7 @@ def get_events(gameID):
 		while game['state']['state'] != 'completed' or len(game['events']) > prevLen:
 
 			# Wait for new events to appear
-			time.sleep(.2)
+			time.sleep(.05)
 
 			# Check event array for new entries
 			newLen = len(game['events'])
