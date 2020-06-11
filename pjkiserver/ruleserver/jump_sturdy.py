@@ -137,10 +137,10 @@ def moveCheck(moveEvent,state):
 
     #update hashmap
     boardHash = board_after.stringHash()
-    if not board_after in hashmap:
+    if not boardHash in hashmap:
         hashmap[boardHash] = 1
     else:
-        hashmap[boardHash] +=1
+        hashmap[boardHash] += 1
         if hashmap[boardHash] >= 3:
             winner = "draw"
             status = "repState"
