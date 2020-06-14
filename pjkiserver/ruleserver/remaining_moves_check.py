@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def checkmate(board):
+def noMovesPossible(board):
     cm = Checkmate()
 
     player = "playerA"

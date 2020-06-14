@@ -11,6 +11,7 @@ from .bitboard import Board
 from .valid_move_check import ValidCheck
 from .WinConditions import reihencheckrk
 from .racing_kings_check_check import checkmate
+from.remaining_moves_check import noMovesPossible
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
@@ -168,6 +169,11 @@ def moveCheck(moveEvent,state):
     # checks for 50 Move rule
     if (board_after.halfRounds >= 50):
         return True, {"type":"50Move", "winner":"draw"}, ""
+
+    # check if the opponent
+    if status!="win" and noMovesPossible(board_after):
+        winner = "playerA" if board_before.player == "w" else "playerB"
+        status = "win"
 
     # checks if the white has already won before
     if reihencheckrk(board_before) and board_before.player == "b" and status in [None, "win"]:
