@@ -267,7 +267,7 @@ class RacingKingsMainFunction(unittest.TestCase):
                 board = Board(t[0])
                 board_moved = Board(t[0])
                 moveEvent = {"type":"move",
-                        "player":"playerA" if board.player == "wh" else "playerB",
+                        "player":"playerA" if board.player == "w" else "playerB",
                        "details": {"move":t[1]+t[2]}}
             except SyntaxError:
                 moveEvent = {"type":"move",
