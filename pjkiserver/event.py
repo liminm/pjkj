@@ -148,9 +148,11 @@ def get_events(gameID):
 	# while continuously feeding back data with the `yield` keyword.
 	def stream_events():
 
-	    # Some SSE clients seem to not start receiving until the first
-	    # line/byte is sent. This does just that for them and hopefully won't
-	    # break anything else.
+		print('Oppening eventstream on game ' + gameID)
+
+		# Some SSE clients seem to not start receiving until the first
+		# line/byte is sent. This does just that for them and hopefully won't
+		# break anything else.
 		yield '\n\n'
 
 		# We get the current length before we print old stuff, just to be sure
@@ -180,6 +182,10 @@ def get_events(gameID):
 
 			prevLen = newLen
 
+		print('Closing eventstream on game ' + gameID)
+
+		return ''
+
 	# Start the eventstream. The mimetype is necessary for the JS EventSource
 	# API.
-	return Response(stream_events(), mimetype='text/event-stream')
+	return Response(stream_events(), 200, mimetype='text/event-stream')
