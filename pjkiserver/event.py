@@ -7,6 +7,10 @@ from .storage.storage import storage, syncDB
 from . import schemas, timer, rules, util
 
 
+_eventstream_update_interval = 0.05 # seconds
+_eventstream_heartbeat_interval = 2 # seconds
+
+
 api = Blueprint('event', __name__)
 
 
@@ -148,9 +152,11 @@ def get_events(gameID):
 	# while continuously feeding back data with the `yield` keyword.
 	def stream_events():
 
-	    # Some SSE clients seem to not start receiving until the first
-	    # line/byte is sent. This does just that for them and hopefully won't
-	    # break anything else.
+		print('Oppening eventstream on game ' + gameID)
+
+		# Some SSE clients seem to not start receiving until the first
+		# line/byte is sent. This does just that for them and hopefully won't
+		# break anything else.
 		yield '\n\n'
 
 		# We get the current length before we print old stuff, just to be sure
@@ -161,25 +167,54 @@ def get_events(gameID):
 		for event in game['events']:
 			yield 'data: ' + json.dumps(event) + '\n\n'
 
-		# Just in case new events arrived while the state was set to completed,
-		# we give the option to print those regardless of the state
-		while game['state']['state'] != 'completed' or len(game['events']) > prevLen:
+		tickCounter = 0
 
-			# Wait for new events to appear
-			time.sleep(.05)
+		try:
+			# Just in case new events arrived while the state was 'completed',
+			# we give the option to print those regardless of the state
+			while game['state']['state'] != 'completed' or len(game['events']) > prevLen:
 
-			# Check event array for new entries
-			newLen = len(game['events'])
-			newEventCount = newLen - prevLen
+				# Wait for new events to appear
+				time.sleep(_eventstream_update_interval)
+				tickCounter += 1
 
-			# Tricky trick here: we want the last couple events in the correct
-			# order, by using range from negative to 0, we get exactly that:
-			# range(-3, 0) -> [-3, -2, -1]
-			for i in range(-newEventCount, 0):
-				yield 'data: ' + json.dumps(game['events'][i]) + '\n\n'
+				# Check event array for new entries
+				newLen = len(game['events'])
+				newEventCount = newLen - prevLen
 
-			prevLen = newLen
+				# Tricky trick here: we want the last couple events in the
+				# correct order, by using range from negative to 0, we get
+				# exactly that:
+				# range(-3, 0) -> [-3, -2, -1]
+				for i in range(-newEventCount, 0):
+					yield 'data: ' + json.dumps(game['events'][i]) + '\n\n'
+
+				prevLen = newLen
+
+				# Send a heartbeat every couple of seconds
+				# This is done because whenever a client disconnects/closes the
+				# eventstream connection and no events are generated, this
+				# handler stays running because a closed connection can't be
+				# detected without sending data to it and getting an error.
+				# That's a problem because every handler takes up a thread on
+				# the prod (uwsgi) server, which are limited in number, leading
+				# the entire server to lock up when all threads are used up
+				# handling a closed connection.
+				# Therefore we forcefully send data regularly to end this
+				# handler when there is no recipient anymore.
+				heartbeatIntervalTicks = int(_eventstream_heartbeat_interval /
+												_eventstream_update_interval)
+				if (tickCounter % heartbeatIntervalTicks == 0):
+					yield ': heartbeat\n\n'
+					tickCounter = 0
+
+			print('Eventstream ended on game ' + gameID)
+
+		except GeneratorExit:
+			print('Client closed eventstream on game ' + gameID)
+
+		return
 
 	# Start the eventstream. The mimetype is necessary for the JS EventSource
 	# API.
-	return Response(stream_events(), mimetype='text/event-stream')
+	return Response(stream_events(), 200, mimetype='text/event-stream')
