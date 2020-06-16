@@ -111,13 +111,13 @@ GAMEINFO=`printf '
 	"players": {
 		"playerA": {
 			"id": "%s",
-			"timeout": 60000,
-			"initialTimeBudget": 120000
+			"timeout": 120000,
+			"initialTimeBudget": 240000
 		},
 		"playerB": {
 			"id": "%s",
-			"timeout": 60000,
-			"initialTimeBudget": 120000
+			"timeout": 120000,
+			"initialTimeBudget": 240000
 		}
 	},
 	"settings": {}

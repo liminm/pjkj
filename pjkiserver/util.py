@@ -127,3 +127,24 @@ def filterTeam(listDict, teamID):
 
 	# Turn it back into a dict
 	return dict(filteredList)
+
+def getNiceMessage():
+	messages = [
+		'Well done!',
+		'Good boy',
+		'Love you!',
+		'<3',
+		':)',
+		'¯\_(ツ)_/¯',
+		'BTW, you\'re beautiful',
+		'Thank you!',
+		';)',
+		'xoxo',
+		'*fanfare*',
+		'https://youtu.be/dQw4w9WgXcQ',
+		'😍',
+		'Smart move!',
+		'Solid choice',
+		'Checks out'
+	]
+	return random.choice(messages)
