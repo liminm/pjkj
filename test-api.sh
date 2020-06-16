@@ -183,6 +183,7 @@ if [[ ${LEAVEOPEN} == "true" ]]
 then
 	petc
 	http -vS ${HOST}/game/${GAMEID}/events
+	exit 0
 fi
 
 petc

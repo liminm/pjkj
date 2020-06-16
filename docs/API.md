@@ -299,7 +299,7 @@ Authorization: Basic <playerToken>
 ### Get past & new Events
 
 This is the complicated part. In order to be notified of all events happening
-in the game, a comet-style [SSE](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
+in the game, a comet-style [Server-Sent-Event (SSE)](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events)
 feed is opened via this GET request and _stays open_, feeding back data in the
 SSE format. This means that as soon as, say, another player makes a move, you
 will be notified of that move and can start yours.
@@ -323,6 +323,10 @@ data: {
     "messageText": "<string>"
   }
 }
+
+: heartbeat     // every couple of seconds the server will send these to ensure
+                // the connection is still alive and close it otherwise.
+                // Please ignore lines starting with a colon (':') (see SSE).
 
 data: ...
 ```
