@@ -8,7 +8,7 @@ from . import schemas, timer, rules, util
 
 
 _eventstream_update_interval = 0.05 # seconds
-_eventstream_heartbeat_interval = 2 # seconds
+_eventstream_heartbeat_interval = 8 # seconds
 
 
 api = Blueprint('event', __name__)
