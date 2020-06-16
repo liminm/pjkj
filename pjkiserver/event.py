@@ -75,8 +75,8 @@ def post_event(gameID):
 		# Check move with ruleserver
 		valid, gameEnd, reason = rules.moveCheck(game['type'], event, game['state'])
 		print('> valid:', valid)
-		print('> gameEnd:', gameEnd)
-		print('> reason:', reason)
+
+		reason = reason if not valid else util.getNiceMessage()
 
 		if valid:
 			# If everything is ok (meaning either a valid move or a surrender),
@@ -129,7 +129,7 @@ def post_event(gameID):
 
 	return json.dumps({
 		'valid': True,
-		'reason': reason
+		'reason': util.getNiceMessage()
 	}, indent=4), 201
 
 
