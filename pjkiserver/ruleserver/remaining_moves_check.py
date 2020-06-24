@@ -1,7 +1,8 @@
 # from bitboard import racing_kings
 import math
 import numpy as np
-
+import racing_kings_check_check
+from racing_kings_check_check import Checkmate as Checkmate2
 
 def noMovesPossible(board):
     cm = Checkmate()
@@ -10,7 +11,7 @@ def noMovesPossible(board):
     if board.player == "b":
         player = "playerB"
 
-    return cm.checkmate(board.board["q"], board.board["k"], board.board["b"], board.board["n"], board.board["r"],
+    return cm.noMovesPossible(board.board["q"], board.board["k"], board.board["b"], board.board["n"], board.board["r"],
                         board.board["wh"], board.board["bl"], player)
 
 def bmatrix(bitboard):
@@ -90,7 +91,8 @@ class Checkmate():
                     #print("King Mask: ",king_mask)
                     #print(bin(king_mask))
 
-                    moves_board = moves_board | king_mask
+                    #moves_board = moves_board | king_mask
+                    moves_board = moves_board
 
                 if (i == 3):
                     knight_move = (fig >> 17) + (fig >> 15) + (fig >> 10) + (fig >> 6) + (fig << 6) + (fig << 10) + (
@@ -316,7 +318,7 @@ class Checkmate():
         else:
             return False
 
-    def checkmate(self, q, k, b, n, r, wh, bl, player):
+    def noMovesPossible(self, q, k, b, n, r, wh, bl, player):
         board = Checkmate()
         bitboards = [q,k,b,n,r,wh,bl]
         for i in range(len(bitboards)):
@@ -365,14 +367,102 @@ class Checkmate():
 
         #print(own_move_board_pure)
 
+        # do a check for king in check
+
+        pos_exp = int(math.log2(own_king))
+        king_mask = (own_king >> 1) + (own_king << 1) + (own_king >> 8) + (own_king << 8) + (own_king << 7) + (
+                    own_king << 9) + (
+                            own_king >> 9) + (own_king >> 7)
+        if (pos_exp in list(range(1, 7, 1))):
+            king_mask -= (own_king >> 9) + (own_king >> 8) + (own_king >> 7)
+        if (pos_exp in list(range(57, 63, 1))):
+            king_mask -= (own_king << 9) + (own_king << 8) + (own_king << 7)
+        if (pos_exp in list(range(8, 49, 8))):
+            king_mask -= (own_king >> 9) + (own_king >> 1) + (own_king << 7)
+        if (pos_exp in list(range(15, 56, 8))):
+            king_mask -= (own_king >> 7) + (own_king << 1) + (own_king << 9)
+        if (pos_exp == 0):
+            king_mask -= (own_king >> 9) + (own_king >> 8) + (own_king >> 7) + (own_king >> 1) + (own_king << 7)
+        if (pos_exp == 7):
+            king_mask -= (own_king >> 9) + (own_king >> 8) + (own_king >> 7) + (own_king << 1) + (own_king << 9)
+        if (pos_exp == 56):
+            king_mask -= (own_king << 9) + (own_king << 8) + (own_king << 7) + (own_king >> 9) + (own_king >> 1)
+        if (pos_exp == 63):
+            king_mask -= (own_king << 9) + (own_king << 8) + (own_king << 7) + (own_king << 1) + (own_king >> 7)
+
+
         # if moveboard is 0 then no move is possible
-        if(own_move_board_pure == 0):
+        if((own_move_board_pure | king_mask)  == 0):
             #if result == 1 then no move is possible
             result = True
+            return result
         else:
             #if result == 0 then move is possible
-            result = False
 
+            if (player == "playerA"):
+                king_mask = king_mask & ~ wh
+            else:
+                king_mask = king_mask & ~ bl
+
+            # If there are other moves possible besides the king or If movesboard (without king moves) & king moves has overlap that means a figure which is not a king can move return False
+            if(own_move_board_pure or own_move_board_pure & king_mask ):
+                return False
+
+            nmove = 1
+            board = Checkmate2()
+            king_in_check_all_dir = 1
+
+            for i in range(64):
+
+                nq = q
+                nk = (k & ~ own_king) | nmove
+                nb = b
+                nn = n
+                nr = r
+
+
+
+                if(king_mask & nmove):
+
+                    if(player == "playerA"):
+                        nwh = (wh & ~ own_king) | nmove
+                        nbl = bl & ~nmove
+
+                        if (nmove & q):
+                            nq = q & ~ nmove
+                        if (nmove & k):
+                            nk = (k & ~ own_king) | nmove
+                        if (nmove & b):
+                            nb = b & ~ nmove
+                        if (nmove & n):
+                            nn = n & ~ nmove
+                        if (nmove & r):
+                            nr = r & ~ nmove
+
+                    else:
+                        nbl = (bl & ~ own_king) | nmove
+                        nwh = wh & ~nmove
+
+                        if (nmove & q):
+                            nq = q & ~ nmove
+                        if (nmove & k):
+                            nk = (k & ~ own_king) | nmove
+                        if (nmove & b):
+                            nb = b & ~ nmove
+                        if (nmove & n):
+                            nn = n & ~ nmove
+                        if (nmove & r):
+                            nr = r & ~ nmove
+
+                    if(board.checkmate(nq, nk, nb, nn, nr, nwh, nbl, player) == False):
+                        king_in_check_all_dir = 0
+
+                nmove = nmove << 1
+
+            if(king_in_check_all_dir == 0):
+                result = False
+            else:
+                result = True
 
 
         return result
@@ -393,5 +483,5 @@ if __name__ == '__main__':
     # 1. Queen 2. King 3. Bishop 4. Knight 5. Rook 6. White 7. Black 8. Player
     # Numbers set to start position
     # result == True if King is in chess; False if King is not attacked
-    result = board.checkmate(129, np.uint64(33024), np.uint64(9252), np.uint64(6168), np.uint64(16962), np.uint64(3855), np.uint64(61680), 'playerA')
+    result = board.noMovesPossible(129, np.uint64(33024), np.uint64(9252), np.uint64(6168), np.uint64(16962), np.uint64(3855), np.uint64(61680), 'playerA')
     #print(result)
