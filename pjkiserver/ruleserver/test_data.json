@@ -106,7 +106,21 @@
 				["8/2k5/8/8/8/6R1/qrb1NB2/1rbnNBRQ w - - 19 10", "False"]],
 
 
-"movesPossible":[["8/8/R7/7k/R4K2/6B1/8/8 b - - 1 11", "True"]],
+"movesPossible":[["8/8/R7/7k/R4K2/6B1/8/8 b - - 1 11", "True"],
+				["8/8/8/7k/R4K2/6B1/8/8 b - - 0 1", "False"],
+				["8/8/6BN/7k/R4K2/6B1/8/8 b - - 0 1", "False"],
+				["8/8/6nn/7k/R4K2/6B1/8/8 b - - 0 1","False"],
+				["R7/6RR/R5Rk/5K2/6B1/8/8/8 b - - 0 1","True"],
+				["1b1R4/bkB5/1BN5/R2B4/7K/8/7B/6BB b - - 0 1","False"],
+				["3R4/bkB5/1BN5/R2B4/7K/8/7B/6BB b - - 0 1","False"],
+				["3R4/b1B5/1BN5/R2B4/7K/8/7B/2k3BB b - - 0 1","False"],
+				["8/8/8/k7/7R/8/8/1R5K b - - 0 1","False"],
+				["8/8/7R/k7/7R/8/8/1R5K b - - 0 1","True"],
+				["8/8/7r/K7/7r/8/8/1r5k w - - 0 1","True"],
+				["8/8/8/K7/7r/8/8/1r5k w - - 0 1","False"]
+				],
+
+
 "commentCheck":"pattern: 0: FEN String, 1: expected value",
 "check":[
     ["2Q5/8/8/5k2/6r1/7n/2b1NB1R/1rbnNBRK w - - 0 8", "True"],
