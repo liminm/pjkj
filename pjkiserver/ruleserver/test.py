@@ -195,7 +195,7 @@ class checkTest(unittest.TestCase):
             board = Board(t[0])
             expected = eval(t[1])
 
-            self.assertEqual(noMovesPossible(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1]);
+            self.assertEqual(remaining_moves_check.noMovesPossible(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:" + t[1])
 
 class JumpSturdyMainFunction(unittest.TestCase):
     def testJumpStirdyStateCheck(self):
