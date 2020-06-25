@@ -1,8 +1,7 @@
 # from bitboard import racing_kings
 import math
 import numpy as np
-import racing_kings_check_check
-from racing_kings_check_check import Checkmate as Checkmate2
+from .racing_kings_check_check import Checkmate as Checkmate2
 
 def noMovesPossible(board):
     cm = Checkmate()

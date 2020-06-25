@@ -11,7 +11,7 @@ from .bitboard import Board
 from .valid_move_check import ValidCheck
 from .WinConditions import reihencheckrk
 from .racing_kings_check_check import checkmate
-from.remaining_moves_check import noMovesPossible
+from .remaining_moves_check import noMovesPossible
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
