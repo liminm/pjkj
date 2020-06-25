@@ -106,6 +106,20 @@
 				["8/2k5/8/8/8/6R1/qrb1NB2/1rbnNBRQ w - - 19 10", "False"]],
 
 
+"movesPossible":[["8/8/R7/7k/R4K2/6B1/8/8 b - - 1 11", "True"],
+				["8/8/8/7k/R4K2/6B1/8/8 b - - 0 1", "False"],
+				["8/8/6BN/7k/R4K2/6B1/8/8 b - - 0 1", "False"],
+				["8/8/6nn/7k/R4K2/6B1/8/8 b - - 0 1","False"],
+				["R7/6RR/R5Rk/5K2/6B1/8/8/8 b - - 0 1","True"],
+				["1b1R4/bkB5/1BN5/R2B4/7K/8/7B/6BB b - - 0 1","False"],
+				["3R4/bkB5/1BN5/R2B4/7K/8/7B/6BB b - - 0 1","False"],
+				["3R4/b1B5/1BN5/R2B4/7K/8/7B/2k3BB b - - 0 1","False"],
+				["8/8/8/k7/7R/8/8/1R5K b - - 0 1","False"],
+				["8/8/7R/k7/7R/8/8/1R5K b - - 0 1","True"],
+				["8/8/7r/K7/7r/8/8/1r5k w - - 0 1","True"],
+				["8/8/8/K7/7r/8/8/1r5k w - - 0 1","False"]
+				],
+
 
 "commentCheck":"pattern: 0: FEN String, 1: expected value",
 "check":[
@@ -202,7 +216,9 @@
 				["2q3RK/2k5/1r3Q2/8/8/6R1/8/4rB1b b - - 19 16", "c7", "b8", "True", "{'type':'draw','winner':'draw'}"]],
 
 "mainFunctionPattern":"0: FEN string der die Spielsituation definiert; 1-2: UCI Move; 3:boolean wert ob der move valid ist oder nicht; 4: gameEnd struct --> wenn das Spiel gewonnen ist, dann wird das befüllt je nach endzustand (type:[win|draw], 'winner':[playerA|playerB|draw]). Wenn nicht, dann ist das feld 'None'",
-"mainFunction":[["8/1k3K2/8/8/8/8/1rbnNBR1/qrbnNBRQ b - - 11 6", "b7", "b8", "True", "{'type':'win', 'winner':'playerB'}"],
+"mainFunction":[
+				["8/R7/8/7k/R4K2/6B1/8/8 w - - 0 11", "a7", "a6", "True", "{'type':'win', 'winner':'playerA'}"],
+				["8/1k3K2/8/8/8/8/1rbnNBR1/qrbnNBRQ b - - 11 6", "b7", "b8", "True", "{'type':'win', 'winner':'playerB'}"],
 				["8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "h3", "True", "None"],
 				["8/8/8/8/8/8/1rbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],
 				["8/8/8/8/7Q/8/krbnNBRK/qrbnNBRQ w - - 0 1", "h2", "g3", "False", "None"],

@@ -11,6 +11,7 @@ from .jump_sturdy import movePlayerJS
 from . import jump_sturdy
 from . import racing_kings
 from . import racing_kings_check_check
+from .remaining_moves_check import noMovesPossible
 
 
 global test_data
@@ -186,6 +187,15 @@ class checkTest(unittest.TestCase):
 
             # TODO: make it run the check mate function and implement some more tests
             self.assertEqual(racing_kings_check_check.checkmate(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
+    
+    def testPlayerCanMove(self):
+        """
+        """
+        for t in test_data["racingKings"]["movesPossible"]:
+            board = Board(t[0])
+            expected = eval(t[1])
+
+            self.assertEqual(remaining_moves_check.noMovesPossible(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:" + t[1])
 
 class JumpSturdyMainFunction(unittest.TestCase):
     def testJumpStirdyStateCheck(self):
@@ -267,7 +277,7 @@ class RacingKingsMainFunction(unittest.TestCase):
                 board = Board(t[0])
                 board_moved = Board(t[0])
                 moveEvent = {"type":"move",
-                        "player":"playerA" if board.player == "wh" else "playerB",
+                        "player":"playerA" if board.player == "w" else "playerB",
                        "details": {"move":t[1]+t[2]}}
             except SyntaxError:
                 moveEvent = {"type":"move",
