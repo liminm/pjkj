@@ -212,9 +212,9 @@ class Board:
             return None
             
         if field.lower() == field:
-            return "bl"
+            return "b"
         else:
-            return "wh"
+            return "w"
     
     def setField(self, position, character):
         """
