@@ -336,7 +336,8 @@
 ["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 4", "f2", "h1", "False", "None"],
 ["1bbbbbb1/1k1k1k2/8/8/8/8/1K1K1K2/1BBBBBB1 w - - 0 4", "f2", "f3", "False", "None"],
 ["1bbbbbb1/1bbbb3/8/4k3/4B3/8/1BBB1K2/1BBBBBB1 b - - 0 3", "e5", "e4", "False", "None"],
-["1bbbbbb1/1bbbb3/8/4k3/4B3/8/1BBB1K2/1BBBBBB1 w - - 0 3", "e4", "e5", "False", "None"]
+["1bbbbbb1/1bbbb3/8/4k3/4B3/8/1BBB1K2/1BBBBBB1 w - - 0 3", "e4", "e5", "False", "None"],
+["1bkbk1b1/b2bbk2/8/8/8/8/BBB1BBB1/1K1BBBB1 w - - 8 5", "d7", "d8", "False", "None"]
 ]
 
 }

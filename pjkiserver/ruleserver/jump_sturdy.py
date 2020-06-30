@@ -111,6 +111,10 @@ def moveCheck(moveEvent,state):
         return False, None, "StateError: Not your turn, black's turn! Sit down!"
 
     uci = event["details"]['move']
+    
+    # check if you move your player
+    if board_before.getOwner(uci[:2]) != board_before.player:
+        return False, None, "MoveError:You can not move the enemies characters!"
 
     #for check valid  movement
     try:
