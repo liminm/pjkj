@@ -16,7 +16,16 @@ python3 -m pjkiserver               # Run module
 ```
 
 If you want a persistent state across server restarts, install mongoDB as
-described in the INSTALL document linked below.
+described in the INSTALL document linked below or from docker:
+```
+sudo docker pull mongo
+sudo docker run --name mongoDB -p 27017:27017 -d mongo
+```
+The next time you want to use it, just start mongoDB with
+```
+sudo docker start mongoDB
+```
+and all your precious data should be right where you left it :)
 
 Both AIs and humans on web clients connect to the same REST API, specified in
 [docs/API.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/API.md).
