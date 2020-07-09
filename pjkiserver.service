@@ -1,11 +1,11 @@
 [Unit]
 Description=Server for the 2020 AOT AI Tournament
-After=syslog.target network.target nginx.service docker.service
+After=syslog.target network.target nginx.service mongod.service
 
 # Configuration mostly stolen from from uwsgi docs
 [Service]
 User=www-data
-ExecStart=/usr/bin/uwsgi --ini /home/pjki/server/uwsgi.ini
+ExecStart=/usr/bin/uwsgi --ini /home/studentadmin/pjkiserver/uwsgi.ini
 RuntimeDirectory=uwsgi
 Restart=always
 KillSignal=SIGQUIT
