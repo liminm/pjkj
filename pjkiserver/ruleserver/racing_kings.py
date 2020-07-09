@@ -12,6 +12,7 @@ from .valid_move_check import ValidCheck
 from .WinConditions import reihencheckrk
 from .racing_kings_check_check import checkmate
 from .remaining_moves_check import noMovesPossible
+from .kingCanMoveToEnd import kingCanMoveToEnd
 
 INITIAL_FEN = "8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1"
 
@@ -173,6 +174,10 @@ def moveCheck(moveEvent,state):
     # check if the opponent
     if status!="win" and noMovesPossible(board_after):
         winner = "playerA" if board_before.player == "w" else "playerB"
+        status = "win"
+
+    if reihencheckrk(board_after) and board_before.player == "w" and not kingCanMoveToEnd(board_after):
+        winner = "playerA"
         status = "win"
 
     # checks if the white has already won before
