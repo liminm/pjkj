@@ -120,6 +120,10 @@
 				["8/8/8/K7/7r/8/8/1r5k w - - 0 1","False"]
 				],
 
+"kingCanMoveToEnd":[["8/8/8/8/8/6R1/krbnNB1K/qrbnNBRQ b - - 1 1", "False"],
+					["8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 0 1", "False"],
+					["8/5K2/8/8/2k5/8/1rbnNBR1/qrbnNBRQ w - - 9 5", "False"],
+					["8/5K2/1r6/8/2k5/8/2bnNBR1/qrbnNBRQ w - - 10 6", "True"]],
 
 "commentCheck":"pattern: 0: FEN String, 1: expected value",
 "check":[
@@ -242,7 +246,8 @@
 				["8/8/8/8/8/8/krbnNBRK/qrbnNBRQ w - - 80 1", "a2", "a3", "False", "None"],
 				["7K/k7/8/8/8/6R1/1rb1NB2/qrbnNBRQ b - - 50 9", "a7", "b8", "False", "None"],
 				["7K/2k5/8/8/8/6R1/1rb1NB2/qrbnNBRQ b - - 18 9", "a1", "a2", "True", "{'type':'win','winner':'playerA'}"],
-				["7K/k7/8/8/8/6R1/1rb1NB2/qrbnNBRQ w - - 19 9", "b2", "b3", "False", "None"]]
+				["7K/k7/8/8/8/6R1/1rb1NB2/qrbnNBRQ w - - 19 9", "b2", "b3", "False", "None"],
+				["8/5K2/1r6/8/2k5/8/2bnNBR1/qrbnNBRQ w - - 10 6", "f7", "g8", "True", "{'type':'win', 'winner':'playerA'}"]]
 },
 
 "jumpStirdy":{

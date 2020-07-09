@@ -12,6 +12,7 @@ from . import jump_sturdy
 from . import racing_kings
 from . import racing_kings_check_check
 from .remaining_moves_check import noMovesPossible
+from .kingCanMoveToEnd import kingCanMoveToEnd
 
 
 global test_data
@@ -196,6 +197,14 @@ class checkTest(unittest.TestCase):
             expected = eval(t[1])
 
             self.assertEqual(noMovesPossible(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:" + t[1])
+
+    def kingCanMoveToEndTest(self):
+        for t in test_data["racingKings"]["kingCanMoveToEnd"]:
+            board = Board(t[0])
+            expected = eval(t[1])
+
+            self.assertEqual(kingCanMoveToEnd(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:" + t[1])
+
 
 class JumpSturdyMainFunction(unittest.TestCase):
     def testJumpStirdyStateCheck(self):
