@@ -65,11 +65,8 @@ def fenStateCheck(state):
             return False,None ,"StateError : there can only be 0-24 figures on the board at any time!"
 
     #check for win
-    if reihencheckjs(board,board.player) :
-       if board.player == 'w' :
-           return True,{'type' : "win", 'winner' : "playerA"},""
-       else :
-           return True,{'type' : "win", 'winner' : "playerB"},""
+    if reihencheckjs(board) :
+       return True,{'type' : "win", 'winner' : "draw"},""
 
     return True,None, ""
 
@@ -111,7 +108,7 @@ def moveCheck(moveEvent,state):
         return False, None, "StateError: Not your turn, black's turn! Sit down!"
 
     uci = event["details"]['move']
-    
+
     # check if you move your player
     if board_before.getOwner(uci[:2]) != board_before.player:
         return False, None, "MoveError:You can not move the enemies characters!"
@@ -130,14 +127,13 @@ def moveCheck(moveEvent,state):
     except:
         return False, None, "SyntaxError:UCI String is invalid!"
 
-
     #check for win
-    if reihencheckjs(board_after,board_after.player) :
-        if board_after.player == 'w' :
-            return True,{'type' : "win", 'winner' : "playerA"},""
+    if reihencheckjs(board_after) :
+        status = "win"
+        if board_before.player == 'w' :
+            winner = "playerA"
         else :
-            return True,{'type' : "win", 'winner' : "playerB"},""
-
+            winner = "playerB"
 
     #update hashmap
     boardHash = board_after.stringHash()
