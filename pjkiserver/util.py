@@ -111,6 +111,24 @@ def filterState(listDict, state):
 	# Turn it back into a dict
 	return dict(filteredList)
 
+# Filter games by tag
+def filterTag(listDict, tag):
+
+	# Filtering by * is no filtering at all!
+	if (tag == '*'):
+		return listDict
+
+	# Turn dict into list of (key, val) tuples
+	dictList = list(listDict.items())
+
+	# Use a lambda function to see if each value's tag list contains the tag
+	# And keep only matching (key, value) pairs
+	filteredList = list(
+		filter(lambda el: tag in el[1]['tags'], dictList))
+
+	# Turn it back into a dict
+	return dict(filteredList)
+
 def filterTeam(listDict, teamID):
 
 	# Filtering by * is no filtering at all!
