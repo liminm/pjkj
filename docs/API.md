@@ -181,6 +181,7 @@ POST /api/games
 {
   "name": "<string>",
   "type": "jumpSturdy" || "racingKings",
+  "tags": <_optional_> [ "<_optional_ string>", ... ],
   "players": {
     "playerA": {
       "id": "<string playerID>",
@@ -215,6 +216,7 @@ GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]
     "<id>" {
       "name": "<string>",
       "type": "jumpSturdy" || "racingKings",
+      "tags": [ "<_optional_ string>", ... ],
       "players": {
         "playerA": {
           "name": "<string>"
@@ -241,6 +243,7 @@ GET /api/game/<gameID>
 {
   "name": "<string>",
   "type": "jumpSturdy" || "racingKings",
+  "tags": [ "<_optional_ string>", ... ],
   "players": {
     "playerA": {
       "id": "<string playerID>",
