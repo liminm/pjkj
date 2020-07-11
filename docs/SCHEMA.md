@@ -24,6 +24,7 @@ let storage = {
         <id>: {
             name: String,
             type: String,                   // jumpSturdy | racingKings
+            tags: [ String ],               // List of tags like 'contest1'
             players: {
                 playerA: {
                     id: String,             // Player ID
