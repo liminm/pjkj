@@ -207,7 +207,7 @@ POST /api/games
 
 ### List Games
 ```javascript
-GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]
+GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]&tag=<tag>
 
 200 OK
 {
