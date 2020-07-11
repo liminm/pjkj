@@ -15,15 +15,15 @@ from .bitboard import Board
 
 MASKJS1 = np.uint64(9079256848778919936)
 MASKJS2 = np.uint64(126)
-def reihencheckjs(board , player=None):
-    if player==None:
-        player = board.player
-    if player == 'w':
-        if board.board["wh"] & MASKJS1 != 0:
-            return True
-    else:
-        if board.board["bl"] & MASKJS2 != 0:
-            return True
+def reihencheckjs(board):
+
+    # White has reached black's home row
+    if board.board["wh"] & MASKJS1 != 0:
+        return True
+
+    # Black has reached white's home row
+    if board.board["bl"] & MASKJS2 != 0:
+        return True
 
     return False
 
