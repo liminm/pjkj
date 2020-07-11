@@ -63,6 +63,7 @@ game = {
 		"_re": r"^(jumpSturdy|racingKings)$",
 	},
 	"tags": {
+		"_optional": True,
 		"_type": list,
 		"_maxLen": 8,
 		"_elements": {
