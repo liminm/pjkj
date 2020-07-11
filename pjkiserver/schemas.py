@@ -62,6 +62,16 @@ game = {
 		"_type": str,
 		"_re": r"^(jumpSturdy|racingKings)$",
 	},
+	"tags": {
+		"_type": list,
+		"_maxLen": 8,
+		"_elements": {
+			"_type": str,
+			"_re": r"^\w+$",
+			"_minLen": 4,
+			"_maxLen": 32,
+		}
+	},
 	"players": {
 		"_type": dict,
 		"playerA": gamePlayer,
