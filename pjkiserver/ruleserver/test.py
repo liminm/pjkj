@@ -192,7 +192,7 @@ class checkTest(unittest.TestCase):
     def testPlayerCanMove(self):
         """
         """
-        for t in test_data["racingKings"]["movesPossible"]:
+        for t in test_data["racingKings"]["noMovesPossible"]:
             board = Board(t[0])
             expected = eval(t[1])
 
