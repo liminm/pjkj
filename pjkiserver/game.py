@@ -42,6 +42,10 @@ def post_game():
 	if game['players']['playerA']['id'] == game['players']['playerB']['id']:
 		return "Error: Player can't play against itself", 409
 
+	# Initialize tags array if none given
+	# If no initial FEN string is given, we get the defaults from the rules
+	game['tags'] = game.get('tags') or []
+
 	# If no initial FEN string is given, we get the defaults from the rules
 	game['settings']['initialFEN'] = game['settings'].get('initialFEN') or rules.initialFEN(game['type'])
 
@@ -85,13 +89,15 @@ def get_games():
 	start = request.args.get('start', default = 0, type = int)
 	count = request.args.get('count', default = None, type = int)
 	state = request.args.get('state', default = '*', type = str)
+	tag =   request.args.get('tag',   default = '*', type = str)
 
 	# In order to not accidentally remove data from the database, we copy
 	# the entire dict here.
 	games = deepcopy(storage['games'])
 
-	# Apply filter
+	# Apply filters
 	games = util.filterState(games, state)
+	games = util.filterTag(games, tag)
 
 	# Take length after filter but before pagination to get number of games
 	# with this filter
@@ -110,6 +116,7 @@ def get_games():
 		for player in game['players']:
 			playerID = game['players'][player]['id']
 			game['players'][player] = {
+				'id': playerID,
 				'name': storage['players'][playerID]['name']
 			}
 
