@@ -219,9 +219,11 @@ GET /api/games?count=<count>&start=<start>&state=[planned|running|completed]
       "tags": [ "<_optional_ string>", ... ],
       "players": {
         "playerA": {
+          "id": "<string>",
           "name": "<string>"
         },
         "playerB": {
+          "id": "<string>",
           "name": "<string>"
         }
       },
