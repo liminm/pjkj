@@ -322,7 +322,7 @@ data: {
     "postFEN": "<string fen after move>",
     "time": <int ms>
   } || {
-    "type": "win" || "surrender" || "draw" || "timeout" || "timeBudget" || "50move" || "repState",
+    "type": "win" || "surrender" || "draw" || "timeout" || "timeBudget" || "50Move" || "repState",
     "winner": "playerA" || "playerB" || "draw"
   } || {
     "messageText": "<string>"

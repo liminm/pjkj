@@ -173,10 +173,9 @@ class WinConditionsTest(unittest.TestCase):
         """
         for t in test_data["jumpStirdy"]["winConditions"]:
             board = Board(t[0])
-            player = None # w | b
             expected = eval(t[1])
 
-            self.assertEqual(reihencheckjs(board, player), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
+            self.assertEqual(reihencheckjs(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
 
 class checkTest(unittest.TestCase):
     def testCheck(self):
@@ -188,7 +187,7 @@ class checkTest(unittest.TestCase):
 
             # TODO: make it run the check mate function and implement some more tests
             self.assertEqual(racing_kings_check_check.checkmate(board), expected, "\nBoard representation:\n" + str(board) + "\nexpected:"+t[1])
-    
+
     def testPlayerCanMove(self):
         """
         """
