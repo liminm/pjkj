@@ -95,7 +95,7 @@ val = ''
 while not (val in ['yes', 'no']):
 	val = input('Are you sure you want to proceed? (yes/no) ')
 
-if (val == 'no'):
+if (val != 'yes'):
 	exit()
 
 print('Writing...')
