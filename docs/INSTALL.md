@@ -28,13 +28,13 @@ For mongoDB, first add their apt sources as described on
 [their website](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/).
 
 Do a full update + upgrade:
-```
+```bash
 sudo apt update
 sudo apt upgrade
 ```
 
 Then, install all required backages
-```
+```bash
 # Debian
 sudo apt install \
 	git python3 python3-pip \
@@ -45,7 +45,7 @@ sudo apt install \
 
 Unfortunately, the service file shipped by mongo has an error in it. Let's fix
 that. Edit the file:
-```
+```bash
 sudo nano /lib/systemd/system/mongod.service
 ```
 and replace the line
@@ -58,7 +58,7 @@ PIDFile=/run/mongodb/mongod.pid
 ```
 
 Then, start mongoDB using
-```
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable mongod
 sudo systemctl restart mongod
@@ -68,12 +68,12 @@ and ensure there are no errors.
 ## 2. Package installation
 
 Download the gameserver source onto your drive:
-```
+```bash
 git clone https://gitlab.tubit.tu-berlin.de/PJ-KI/server.git pjkiserver
 ```
 
 To install the gameserver package system-wide on your system, run
-```
+```bash
 cd pjkiserver
 sudo -H pip3 install --system -r requirements.txt
 sudo -H pip3 install --system .
@@ -90,12 +90,12 @@ use any production web server, but we recommend `nginx`.
 A sample site configuration file can be found in `pjki.site.nginx`. Make edits
 as desired (domain name, ssl) and copy or symlink it to
 `/etc/nginx/sites-available/pjki`, then symlink it into `sites-enabled`:
-```
+```bash
 sudo cp pjki.site.nginx /etc/nginx/sites-available/pjki
 sudo ln -s /etc/nginx/{sites-available/pjki,/sites-enabled/pjki}
 ```
 Then you can start `nginx` and enable it, if it isn't enabled/running yet:
-```
+```bash
 sudo systemctl enable nginx
 sudo systemctl restart nginx
 ```
@@ -106,7 +106,7 @@ might have to disable SSL before you can get a SSL certificate.
 
 It is highly recommended to get a free SSL certificate to properly encrypt all
 API (and static) traffic. This can be done easily by running `certbot`:
-```
+```bash
 sudo certbot
 # Follow certbot's instructions
 ```
@@ -133,18 +133,18 @@ IMPORTANT: Edit the `pjkiserver.service` file to update the `uswsgi.ini` file
 path inside.
 
 Then, copy or symlink the service file into `systemd`:
-```
+```bash
 sudo cp pjkiserver.service /etc/systemd/system
 sudo systemctl daemon-reload
 ```
 One more thing: To avoid a permission error, initialize `uwsgi`'s logfile to be
 owned by your webserver user:
-```
+```bash
 sudo touch /var/log/uwsgi.log
 sudo chown www-data:www-data /var/log/uwsgi.log
 ```
 Finally, let's start the server.
-```
+```bash
 sudo systemctl enable pjkiserver
 sudo systemctl restart pjkiserver
 ```

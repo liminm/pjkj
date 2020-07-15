@@ -17,12 +17,12 @@ python3 -m pjkiserver               # Run module
 
 If you want a persistent state across server restarts, install mongoDB as
 described in the INSTALL document linked below or from docker:
-```
+```bash
 sudo docker pull mongo
 sudo docker run --name mongoDB -p 27017:27017 -d mongo
 ```
 The next time you want to use it, just start mongoDB with
-```
+```bash
 sudo docker start mongoDB
 ```
 and all your precious data should be right where you left it :)
