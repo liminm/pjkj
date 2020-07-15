@@ -68,7 +68,7 @@ game = {
 		"_maxLen": 8,
 		"_elements": {
 			"_type": str,
-			"_re": r"^\w+$",
+			"_re": r"^[\w\-\.]+$",
 			"_minLen": 4,
 			"_maxLen": 32,
 		}
