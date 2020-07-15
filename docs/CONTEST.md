@@ -1,16 +1,24 @@
 Contest
 =======
 
-## Phase 1
+## Durchführung
 
-- Jede*r gegen Jede*n (mit Rückrunde)
+- Jede\*r gegen Jede\*n (mit Rückrunde)
 - Bei HPC-Hoster (mit GPUs)
 - Automatisiert
 - Ca. 3-5h
 
 ## Allgemeine Regeln
 
-- Timeout pro Zug: 2 min
-- MiniMax Zeitkonto pro Spieler: 5 min
-- AlphaZero Zeitkonto pro Spieler: 10 min
+### Zeit-Limits
 
+Timeout pro Zug: **1 Minute**
+
+Zeitkonten pro Spieler:
+
+- Jump Sturdy:
+  - MiniMax: **4 Minuten**
+  - AlphaZero: **8 Minuten**
+- Racing Kings:
+  - MiniMax: **3 Minuten**
+  - AlphaZero: **6 Minuten**
