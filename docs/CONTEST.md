@@ -11,4 +11,6 @@ Contest
 ## Allgemeine Regeln
 
 - Timeout pro Zug: 2 min
-- Zeitkonto pro Spieler: 5 min
+- MiniMax Zeitkonto pro Spieler: 5 min
+- AlphaZero Zeitkonto pro Spieler: 10 min
+
