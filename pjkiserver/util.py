@@ -124,7 +124,7 @@ def filterTag(listDict, tag):
 	# Use a lambda function to see if each value's tag list contains the tag
 	# And keep only matching (key, value) pairs
 	filteredList = list(
-		filter(lambda el: tag in el[1]['tags'], dictList))
+		filter(lambda el: tag in el[1].get('tags', []), dictList))
 
 	# Turn it back into a dict
 	return dict(filteredList)
