@@ -246,7 +246,7 @@ class Board:
         m = re.compile("[a-h][1-8]").match(position)
         
         if m is None:
-            raise SyntaxError("The Syntax of the position is wrong! string:" + start)
+            raise SyntaxError("The Syntax of the position is wrong! string:" + position)
         
         x = 7-int(ord(position[0])-ord("a"))
         y = int(position[1])-1

@@ -21,7 +21,7 @@ def kingCanMoveToEnd(board):
         xNew = x+o[0]
         yNew = y+o[1]
 
-        if x in range(8) and y in range(8):
+        if xNew in range(8) and yNew in range(8):
             index = yNew*8+xNew
             posNew = indexToUci(index)
 
