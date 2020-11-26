@@ -1,5 +1,5 @@
 server {
-	server_name pjki.ml pjki.ga dai-lehre.dai-labor.tu-berlin.de;
+	server_name dai-lehre.dai-labor.tu-berlin.de;
 
 	listen 443 ssl default_server;
 	listen [::]:443 ssl default_server;
@@ -33,13 +33,13 @@ server {
 	# RIP
 	add_header X-Clacks-Overhead "GNU Terry Pratchett" always;
 
-	ssl_certificate /etc/letsencrypt/live/dai-lehre.dai-labor.tu-berlin.de-0001/fullchain.pem; # managed by Certbot
-	ssl_certificate_key /etc/letsencrypt/live/dai-lehre.dai-labor.tu-berlin.de-0001/privkey.pem; # managed by Certbot
+	ssl_certificate /etc/letsencrypt/live/dai-lehre.dai-labor.tu-berlin.de/fullchain.pem; # managed by Certbot
+	ssl_certificate_key /etc/letsencrypt/live/dai-lehre.dai-labor.tu-berlin.de/privkey.pem; # managed by Certbot
 
 }
 
 server {
-	server_name pjki.ml pjki.ga dai-lehre.dai-labor.tu-berlin.de;
+	server_name dai-lehre.dai-labor.tu-berlin.de;
 
 	listen 80 default_server;
 	listen [::]:80 default_server;
