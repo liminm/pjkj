@@ -28,12 +28,12 @@ sudo docker start mongoDB
 and all your precious data should be right where you left it :)
 
 Both AIs and humans on web clients connect to the same REST API, specified in
-[docs/API.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/API.md).
+[docs/API.md](//git.tu-berlin.de/pjki/server/blob/master/docs/API.md).
 
 ## (Advanced users only!) Deploying permanently on dedicated machines
 
 For more details regarding permanent installation and deployment on servers,
-see [docs/INSTALL.md](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/docs/INSTALL.md).
+see [docs/INSTALL.md](//git.tu-berlin.de/pjki/server/blob/master/docs/INSTALL.md).
 
 # Software architechture
 
@@ -63,7 +63,7 @@ The entire system consists of 4 Parts:
 For more detailed information about the individual modules, see their
 respective repos/folders:
 
-- [Frontend](//gitlab.tubit.tu-berlin.de/PJ-KI/web-client)
-- [Controller](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/README.md)
-- [Ruleserver](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/ruleserver/README.md)
-- [Storage](//gitlab.tubit.tu-berlin.de/PJ-KI/server/blob/master/pjkiserver/storage/README.md)
+- [Frontend](//git.tu-berlin.de/pjki/web-client)
+- [Controller](//git.tu-berlin.de/pjki/server/blob/master/pjkiserver/README.md)
+- [Ruleserver](//git.tu-berlin.de/pjki/server/blob/master/pjkiserver/ruleserver/README.md)
+- [Storage](//git.tu-berlin.de/pjki/server/blob/master/pjkiserver/storage/README.md)
