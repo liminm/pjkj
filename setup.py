@@ -3,6 +3,9 @@ import setuptools
 with open("README.md", "r") as fh:
 	long_description = fh.read()
 
+with open("LICENSE.md", "r") as f:
+    license_text = f.read()
+
 setuptools.setup(
 	name="pjkiserver",
 	version="0.1.0",
@@ -22,6 +25,7 @@ setuptools.setup(
 		"numpy",
 		"pymongo",
 	],
+	license=license_text,
 	classifiers=[
 		"Programming Language :: Python :: 3",
 		"License :: OSI Approved :: MIT License",
