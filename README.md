@@ -11,8 +11,8 @@ To run locally for testing without persistence, simply run these commands
 inside of the repository folder:
 
 ```bash
-pip3 install -r requirements.txt    # Install dependencies
-python3 -m pjkiserver               # Run module
+pip3 install -e .       # Install dependencies and register module
+python3 -m pjkiserver   # Run module
 ```
 
 If you want a persistent state across server restarts, install mongoDB as

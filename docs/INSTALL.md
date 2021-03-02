@@ -75,7 +75,6 @@ git clone https://gitlab.tubit.tu-berlin.de/PJ-KI/server.git pjkiserver
 To install the gameserver package system-wide on your system, run
 ```bash
 cd pjkiserver
-sudo -H pip3 install --system -r requirements.txt
 sudo -H pip3 install --system .
 ```
 This will install the package for all users, so your webserver user (e.g.
