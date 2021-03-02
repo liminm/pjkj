@@ -69,7 +69,7 @@ and ensure there are no errors.
 
 Download the gameserver source onto your drive:
 ```bash
-git clone https://gitlab.tubit.tu-berlin.de/PJ-KI/server.git pjkiserver
+git clone https://git.tu-berlin.de/pjki/server.git pjkiserver
 ```
 
 To install the gameserver package system-wide on your system, run
